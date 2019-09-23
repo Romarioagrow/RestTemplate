@@ -1,12 +1,11 @@
 <template>
         <v-card max-width="344" class="mx-auto">
             <v-card-title>
-                {{item.name}}
-                <i>({{item.id}})</i>
+                {{item.fullName}}
             </v-card-title>
             <v-card-text>
-                {{item.attributes}}
-                {{item.type}}
+                {{item.productType}}
+                {{item.finalPrice}}
             </v-card-text>
         </v-card>
 </template>

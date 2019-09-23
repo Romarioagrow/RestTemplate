@@ -27,7 +27,12 @@
                                 <v-item-group>
                                     <v-container>
                                         <v-row>
-                                            <div>{{categories[i]}}</div>
+                                            <catalog-groups v-for="(group, i) in productGroups"
+                                                            :key="group.groupName"
+                                                            :group="group"
+                                                            :index="i">
+
+                                            </catalog-groups>
                                         </v-row>
                                     </v-container>
                                 </v-item-group>
@@ -40,9 +45,15 @@
 </template>
 
 <script>
+    import CatalogGroups from "components/CatalogGroups.vue";
+    import axios from 'axios'
     export default {
+        components: {
+            CatalogGroups
+        },
         data() {
             return {
+                productGroups: [],
                 categories: [
                     '',
                     'Теле-видео-аудио',
@@ -65,6 +76,13 @@
                     'Товары для отдыха на природе'
                 ]
             }
+        },
+        created() {
+            //var group = '/catalog/' + this.categories[i];
+            axios.get('/items/catalog/теле-видео-аудио').then(response => {
+                this.productGroups = response.data
+                console.log(this.productGroups)
+            })
         }
     }
 </script>
