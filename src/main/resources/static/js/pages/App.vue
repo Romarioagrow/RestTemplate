@@ -1,17 +1,14 @@
 <template>
-    <div>
-        <h1>Rest please do</h1>
-        <items-list />
-    </div>
+    <v-app>
+        <navbar></navbar>
+        <router-view></router-view>
+    </v-app>
 </template>
 
 <script>
-    import ItemsList from 'components/ItemsList.vue'
+    import Navbar from "components/Navbar.vue";
     export default {
-        components: {
-            ItemsList
-        }
+        components: {Navbar}
     }
 </script>
-
 <style scoped></style>

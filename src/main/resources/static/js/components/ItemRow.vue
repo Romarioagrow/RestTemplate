@@ -1,10 +1,14 @@
 <template>
-    <div>
-        <i>({{item.id}})</i>
-        <strong>{{item.name}}</strong>
-        {{item.type}}
-        {{item.attributes}}
-    </div>
+        <v-card max-width="344" class="mx-auto">
+            <v-card-title>
+                {{item.name}}
+                <i>({{item.id}})</i>
+            </v-card-title>
+            <v-card-text>
+                {{item.attributes}}
+                {{item.type}}
+            </v-card-text>
+        </v-card>
 </template>
 
 <script>
