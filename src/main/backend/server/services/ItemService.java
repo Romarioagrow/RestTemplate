@@ -18,7 +18,7 @@ public class ItemService {
     private final ItemRepo itemRepo;
 
     public List<Item> listAllItems() {
-        return itemRepo.findByProductGroupIgnoreCase("музыкальные центры");
+        return itemRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull("музыкальные центры");
     }
 
     public List<ProductGroup> getProductGroups(String category) {
@@ -36,5 +36,10 @@ public class ItemService {
         });
 
         return groups;
+    }
+
+    public List<Item> getProductsByGroup(String group) {
+        log.info(group);
+        return itemRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(group.replaceAll("_"," "));
     }
 }

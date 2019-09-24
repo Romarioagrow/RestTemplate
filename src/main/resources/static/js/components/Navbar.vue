@@ -27,6 +27,7 @@
                 </v-list>
             </v-menu>
         </v-app-bar>
+        <!---->
         <v-bottom-navigation
                 color="deep-purple accent-4"
         >

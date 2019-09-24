@@ -1,47 +1,47 @@
 <template>
-        <v-container>
-            <h1>
-                Каталог товаров
-            </h1>
-            <v-content>
-                <v-card>
-                    <v-tabs center-active dark show-arrows background-color="teal darken-3"
-                            :centered="true"
-                            :icons-and-text="true"
+    <v-container>
+        <h1>
+            Каталог товаров
+        </h1>
+        <v-content>
+            <v-card>
+                <v-tabs center-active dark show-arrows background-color="teal darken-3"
+                        :centered="true"
+                        :icons-and-text="true"
+                >
+                    <v-tabs-slider color="teal lighten-3"></v-tabs-slider>
+
+                    <v-tab v-for="i in categories.length"
+                           :key="i"
+                           :href="'#tab-' + i"
+                           @click="loadGroups(categories[i])"
                     >
-                        <v-tabs-slider color="teal lighten-3"></v-tabs-slider>
+                        {{categories[i]}}
+                        <v-icon>mdi-phone</v-icon>
+                    </v-tab>
 
-                        <v-tab v-for="i in categories.length"
+                    <v-tab-item v-for="i in categories.length"
                                 :key="i"
-                                :href="'#tab-' + i"
-                        >
-                            {{categories[i]}}
-                            <v-icon>mdi-phone</v-icon>
-                        </v-tab>
-
-                        <v-tab-item v-for="i in categories.length"
-                                    :key="i"
-                                    :value="'tab-' + i"
-                        >
-                            <v-card flat tile>
-                                <v-item-group>
-                                    <v-container>
-                                        <v-row>
-                                            <catalog-groups v-for="(group, i) in productGroups"
-                                                            :key="group.groupName"
-                                                            :group="group"
-                                                            :index="i">
-
-                                            </catalog-groups>
-                                        </v-row>
-                                    </v-container>
-                                </v-item-group>
-                            </v-card>
-                        </v-tab-item>
-                    </v-tabs>
-                </v-card>
-            </v-content>
-        </v-container>
+                                :value="'tab-' + i"
+                    >
+                        <v-card flat tile>
+                            <v-item-group>
+                                <v-container>
+                                    <v-row align="stretch" justify="space-around">
+                                        <catalog-groups v-for="(group, i) in productGroups"
+                                                        :key="group.groupName"
+                                                        :group="group"
+                                                        :index="i">
+                                        </catalog-groups>
+                                    </v-row>
+                                </v-container>
+                            </v-item-group>
+                        </v-card>
+                    </v-tab-item>
+                </v-tabs>
+            </v-card>
+        </v-content>
+    </v-container>
 </template>
 
 <script>
@@ -50,6 +50,14 @@
     export default {
         components: {
             CatalogGroups
+        },
+        methods: {
+            loadGroups(group) {
+                console.log(group);
+                axios.get('/api/catalog/'+ group).then(response => {
+                    this.productGroups = response.data;
+                })
+            }
         },
         data() {
             return {
@@ -78,10 +86,8 @@
             }
         },
         created() {
-            //var group = '/catalog/' + this.categories[i];
-            axios.get('/items/catalog/теле-видео-аудио').then(response => {
-                this.productGroups = response.data
-                console.log(this.productGroups)
+            axios.get('/api/catalog/теле-видео-аудио').then(response => {
+                this.productGroups = response.data;
             })
         }
     }

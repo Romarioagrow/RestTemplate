@@ -7,7 +7,7 @@ import java.util.List;
 
 @Repository
 public interface ItemRepo extends JpaRepository<Item, String> {
-    List<Item> findByProductGroupIgnoreCase(String group);
+    List<Item> findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(String group);
 
     List<Item> findByProductCategoryIgnoreCase(String category);
 

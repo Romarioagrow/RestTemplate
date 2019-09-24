@@ -26,7 +26,9 @@
             </v-sheet>
             <!---->
             <v-container>
+                <!---->
                 <items-list />
+                <!---->
                 <v-btn class="ma-2" color="red" dark>Удалить
                     <v-icon dark right>mdi-cancel</v-icon>
                 </v-btn>

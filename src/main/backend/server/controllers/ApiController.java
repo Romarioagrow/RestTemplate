@@ -8,12 +8,10 @@ import org.springframework.web.bind.annotation.RestController;
 import server.domain.Item;
 import server.dto.ProductGroup;
 import server.services.ItemService;
-
 import java.util.List;
-import java.util.Set;
 
 @RestController
-@RequestMapping("/items")
+@RequestMapping("/api")
 @AllArgsConstructor
 @Log
 public class ApiController {
@@ -27,5 +25,10 @@ public class ApiController {
     @GetMapping("/catalog/{category}")
     private List<ProductGroup> getGroupsInCategory(@PathVariable String category) {
         return itemService.getProductGroups(category);
+    }
+
+    @GetMapping("/products/{group}")
+    private List<Item> listProductsByGroup(@PathVariable String group) {
+        return itemService.getProductsByGroup(group);
     }
 }
