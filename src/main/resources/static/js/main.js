@@ -13,7 +13,6 @@ Vue.use(VueResource);
 Vue.use(Vuetify);
 Vue.use(BootstrapVue);
 
-
 new Vue({
     el: '#app',
     vuetify: new Vuetify(),

@@ -12,4 +12,6 @@ public interface ItemRepo extends JpaRepository<Item, String> {
     List<Item> findByProductCategoryIgnoreCase(String category);
 
     Item findFirstByProductGroupAndOriginalPicIsNotNull(String group);
+
+
 }

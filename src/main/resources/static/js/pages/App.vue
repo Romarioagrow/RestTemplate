@@ -1,7 +1,9 @@
 <template>
     <v-app>
         <navbar></navbar>
-        <router-view></router-view>
+        <v-content>
+            <router-view></router-view>
+        </v-content>
     </v-app>
 </template>
 
@@ -12,3 +14,4 @@
     }
 </script>
 <style scoped></style>
+
