@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import server.domain.Item;
 import server.dto.FiltersList;
 import server.dto.ProductGroup;
-import server.services.ItemService;
+import server.services.ProductService;
 import java.util.List;
 
 @RestController
@@ -16,12 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Log
 public class ApiController {
-    private final ItemService itemService;
-
-    /*@GetMapping
-    private List<Item> restApi() {
-        return itemService.listAllItems();
-    }*/
+    private final ProductService itemService;
 
     @GetMapping("/catalog/{category}")
     private List<ProductGroup> getGroupsInCategory(@PathVariable String category) {

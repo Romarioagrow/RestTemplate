@@ -1,7 +1,7 @@
 <template>
     <router-link :to="path">
-        <v-card class="mx-auto" width="300" height="300">
-            <v-img class="white--text w-50" :src="group.groupPic"></v-img>
+        <v-card class="mx-auto mt-3" width="300" height="300">
+            <v-img class="white--text w-50" :src="group.groupPic" contain width="200" height="200"></v-img>
             <v-card-title>
                 <div>{{group.groupName}}</div>
             </v-card-title>
