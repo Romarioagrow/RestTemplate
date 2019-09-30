@@ -32,4 +32,10 @@ public class ApiController {
     private FiltersList createFiltersLists(@PathVariable String group) {
         return itemService.createFiltersLists(group);
     }
+
+    @GetMapping("/products/product/{productID}")
+    private Product getProductByID(@PathVariable String productID) {
+        log.info(productID);
+        return itemService.getProductByID(productID);
+    }
 }

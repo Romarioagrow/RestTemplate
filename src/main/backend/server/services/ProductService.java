@@ -15,16 +15,20 @@ import static org.apache.commons.lang3.StringUtils.*;
 @AllArgsConstructor
 @Log
 public class ProductService {
-    private final ProductRepo itemRepo;
+    private final ProductRepo productRepo;
+
+    public List<Product> getProductsByGroup(String group) {
+        return productRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(group.replaceAll("_"," "));
+    }
 
     public List<ProductGroup> getProductGroups(String category) {
         Set<String> productGroups = new HashSet<>();
         List<ProductGroup> groups = new ArrayList<>();
 
-        itemRepo.findByProductCategoryIgnoreCase(category).forEach(item -> productGroups.add(item.getProductGroup()));
+        productRepo.findByProductCategoryIgnoreCase(category).forEach(item -> productGroups.add(item.getProductGroup()));
 
         productGroups.forEach(productGroup -> {
-            String pic = itemRepo.findFirstByProductGroupAndOriginalPicIsNotNull(productGroup).getOriginalPic();
+            String pic = productRepo.findFirstByProductGroupAndOriginalPicIsNotNull(productGroup).getOriginalPic();
             ProductGroup group = new ProductGroup();
             group.setGroupName(productGroup);
             group.setGroupPic(pic);
@@ -34,10 +38,6 @@ public class ProductService {
         return groups;
     }
 
-    public List<Product> getProductsByGroup(String group) {
-        return itemRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(group.replaceAll("_"," "));
-    }
-
     public FiltersList createFiltersLists(String group) {
         log.info(group);
 
@@ -45,10 +45,10 @@ public class ProductService {
         List<Integer> allPrices = new LinkedList<>();
 
         /*Наполнение списка товаров нужной группы*/
-        List<Product> products = itemRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(group).stream().filter(item ->
+        List<Product> products = productRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(group).stream().filter(item ->
                 !item.getOriginalAnnotation().isEmpty()).collect(Collectors.toList());
 
-        products.forEach(product -> log.info(product.getOriginalAnnotation()));
+        products.forEach(product -> log.info(product.getOriginalAnnotation())); ///
 
         try
         {
@@ -86,8 +86,8 @@ public class ProductService {
                     }
                 });
 
-                System.out.println("\n До просева:");
-                filtersList.features.forEach(log::info);
+                System.out.println("\n До просева:"); ///
+                filtersList.features.forEach(log::info); ///
 
                 /*Отсев дублей фильтров и синонимов фильтров*/
                 List<String> remove = new ArrayList<>();
@@ -102,8 +102,8 @@ public class ProductService {
                 });
                 filtersList.features.removeAll(remove);
 
-                System.out.println("\n Features:");
-                filtersList.features.forEach(log::info);
+                System.out.println("\n Features:"); ///
+                filtersList.features.forEach(log::info); ///
             }
         }
         catch (Exception e) {
@@ -118,7 +118,10 @@ public class ProductService {
         String[] colors      = {"МРАМОР", "КОРИЧНЕВЫЙ", "БОРДОВЫЙ", "ВИШНЕВЫЙ", "ЗЕЛЕНЫЙ", "ЗОЛОТОЙ", "КРАСНЫЙ", "РОЗОВЫЙ", "САЛАТОВЫЙ", "БОРДО", "МРАМОР", "СЕРЕБРИСТЫЙ", "СЕРЫЙ", "СИНИЙ", "ФИСТАШКОВЫЙ", "ЦВЕТНОЙ"};
         String[] synonyms    = {"ВЛАГОЗАЩИЩЕННЫЙ КОРПУС", "СЛОТ ДЛЯ ПАМЯТИ", "САМООЧИСТКА", "ВЕРТ. ОТПАРИВАНИЕ", "АВТООТКЛЮЧЕНИЕ", "СИСТЕМА РЕВЕРСА", "3D-НАГРЕВ"};
 
-        if (filter.contains(": есть") || (supplier.contains("RUS-BT") && !filter.contains(":"))) {
+        /*Основное условие*/
+        if (filter.contains(": есть") || (supplier.contains("RUS-BT") && !filter.contains(":"))) /// filter.contains(": да")
+        {
+            /*Спецефический отсев*/ /// В мультипоток
             for (String word : notContains) {
                 if (containsIgnoreCase(filter, word)) return false;
             }
@@ -147,6 +150,10 @@ public class ProductService {
             return true;
         };
         return false;
+    }
+
+    public Product getProductByID(String productID) {
+        return productRepo.findProductByProductID(productID);
     }
 }
 
