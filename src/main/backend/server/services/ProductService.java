@@ -9,6 +9,7 @@ import server.dto.ProductGroup;
 import server.repos.ProductRepo;
 import java.util.*;
 import java.util.stream.Collectors;
+import static org.apache.commons.lang3.StringUtils.*;
 
 @Service
 @AllArgsConstructor
@@ -43,7 +44,7 @@ public class ProductService {
         FiltersList filtersList = new FiltersList();
         List<Integer> allPrices = new LinkedList<>();
 
-        /*Спсок товаров по нужной группе с картинками*/
+        /*Наполнение списка товаров нужной группы*/
         List<Product> products = itemRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(group).stream().filter(item ->
                 !item.getOriginalAnnotation().isEmpty()).collect(Collectors.toList());
 
@@ -51,35 +52,59 @@ public class ProductService {
 
         try
         {
-            /*Все бренды группы*/
-            products.forEach(item -> filtersList.brands.add(StringUtils.capitalize(item.getOriginalBrand().toLowerCase())));
+            /*Сформировать фильтры-бренды группы*/
+            {
+                products.forEach(item -> filtersList.brands.add(StringUtils.capitalize(item.getOriginalBrand().toLowerCase())));
+            }
 
-            /*Минимальная и максимальная цена в группе*/
-            products.forEach(item -> allPrices.add(item.getFinalPrice()));
-            allPrices.sort(Comparator.comparingInt(Integer::intValue));
+            /*Сформировать фильры цены*/
+            {
+                products.forEach(item -> allPrices.add(item.getFinalPrice()));
+                allPrices.sort(Comparator.comparingInt(Integer::intValue));
 
-            log.info(allPrices.size() + "");
-            filtersList.prices.add(allPrices.get(0));
-            filtersList.prices.add(allPrices.get(allPrices.size()-1));
+                /*Минимальная и максимальная цена в группе*/
+                log.info(allPrices.size() + "");
+                filtersList.prices.add(allPrices.get(0));
+                filtersList.prices.add(allPrices.get(allPrices.size()-1));
+            }
 
             /*Сформировать фильтры-особенности*/
-            products.forEach(product -> {
-                String supplier = product.getSupplier();
-                String annotation = product.getOriginalAnnotation();
+            {
+                products.forEach(product -> {
+                    String supplier   = product.getSupplier();
+                    String annotation = product.getOriginalAnnotation();
 
-                String splitter = supplier.contains("1RBT") ? "; " : ", ";
-                String[] filters = annotation.split(splitter);
+                    /*Разбиение аннотации экземпляра Product на фильтры*/
+                    String splitter  = supplier.contains("1RBT") ? "; " : ", ";
+                    String[] filters = annotation.split(splitter);
 
-                for (String filter : filters)
-                {
-                    if (filterIsFeature(filter, supplier)) {
-                        filtersList.features.add(org.apache.commons.lang3.StringUtils.substringBefore(filter, ":"));
+                    /*Итерация и отсев неподходящих под фильтры-особенности*/
+                    for (String filter : filters) {
+                        if (filterIsFeature(filter, supplier)) {
+                            filtersList.features.add(substringBefore(filter, ":").toUpperCase());
+                        }
                     }
-                }
-            });
+                });
 
-            System.out.println("\n Features:");
-            filtersList.features.forEach(log::info);
+                System.out.println("\n До просева:");
+                filtersList.features.forEach(log::info);
+
+                /*Отсев дублей фильтров и синонимов фильтров*/
+                List<String> remove = new ArrayList<>();
+                filtersList.features.forEach(featureFilter ->
+                {
+                    for (String checkDuplicate : filtersList.features)
+                    {
+                        if (filterIsDuplicate(checkDuplicate, featureFilter)) {
+                            remove.add(checkDuplicate);
+                        }
+                    }
+                });
+                filtersList.features.removeAll(remove);
+
+                System.out.println("\n Features:");
+                filtersList.features.forEach(log::info);
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -88,22 +113,67 @@ public class ProductService {
     }
 
     private boolean filterIsFeature(String filter, String supplier) {
-        String[] stopList = {" Л", " СМ", " ЯЩИКА", " ВТ"};
-        String[] notEquals = {"A", "A+", "B", "N", "N/ST", "R134A", "R600A", "SN/N/ST", "SN/ST"};
+        String[] notContains = {"X1080","''"," ГБ", "Х720", "X480", "МА*Ч"," ГЦ"," ПИНЦЕТОВ", "220 В", " КВТ","АВТООТКЛЮЧЕНИЕ","НЕРЖ."," БАР", " °C","КЭН","ПЭН", "ТЭН", " ГР","АЛЮМИНИЙ /", "T +6 - 20C", "АРТ.","ТРС-3", " Л", " СМ", " ВТ", " ОБ/МИН", " КГ", "в формате HDTV", "КУБ.М/ЧАС", " ДУХОВКА", "КРЫШКА"};
+        String[] notEquals   = {"TN", "TFT","A", "A+", "B", "N", "N/ST", "R134A", "R600A", "SN/N/ST", "SN/ST", "ST"};
+        String[] colors      = {"МРАМОР", "КОРИЧНЕВЫЙ", "БОРДОВЫЙ", "ВИШНЕВЫЙ", "ЗЕЛЕНЫЙ", "ЗОЛОТОЙ", "КРАСНЫЙ", "РОЗОВЫЙ", "САЛАТОВЫЙ", "БОРДО", "МРАМОР", "СЕРЕБРИСТЫЙ", "СЕРЫЙ", "СИНИЙ", "ФИСТАШКОВЫЙ", "ЦВЕТНОЙ"};
+        String[] synonyms    = {"ВЛАГОЗАЩИЩЕННЫЙ КОРПУС", "СЛОТ ДЛЯ ПАМЯТИ", "САМООЧИСТКА", "ВЕРТ. ОТПАРИВАНИЕ", "АВТООТКЛЮЧЕНИЕ", "СИСТЕМА РЕВЕРСА", "3D-НАГРЕВ"};
 
-        if ((supplier.contains("RUS-BT") && !filter.contains(":")) || filter.contains(": есть")) {
-            for (String word : stopList) {
-                if (filter.contains(word)) return false;
+        if (filter.contains(": есть") || (supplier.contains("RUS-BT") && !filter.contains(":"))) {
+            for (String word : notContains) {
+                if (containsIgnoreCase(filter, word)) return false;
             }
             for (String word : notEquals) {
-                if (filter.equals(word)) return false;
+                if (equalsIgnoreCase(filter, word)) return false;
+            }
+            for (String word : colors) {
+                if (containsIgnoreCase(filter, word)) return false;
+            }
+            for (String word : synonyms) {
+                if (containsIgnoreCase(filter, word)) return false;
             }
             return true;
         }
         return false;
     }
+
+    private boolean filterIsDuplicate(String checkDuplicate, String featureFilter) {
+        String[] dontMatch = {"FULL HD (1080P)", "ULTRA HD (2160P)"};
+
+        if (containsIgnoreCase(checkDuplicate, featureFilter) & !equalsIgnoreCase(checkDuplicate, featureFilter))
+        {
+            for (String word : dontMatch) {
+                if (word.contains(checkDuplicate)) return false;
+            }
+            return true;
+        };
+        return false;
+    }
 }
 
+/*Все внутренние методы для фильтрации в FilterService*/
+
+/*При фильтрации обрабатывать итерируемый фильтр, для нужных случаев по группам товаров добавлять синоним для фильтра*/
+
+/*Добавить возможность обязательного добавления собственного фильтра в фильтры*/
+
+/*
+* В базе у products специальное поле для фильтрации аннтоации, filteredAnnotation, все пробелы в словах внутри фильтра заменить на _, и при фильтрации у фильтра аналогично*/
+
+/*при выборе фильтра-особенности, отображать этот фильтр на карточке товара!*/
+
+/*
+* Сначала ишет уникальные фильтры через И, если их ноль, то тогда через или*/
+
+/*
+Алгоритм наполнения фильтров
+1. наполнение списка товаров нужной группы
+
+* */
+
+/*
+ * если у двух поставщиков есть одинаковое свойство с одним и тем же словом в названии,
+ * в списке оставлять свойство с наименьшим количеством слов в названии: из DVB-T2 и Приём DVB-T2 оставить DVB-T2,
+ * фильтровать по contains */
 
 /// Заметки
 /*
