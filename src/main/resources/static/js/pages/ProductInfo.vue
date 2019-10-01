@@ -1,5 +1,4 @@
 <template>
-
     <v-container>
         <v-row>
             <v-col cols="6">
@@ -55,16 +54,6 @@
             return {
                 product: '',
                 linkBack: ''
-                /*items: [
-                    {
-                        category: '',
-                        href: '#'
-                    },
-                    {
-                        group: '',
-                        href: '#'
-                    }
-                ]*/
             }
         },
         beforeCreate() {
@@ -74,11 +63,6 @@
             {
                 this.product = response.data
                 this.linkBack = '/products/'+ (this.product.productGroup).toLowerCase();
-                /*console.log(this.product.productCategory)
-                console.log(this.product.productGroup)
-                this.items.category = this.product.productCategory
-                this.items.group = this.product.productGroup*/
-
             });
         }
     }

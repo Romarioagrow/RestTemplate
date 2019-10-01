@@ -68,7 +68,7 @@ public class ProductService {
                 filtersList.prices.add(allPrices.get(allPrices.size()-1));
             }
 
-            /*Сформировать фильтры-особенности*/
+            /*Сформировать фильтры*/
             {
                 products.forEach(product -> {
                     String supplier   = product.getSupplier();
@@ -79,9 +79,25 @@ public class ProductService {
                     String[] filters = annotation.split(splitter);
 
                     /*Итерация и отсев неподходящих под фильтры-особенности*/
-                    for (String filter : filters) {
+                    for (String filter : filters)
+                    {
+                        /*Сформировать фильтры-особенности*/
                         if (filterIsFeature(filter, supplier)) {
                             filtersList.features.add(substringBefore(filter, ":").toUpperCase());
+                        }
+
+                        /*Сформировать фильтры-параметры*/
+                        else if (filterIsParam(filter)) {
+                            String key = substringBefore(filter, ":");
+                            String val = substringAfter(filter, ": ");
+
+                            if (filtersList.paramFilters.get(key) != null)
+                            {
+                                TreeSet<String> vals = filtersList.paramFilters.get(key);
+                                vals.add(val);
+                                filtersList.paramFilters.put(key, vals);
+                            }
+                            else filtersList.paramFilters.putIfAbsent(key, new TreeSet<>(Collections.singleton(val)));
                         }
                     }
                 });
@@ -102,14 +118,33 @@ public class ProductService {
                 });
                 filtersList.features.removeAll(remove);
 
+                ////
                 System.out.println("\n Features:"); ///
                 filtersList.features.forEach(log::info); ///
+                System.out.println("\n filters params:"); ///
+                filtersList.paramFilters.forEach((s, strings) -> {
+                    log.info(s + " " + strings);
+                }); ///
             }
+
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         return filtersList;
+    }
+
+    private boolean filterIsParam(String filter) {
+        String[] notParam = {"нет", "0", "количество шт в", "-"};
+        if (filter.contains(":") && !filter.contains("количество шт в")) {
+            for (String word : notParam) {
+                String checkParam = substringAfter(filter, ":").trim();
+                if (checkParam.startsWith(word)) return false;
+            }
+            return true;
+        }
+        return false;
+
     }
 
     private boolean filterIsFeature(String filter, String supplier) {
@@ -119,7 +154,7 @@ public class ProductService {
         String[] synonyms    = {"ВЛАГОЗАЩИЩЕННЫЙ КОРПУС", "СЛОТ ДЛЯ ПАМЯТИ", "САМООЧИСТКА", "ВЕРТ. ОТПАРИВАНИЕ", "АВТООТКЛЮЧЕНИЕ", "СИСТЕМА РЕВЕРСА", "3D-НАГРЕВ"};
 
         /*Основное условие*/
-        if (filter.contains(": есть") || (supplier.contains("RUS-BT") && !filter.contains(":"))) /// filter.contains(": да")
+        if ((filter.contains(": есть") || filter.contains(": да")) || (supplier.contains("RUS-BT") && !filter.contains(":"))) /// filter.contains(": да")
         {
             /*Спецефический отсев*/ /// В мультипоток
             for (String word : notContains) {
@@ -164,12 +199,12 @@ public class ProductService {
 /*Добавить возможность обязательного добавления собственного фильтра в фильтры*/
 
 /*
-* В базе у products специальное поле для фильтрации аннтоации, filteredAnnotation, все пробелы в словах внутри фильтра заменить на _, и при фильтрации у фильтра аналогично*/
+ * В базе у products специальное поле для фильтрации аннтоации, filteredAnnotation, все пробелы в словах внутри фильтра заменить на _, и при фильтрации у фильтра аналогично*/
 
 /*при выборе фильтра-особенности, отображать этот фильтр на карточке товара!*/
 
 /*
-* Сначала ишет уникальные фильтры через И, если их ноль, то тогда через или*/
+ * Сначала ишет уникальные фильтры через И, если их ноль, то тогда через или*/
 
 /*
 Алгоритм наполнения фильтров

@@ -47,12 +47,12 @@
                             </v-expansion-panel-content>
                         </v-expansion-panel>
 
-                        <!--<v-expansion-panel class="mt-2" v-for="(item,i) in 5" :key="i" >
-                            <v-expansion-panel-header>Item</v-expansion-panel-header>
+                        <v-expansion-panel class="mt-2" v-for="[key, val] of filtersParams" :key="item" >
+                            <v-expansion-panel-header>{{ key }}</v-expansion-panel-header>
                             <v-expansion-panel-content>
                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                             </v-expansion-panel-content>
-                        </v-expansion-panel>-->
+                        </v-expansion-panel>
                     </v-expansion-panels>
                 </v-container>
             </v-list-item>
@@ -73,9 +73,7 @@
                 </v-sheet>
                 <!---->
                 <v-row>
-
-                        <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
-
+                    <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
                 </v-row>
             </v-container>
         </v-item-group>
@@ -96,7 +94,7 @@
                 filtersBrands: [],
                 filtersFeat: [],
                 filtersCompute: [],
-                filtersParams: [],
+                filtersParams: new Map(),
                 drawer: true,
                 mini: false,
                 group: decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/')+1),
@@ -113,13 +111,11 @@
             let url = '/api/products' + requestGroup;
             let filtersRequest = '/api/filters/construct' + requestGroup;
 
-            console.log(url) ///
-            console.log(filtersRequest) ///
-
             axios.get(url).then(response => this.products = response.data);
+
             axios.get(filtersRequest).then(response =>
             {
-                console.log(response.data.prices); ///
+                //console.log(response.data); ///
 
                 /// priceFilters()
                 let prices = response.data.prices;
@@ -133,6 +129,10 @@
 
                 /// featuresFilters()
                 this.features = response.data.features;
+
+                ///
+                let map = response.data.paramFilters;
+                for (const [key, value] of Object.entries(map)) this.filtersParams.set(key, value)
             });
         }
     }
