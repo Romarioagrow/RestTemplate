@@ -30,7 +30,7 @@ public class ApiController {
 
     @GetMapping("/filters/construct/{group}")
     private FiltersList createFiltersLists(@PathVariable String group) {
-        return itemService.createFiltersLists(group);
+        return itemService.createProductsFilterLists(group);
     }
 
     @GetMapping("/products/product/{productID}")

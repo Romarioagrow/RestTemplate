@@ -7,7 +7,12 @@ import server.domain.Product;
 import server.dto.FiltersList;
 import server.dto.ProductGroup;
 import server.repos.ProductRepo;
+
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.*;
 
@@ -25,7 +30,8 @@ public class ProductService {
         Set<String> productGroups = new HashSet<>();
         List<ProductGroup> groups = new ArrayList<>();
 
-        productRepo.findByProductCategoryIgnoreCase(category).forEach(item -> productGroups.add(item.getProductGroup()));
+        /*Находятся все products категории и просеиваются группы*/
+        productRepo.findByProductCategoryIgnoreCase(category).forEach(item -> productGroups.add(item.getProductGroup())); ////
 
         productGroups.forEach(productGroup -> {
             String pic = productRepo.findFirstByProductGroupAndOriginalPicIsNotNull(productGroup).getOriginalPic();
@@ -35,10 +41,13 @@ public class ProductService {
             groups.add(group);
         });
         groups.sort(Comparator.comparing(ProductGroup::getGroupName));
+
+        System.out.println();
+        groups.forEach(productGroup -> log.info(productGroup.getGroupName()));
         return groups;
     }
 
-    public FiltersList createFiltersLists(String group) {
+    public FiltersList createProductsFilterLists(String group) {
         log.info(group);
 
         FiltersList filtersList = new FiltersList();
@@ -48,8 +57,6 @@ public class ProductService {
         List<Product> products = productRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(group).stream().filter(item ->
                 !item.getOriginalAnnotation().isEmpty()).collect(Collectors.toList());
 
-        products.forEach(product -> log.info(product.getOriginalAnnotation())); ///
-
         try
         {
             /*Сформировать фильтры-бренды группы*/
@@ -57,13 +64,12 @@ public class ProductService {
                 products.forEach(item -> filtersList.brands.add(StringUtils.capitalize(item.getOriginalBrand().toLowerCase())));
             }
 
-            /*Сформировать фильры цены*/
+            /*Сформировать фильтры-цены*/
             {
                 products.forEach(item -> allPrices.add(item.getFinalPrice()));
                 allPrices.sort(Comparator.comparingInt(Integer::intValue));
 
                 /*Минимальная и максимальная цена в группе*/
-                log.info(allPrices.size() + "");
                 filtersList.prices.add(allPrices.get(0));
                 filtersList.prices.add(allPrices.get(allPrices.size()-1));
             }
@@ -82,51 +88,70 @@ public class ProductService {
                     for (String filter : filters)
                     {
                         /*Сформировать фильтры-особенности*/
-                        if (filterIsFeature(filter, supplier)) {
+                        if (filterIsFeature(filter, supplier))
+                        {
+                            /// method()
                             filtersList.features.add(substringBefore(filter, ":").toUpperCase());
-                        }
 
-                        /*Сформировать фильтры-параметры*/
-                        else if (filterIsParam(filter)) {
+                            /*Отсев дублей фильтров и синонимов фильтров*/
+                            List<String> remove = new ArrayList<>();
+                            filtersList.features.forEach(featureFilter ->
+                            {
+                                for (String checkDuplicate : filtersList.features)
+                                {
+                                    if (filterIsDuplicate(checkDuplicate, featureFilter)) {
+                                        remove.add(checkDuplicate);
+                                    }
+                                }
+                            });
+                            filtersList.features.removeAll(remove);
+                        }
+                        else if (filter.contains(":") && !filter.contains("количество шт в")) /// ЗДЕСЬ ОТСЕВ НА СТОПСЛОВА ДЛЯ DIAPASONS И PARAMS
+                        {
                             String key = substringBefore(filter, ":");
                             String val = substringAfter(filter, ": ");
 
-                            if (filtersList.paramFilters.get(key) != null)
+                            /*Digit diapasons*/ /// ЕСЛИ ДИАПАЗОН ТО В DIAPASONS
+                            if (filterIsDiapason(val))
                             {
-                                TreeSet<String> vals = filtersList.paramFilters.get(key);
-                                vals.add(val);
-                                filtersList.paramFilters.put(key, vals);
+                                /// method()
+                                NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
+                                try
+                                {
+                                    Number number = format.parse(val);
+                                    Double parsedValue = number.doubleValue();
+
+                                    if (filtersList.diapasonsFilters.get(key) != null)
+                                    {
+                                        TreeSet<Double> vals = filtersList.diapasonsFilters.get(key);
+                                        vals.add(parsedValue);
+                                        filtersList.diapasonsFilters.put(key, vals);
+                                    }
+                                    else filtersList.diapasonsFilters.putIfAbsent(key, new TreeSet<>(Collections.singleton(parsedValue)));
+
+                                }
+                                catch (ParseException e) {
+                                    e.getSuppressed();
+                                }
                             }
-                            else filtersList.paramFilters.putIfAbsent(key, new TreeSet<>(Collections.singleton(val)));
+
+                            /*Сформировать фильтры-параметры*/ /// ЕСЛИ НЕ DIAPASONS ТО В PARAMS
+                            else if (filterIsParam(filter)) /// ЗДЕСЬ НЕ ПРОВЕРЯТЬ ВТОРОЙ РАЗ
+                            {
+                                /// method()
+                                if (filtersList.paramFilters.get(key) != null)
+                                {
+                                    TreeSet<String> vals = filtersList.paramFilters.get(key);
+                                    vals.add(val);
+                                    filtersList.paramFilters.put(key, vals);
+                                }
+                                else filtersList.paramFilters.putIfAbsent(key, new TreeSet<>(Collections.singleton(val)));
+                            }
                         }
                     }
                 });
-
-                System.out.println("\n До просева:"); ///
-                filtersList.features.forEach(log::info); ///
-
-                /*Отсев дублей фильтров и синонимов фильтров*/
-                List<String> remove = new ArrayList<>();
-                filtersList.features.forEach(featureFilter ->
-                {
-                    for (String checkDuplicate : filtersList.features)
-                    {
-                        if (filterIsDuplicate(checkDuplicate, featureFilter)) {
-                            remove.add(checkDuplicate);
-                        }
-                    }
-                });
-                filtersList.features.removeAll(remove);
-
-                ////
-                System.out.println("\n Features:"); ///
-                filtersList.features.forEach(log::info); ///
-                System.out.println("\n filters params:"); ///
-                filtersList.paramFilters.forEach((s, strings) -> {
-                    log.info(s + " " + strings);
-                }); ///
+                filtersList.showDiapasons();
             }
-
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -134,9 +159,18 @@ public class ProductService {
         return filtersList;
     }
 
+    private boolean filterIsDiapason(String val) {
+        Pattern pattern = Pattern.compile("^[0-9]{1,10}([,.][0-9]{1,10})?$");
+        Matcher matcher = pattern.matcher(val);
+        return !val.equals("0") && matcher.matches();
+    }
+
     private boolean filterIsParam(String filter) {
         String[] notParam = {"нет", "0", "количество шт в", "-"};
-        if (filter.contains(":") && !filter.contains("количество шт в")) {
+
+        /*Основное условие*/
+        if (filter.contains(":") && !filter.contains("количество шт в"))
+        {
             for (String word : notParam) {
                 String checkParam = substringAfter(filter, ":").trim();
                 if (checkParam.startsWith(word)) return false;
@@ -144,7 +178,6 @@ public class ProductService {
             return true;
         }
         return false;
-
     }
 
     private boolean filterIsFeature(String filter, String supplier) {
@@ -192,6 +225,12 @@ public class ProductService {
     }
 }
 
+/*!!!!!
+ * Для работы с поставщиками использовать сущность OriginalProduct, для работы с сервисами и выводом Product
+ * Для работы с самим заказом вцелом Order, внутри которого находится OrderList, products добавлять в OrderList*/
+/*!!!!
+
+ */
 /*Все внутренние методы для фильтрации в FilterService*/
 
 /*При фильтрации обрабатывать итерируемый фильтр, для нужных случаев по группам товаров добавлять синоним для фильтра*/

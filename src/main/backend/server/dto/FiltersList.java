@@ -18,4 +18,8 @@ public class FiltersList {
         brands.forEach(log::info);
         prices.forEach(integer -> log.info(integer + ""));
     }
+
+    public void showDiapasons() {
+        diapasonsFilters.forEach((key, value) -> log.info(key + value.toString()));
+    }
 }
