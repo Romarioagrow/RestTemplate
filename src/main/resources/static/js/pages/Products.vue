@@ -50,14 +50,14 @@
                         <v-expansion-panel class="mt-2" v-for="[key, val] of filtersDiapasons" :key="item" >
                             <v-expansion-panel-header>{{ key }}</v-expansion-panel-header>
                             <v-expansion-panel-content>
-                                ...
+                                {{val}}
                             </v-expansion-panel-content>
                         </v-expansion-panel>
 
                         <v-expansion-panel class="mt-2" v-for="[key, val] of filtersParams" :key="item" >
                             <v-expansion-panel-header>{{ key }}</v-expansion-panel-header>
                             <v-expansion-panel-content>
-                                ...
+                                {{val}}
                             </v-expansion-panel-content>
                         </v-expansion-panel>
 
