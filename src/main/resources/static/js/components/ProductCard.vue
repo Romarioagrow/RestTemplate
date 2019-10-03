@@ -1,7 +1,7 @@
 <template>
     <v-item v-slot:default="{ active, toggle }">
     <v-card class="mx-auto mt-3" max-width="350">
-        <v-img class="white--text" contain height="200px" :src="product.originalPic"></v-img>
+        <v-img class="white--text" contain height="200px" :src="product.originalPic" alt="Bad Link"></v-img>
         <v-card-text>
             <router-link :to=productID>
                 <v-card-title class="align-end fill-height">{{product.fullName}}</v-card-title>

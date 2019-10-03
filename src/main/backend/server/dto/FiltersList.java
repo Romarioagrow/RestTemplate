@@ -15,8 +15,14 @@ public class FiltersList {
     public Map<String, TreeSet<String>> digitsFilters = new TreeMap<>(), singletonFilters = new TreeMap<>();
 
     public void showInfo() {
-        brands.forEach(log::info);
-        prices.forEach(integer -> log.info(integer + ""));
+        //brands.forEach(log::info);
+        //prices.forEach(integer -> log.info(integer + ""));
+
+        log.info("Prices: " + prices.toString());
+        log.info("Brands: " + brands.toString());
+        log.info("Features: " + features.toString());
+        diapasonsFilters.forEach((key, value) -> log.info("Diapasons: " + key + value.toString()));
+        paramFilters.forEach((key, value) -> log.info("Params: " + key + value.toString()));
     }
 
     public void showDiapasons() {

@@ -1,7 +1,9 @@
 package server.services;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import server.domain.Product;
 import server.dto.FiltersList;
@@ -27,34 +29,61 @@ public class ProductService {
     }
 
     public List<ProductGroup> getProductGroups(String category) {
-        Set<String> productGroups = new HashSet<>();
-        List<ProductGroup> groups = new ArrayList<>();
+        Set<String> groups = new HashSet<>();
+        List<ProductGroup> productGroups = new ArrayList<>();
 
-        /*Находятся все products категории и просеиваются группы*/
-        productRepo.findByProductCategoryIgnoreCase(category).forEach(item -> productGroups.add(item.getProductGroup())); ////
+        /*!!! ПЕРЕПИСАТЬ КОГДА БУДЕТ НОВЫЙ ProductParser С НОВЫМИ ПОЛЯМИ PRODUCTS !!!*/
+        /*Находятся все products в категории и просеиваются группы*/
+        productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> groups.add(product.getProductGroup())); ////
 
-        productGroups.forEach(productGroup -> {
-            String pic = productRepo.findFirstByProductGroupAndOriginalPicIsNotNull(productGroup).getOriginalPic();
-            ProductGroup group = new ProductGroup();
-            group.setGroupName(productGroup);
-            group.setGroupPic(pic);
-            groups.add(group);
-        });
-        groups.sort(Comparator.comparing(ProductGroup::getGroupName));
+        log.info(groups.isEmpty() + "");
+        if (!groups.isEmpty())
+        {
+            groups.forEach(productGroup -> {
+                String pic = productRepo.findFirstByProductGroupAndOriginalPicIsNotNull(productGroup).getOriginalPic();
+                ProductGroup group = new ProductGroup();
+                group.setGroupName(productGroup);
+                group.setGroupPic(pic);
+                productGroups.add(group);
+            });
+        }
+        else
+        {
+            try {
+                log.info(category);
+                productRepo.findByOriginalCategoryContainsIgnoreCase(category).forEach(product -> groups.add(product.getOriginalType())); ////
+                groups.forEach(originalType -> {
+                    String pic = productRepo.findFirstByOriginalTypeAndOriginalPicIsNotNull(originalType).getOriginalPic();
+                    if (pic == null) pic = "/pics/toster.png";
+
+                    ProductGroup group = new ProductGroup();
+                    group.setGroupName(originalType);
+                    group.setGroupPic(pic);
+                    productGroups.add(group);
+                });
+            }
+            catch (NullPointerException e) {
+                e.getSuppressed();
+            }
+        }
+
+
+        productGroups.sort(Comparator.comparing(ProductGroup::getGroupName));
 
         System.out.println();
-        groups.forEach(productGroup -> log.info(productGroup.getGroupName()));
-        return groups;
+        productGroups.forEach(productGroup -> log.info(productGroup.getGroupName()));
+        return productGroups;
     }
 
     public FiltersList createProductsFilterLists(String group) {
-        log.info(group);
-
         FiltersList filtersList = new FiltersList();
         List<Integer> allPrices = new LinkedList<>();
 
         /*Наполнение списка товаров нужной группы*/
         List<Product> products = productRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(group).stream().filter(item ->
+                !item.getOriginalAnnotation().isEmpty()).collect(Collectors.toList());
+        /*!!! ОТРЕДАКИТРОВАТЬ КОГДА БУДЕТ ГОТОВ ProductParser !!!*/
+        if (products.isEmpty()) products = productRepo.findByOriginalTypeIgnoreCase(group).stream().filter(item ->
                 !item.getOriginalAnnotation().isEmpty()).collect(Collectors.toList());
 
         try
@@ -106,13 +135,13 @@ public class ProductService {
                             });
                             filtersList.features.removeAll(remove);
                         }
-                        else if (filter.contains(":") && !filter.contains("количество шт в")) /// ЗДЕСЬ ОТСЕВ НА СТОПСЛОВА ДЛЯ DIAPASONS И PARAMS
+                        else if (filterIsParam(filter))
                         {
                             String key = substringBefore(filter, ":");
                             String val = substringAfter(filter, ": ");
 
-                            /*Digit diapasons*/ /// ЕСЛИ ДИАПАЗОН ТО В DIAPASONS
-                            if (filterIsDiapason(val))
+                            /*Digit diapasons*/
+                            if (filterIsDiapasonParam(val))
                             {
                                 /// method()
                                 NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
@@ -128,15 +157,14 @@ public class ProductService {
                                         filtersList.diapasonsFilters.put(key, vals);
                                     }
                                     else filtersList.diapasonsFilters.putIfAbsent(key, new TreeSet<>(Collections.singleton(parsedValue)));
-
-                                }
+                                                                    }
                                 catch (ParseException e) {
                                     e.getSuppressed();
                                 }
                             }
 
-                            /*Сформировать фильтры-параметры*/ /// ЕСЛИ НЕ DIAPASONS ТО В PARAMS
-                            else if (filterIsParam(filter)) /// ЗДЕСЬ НЕ ПРОВЕРЯТЬ ВТОРОЙ РАЗ
+                            /*Сформировать фильтры-параметры*/
+                            else
                             {
                                 /// method()
                                 if (filtersList.paramFilters.get(key) != null)
@@ -150,34 +178,24 @@ public class ProductService {
                         }
                     }
                 });
-                filtersList.showDiapasons();
+
+                /// distinctDiapason()
+                filtersList.diapasonsFilters.forEach((key, val) -> {
+                    Double first = Math.floor (val.first());
+                    Double last = val.last();
+                    val.clear();
+                    val.add(first);
+                    val.add(last);
+                });
+
+                //filtersList.showDiapasons();
+                filtersList.showInfo();
             }
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         return filtersList;
-    }
-
-    private boolean filterIsDiapason(String val) {
-        Pattern pattern = Pattern.compile("^[0-9]{1,10}([,.][0-9]{1,10})?$");
-        Matcher matcher = pattern.matcher(val);
-        return !val.equals("0") && matcher.matches();
-    }
-
-    private boolean filterIsParam(String filter) {
-        String[] notParam = {"нет", "0", "количество шт в", "-"};
-
-        /*Основное условие*/
-        if (filter.contains(":") && !filter.contains("количество шт в"))
-        {
-            for (String word : notParam) {
-                String checkParam = substringAfter(filter, ":").trim();
-                if (checkParam.startsWith(word)) return false;
-            }
-            return true;
-        }
-        return false;
     }
 
     private boolean filterIsFeature(String filter, String supplier) {
@@ -207,6 +225,37 @@ public class ProductService {
         return false;
     }
 
+    private boolean filterIsParam(String filter) {
+        String[] notParams = {"нет", "0",  "-"};
+        String[] notKeys = {"количество шт в"};
+        String[] duplicates = {"БРИТВЕННЫХ ГОЛОВОК"};
+
+        /*Основное условие*/
+        if (filter.contains(":"))
+        {
+            for (String word : notKeys) {
+                if (filter.startsWith(word)) return false;
+            }
+
+            for (String word : notParams) {
+                String checkParam = substringAfter(filter, ":").trim();
+                if (checkParam.startsWith(word)) return false;
+            }
+
+            for (String word : duplicates) {
+                if (filter.startsWith(word)) return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean filterIsDiapasonParam(String val) {
+        Pattern pattern = Pattern.compile("^[0-9]{1,10}([,.][0-9]{1,10})?$");
+        Matcher matcher = pattern.matcher(val);
+        return !val.equals("0") && matcher.matches();
+    }
+
     private boolean filterIsDuplicate(String checkDuplicate, String featureFilter) {
         String[] dontMatch = {"FULL HD (1080P)", "ULTRA HD (2160P)"};
 
@@ -224,6 +273,9 @@ public class ProductService {
         return productRepo.findProductByProductID(productID);
     }
 }
+
+/*
+ * ДЛЯ ФИЛЬТРАЦИИ RUSBT ДОБАВЛЯТЬ ЕДИНИЦУ ИЗМЕРЕНИЯ ИЗ АННОТАЦИИ*/
 
 /*!!!!!
  * Для работы с поставщиками использовать сущность OriginalProduct, для работы с сервисами и выводом Product

@@ -22,7 +22,7 @@
                                 <v-card-text>
                                     <v-row>
                                         <v-col class="px-4">
-                                            <v-range-slider class="align-center" v-model="range" :max="max" :min="min" hide-details>
+                                            <v-range-slider class="align-center" v-model="range" :min="min" :max="max"  hide-details>
                                                 <template v-slot:prepend>
                                                     <v-text-field class="mt-0 pt-0" v-model="range[0]" hide-details single-line type="number" style="width: 60px"></v-text-field>
                                                 </template>
@@ -47,17 +47,35 @@
                             </v-expansion-panel-content>
                         </v-expansion-panel>
 
-                        <v-expansion-panel class="mt-2" v-for="[key, val] of filtersDiapasons" :key="item" >
+                        <v-expansion-panel class="mt-2" v-for="[key, val] of filtersDiapasons" :key="key" >
                             <v-expansion-panel-header>{{ key }}</v-expansion-panel-header>
                             <v-expansion-panel-content>
-                                {{val}}
+                                <v-row>
+                                    <v-col class="px-4">
+                                        <v-range-slider v-model="val" :min="val[0]" :max="val[1]"  hide-details class="align-center">
+                                            <template v-slot:prepend>
+                                                <v-text-field v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                            </template>
+                                            <template v-slot:append>
+                                                <v-text-field v-model="val[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                            </template>
+                                        </v-range-slider>
+                                    </v-col>
+                                </v-row>
                             </v-expansion-panel-content>
                         </v-expansion-panel>
 
-                        <v-expansion-panel class="mt-2" v-for="[key, val] of filtersParams" :key="item" >
+                        <v-expansion-panel class="mt-2" v-for="[key, val] of filtersParams" :key="key" >
                             <v-expansion-panel-header>{{ key }}</v-expansion-panel-header>
                             <v-expansion-panel-content>
                                 {{val}}
+
+                                <!--<v-data-table v-model="selected" :items="val" item-key="val" show-select class="elevation-1">
+                                    <template v-slot:top>
+                                        <v-switch v-model="val" label="Single select" class="pa-3"></v-switch>
+                                    </template>
+                                </v-data-table>-->
+
                             </v-expansion-panel-content>
                         </v-expansion-panel>
 
@@ -72,7 +90,7 @@
                 <v-sheet class="mx-auto mt-2">
                     <v-slide-group multiple show-arrows>
 
-                        <v-slide-item v-for="feature in features" :key="feature" v-slot:default="{ active, toggle }">
+                        <v-slide-item v-for="feature in filtersFeats" :key="feature" v-slot:default="{ active, toggle }">
                             <v-btn class="mx-2" :input-value="active" active-class="purple white text" depressed rounded @click="toggle">
                                 {{ feature }}
                             </v-btn>
@@ -101,7 +119,7 @@
                 products: [],
                 filtersPrice: [],
                 filtersBrands: [],
-                filtersFeat: [],
+                filtersFeats: [],
                 filtersDiapasons: new Map(),
                 filtersParams: new Map(),
                 drawer: true,
@@ -135,7 +153,7 @@
                 this.filtersBrands = response.data.brands;
 
                 /// featuresFilters()
-                this.features = response.data.features;
+                this.filtersFeats = response.data.features;
 
                 ///
                 let diapasons = response.data.diapasonsFilters;
