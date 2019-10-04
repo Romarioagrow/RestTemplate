@@ -1,15 +1,12 @@
 package server.services;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import server.domain.Product;
 import server.dto.FiltersList;
 import server.dto.ProductGroup;
 import server.repos.ProductRepo;
-
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
@@ -18,9 +15,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.*;
 
+@Log
 @Service
 @AllArgsConstructor
-@Log
 public class ProductService {
     private final ProductRepo productRepo;
 

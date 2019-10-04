@@ -23,12 +23,12 @@
                                 <v-card-text>
                                     <v-row>
                                         <v-col class="px-4">
-                                            <v-range-slider class="align-center" v-model="range" :min="min" :max="max"  hide-details>
+                                            <v-range-slider class="align-center" v-model="priceRange" :min="min" :max="max"  hide-details>
                                                 <template v-slot:prepend>
-                                                    <v-text-field class="mt-0 pt-0" v-model="range[0]" hide-details single-line type="number" style="width: 60px"></v-text-field>
+                                                    <v-text-field class="mt-0 pt-0" v-model="priceRange[0]" hide-details single-line type="number" style="width: 60px"></v-text-field>
                                                 </template>
                                                 <template v-slot:append>
-                                                    <v-text-field class="mt-0 pt-0" v-model="range[1]" hide-details single-line type="number" style="width: 60px"></v-text-field>
+                                                    <v-text-field class="mt-0 pt-0" v-model="priceRange[1]" hide-details single-line type="number" style="width: 60px"></v-text-field>
                                                 </template>
                                             </v-range-slider>
                                         </v-col>
@@ -40,7 +40,7 @@
                         <!--Автовывод фильтров-брендов-->
                         <v-expansion-panel class="mt-2" >
                             <v-expansion-panel-header>Бренды</v-expansion-panel-header>
-                            <v-expansion-panel-content>
+                            <v-expansion-panel-content class="ml-3">
                                 <div v-for="brand in twoColsBrands" >
                                     <v-row>
                                         <v-col class="p-0 m-0">
@@ -57,7 +57,7 @@
                         <!--Автовывод фильтров-диапазонов-->
                         <v-expansion-panel class="mt-2" v-for="[key, val] of filtersDiapasons" :key="key" >
                             <v-expansion-panel-header>{{ key }}</v-expansion-panel-header>
-                            <v-expansion-panel-content>
+                            <v-expansion-panel-content class="ml-3">
                                 <v-row>
                                     <v-col class="px-4">
                                         <v-range-slider v-model="val" :min="val[0]" :max="val[1]"  hide-details class="align-center">
@@ -76,7 +76,7 @@
                         <!--Автовывод фильтров-параметров-->
                         <v-expansion-panel class="mt-2" v-for="[key, val] of filtersParams" :key="key" >
                             <v-expansion-panel-header>{{ key }}</v-expansion-panel-header>
-                            <v-expansion-panel-content>
+                            <v-expansion-panel-content class="ml-3">
                                 <div v-for="(param, i) in val" :key="i" :brand="param">
                                     <v-row>
                                         <v-col class="p-0 m-0">
@@ -135,7 +135,7 @@
                 group: decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/')+1),
                 min: '',
                 max: '',
-                range: [],
+                priceRange: [],
                 selected: []
             }
         },
@@ -154,8 +154,8 @@
                 let prices = response.data.prices;
                 this.min = prices[0];
                 this.max = prices[1];
-                this.range[0] = prices[0];
-                this.range[1] = prices[1];
+                this.priceRange[0] = prices[0];
+                this.priceRange[1] = prices[1];
 
                 /// brandsFilters()
                 this.filtersBrands = response.data.brands;

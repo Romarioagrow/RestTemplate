@@ -18,8 +18,7 @@
                         <v-item-group>
                             <v-container>
                                 <v-row align="stretch" justify="space-around">
-                                    <catalog-groups v-for="(group, i) in productGroups" :key="group.groupName" :group="group" :index="i">
-                                    </catalog-groups>
+                                    <catalog-groups v-for="(group, i) in productGroups" :key="group.groupName" :group="group" :index="i"></catalog-groups>
                                 </v-row>
                             </v-container>
                         </v-item-group>
@@ -47,6 +46,13 @@
         },
         data() {
             return {
+                /*cats: {
+                    name: '',
+                    groups: {
+                        name: '',
+                        pic: ''
+                    }
+                },*/
                 productGroups: [],
                 categories: [
                     '',
