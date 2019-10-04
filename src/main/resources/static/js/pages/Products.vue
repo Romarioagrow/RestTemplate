@@ -16,6 +16,7 @@
                     </v-row>
                     <v-expansion-panels multiple>
 
+                        <!--Автовывод фильтров-цен-->
                         <v-expansion-panel class="mt-2">
                             <v-expansion-panel-header >Цены</v-expansion-panel-header>
                             <v-expansion-panel-content>
@@ -36,17 +37,24 @@
                             </v-expansion-panel-content>
                         </v-expansion-panel>
 
+                        <!--Автовывод фильтров-брендов-->
                         <v-expansion-panel class="mt-2" >
                             <v-expansion-panel-header>Бренды</v-expansion-panel-header>
                             <v-expansion-panel-content>
-                                <v-row>
-                                    <div v-for="brand in filtersBrands" :key="brand" :brand="brand" :filtersBrands="filtersBrands">
-                                        <v-checkbox v-model="selected" :label="brand" :value="brand"></v-checkbox>
-                                    </div>
-                                </v-row>
+                                <div v-for="brand in twoColsBrands" >
+                                    <v-row>
+                                        <v-col class="p-0 m-0">
+                                            <v-checkbox v-model="selectedBrands" :label="brand.firstBrand" :value="brand.firstBrand" height="2"></v-checkbox>
+                                        </v-col>
+                                        <v-col class="p-0 m-0" v-if="brand.secondBrand !== undefined">
+                                            <v-checkbox v-model="selectedBrands" :label="brand.secondBrand" :value="brand.secondBrand" height="2"></v-checkbox>
+                                        </v-col>
+                                    </v-row>
+                                </div>
                             </v-expansion-panel-content>
                         </v-expansion-panel>
 
+                        <!--Автовывод фильтров-диапазонов-->
                         <v-expansion-panel class="mt-2" v-for="[key, val] of filtersDiapasons" :key="key" >
                             <v-expansion-panel-header>{{ key }}</v-expansion-panel-header>
                             <v-expansion-panel-content>
@@ -65,21 +73,19 @@
                             </v-expansion-panel-content>
                         </v-expansion-panel>
 
+                        <!--Автовывод фильтров-параметров-->
                         <v-expansion-panel class="mt-2" v-for="[key, val] of filtersParams" :key="key" >
                             <v-expansion-panel-header>{{ key }}</v-expansion-panel-header>
                             <v-expansion-panel-content>
-                                {{val}}
-
-                                <!--<v-data-table v-model="selected" :items="val" item-key="val" show-select class="elevation-1">
-                                    <template v-slot:top>
-                                        <v-switch v-model="val" label="Single select" class="pa-3"></v-switch>
-                                    </template>
-                                </v-data-table>-->
-
+                                <div v-for="(param, i) in val" :key="i" :brand="param">
+                                    <v-row>
+                                        <v-col class="p-0 m-0">
+                                            <v-checkbox v-model="selectedParams" :label="param" :value="param" height="2"></v-checkbox>
+                                        </v-col>
+                                    </v-row>
+                                </div>
                             </v-expansion-panel-content>
                         </v-expansion-panel>
-
-
                     </v-expansion-panels>
                 </v-container>
             </v-list-item>
@@ -116,6 +122,8 @@
         },
         data() {
             return {
+                selectedBrands: [],
+                selectedParams: [],
                 products: [],
                 filtersPrice: [],
                 filtersBrands: [],
@@ -163,6 +171,19 @@
                 let params = response.data.paramFilters;
                 for (const [key, value] of Object.entries(params)) this.filtersParams.set(key, value)
             });
+        },
+        computed: {
+            twoColsBrands() {
+                const twoColsBrands = []
+                for (let i = 0; i < this.filtersBrands.length; i+=2) {
+                    let first = this.filtersBrands[i];
+                    let second = this.filtersBrands[i+1];
+                    twoColsBrands.push({
+                        firstBrand: first, secondBrand: second
+                    })
+                }
+                return twoColsBrands
+            }
         }
     }
 </script>

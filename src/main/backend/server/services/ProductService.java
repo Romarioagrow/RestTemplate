@@ -144,9 +144,9 @@ public class ProductService {
                             if (filterIsDiapasonParam(val))
                             {
                                 /// method()
-                                NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
                                 try
                                 {
+                                    NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
                                     Number number = format.parse(val);
                                     Double parsedValue = number.doubleValue();
 
