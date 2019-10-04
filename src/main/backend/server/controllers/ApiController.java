@@ -16,11 +16,11 @@ import java.util.List;
 @AllArgsConstructor
 @Log
 public class ApiController {
-    private final ProductService itemService;
+    private final ProductService productService;
 
     @GetMapping("/catalog/{category}")
     private List<ProductGroup> getGroupsInCategory(@PathVariable String category) {
-        return itemService.getProductGroups(category);
+        return productService.getProductGroups(category);
     }
 
     @GetMapping("/products/{group}")
@@ -30,12 +30,12 @@ public class ApiController {
 
     @GetMapping("/filters/construct/{group}")
     private FiltersList createFiltersLists(@PathVariable String group) {
-        return itemService.createProductsFilterLists(group);
+        return productService.createProductsFilterLists(group);
     }
 
     @GetMapping("/products/product/{productID}")
     private Product getProductByID(@PathVariable String productID) {
         log.info(productID);
-        return itemService.getProductByID(productID);
+        return productService.getProductByID(productID);
     }
 }
