@@ -19,7 +19,7 @@ public class ApiController {
     private final ProductService productService;
 
     @GetMapping("/catalog/{category}")
-    private List<ProductGroup> getGroupsInCategory(@PathVariable String category) {
+    private List<ProductGroup> listProductGroupsOfCategory(@PathVariable String category) {
         return productService.getProductGroups(category);
     }
 
@@ -34,8 +34,7 @@ public class ApiController {
     }
 
     @GetMapping("/products/product/{productID}")
-    private Product getProductByID(@PathVariable String productID) {
-        log.info(productID);
+    private Product listProductByID(@PathVariable String productID) {
         return productService.getProductByID(productID);
     }
 }

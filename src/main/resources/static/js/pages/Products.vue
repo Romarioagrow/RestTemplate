@@ -23,12 +23,12 @@
                                 <v-card-text>
                                     <v-row>
                                         <v-col class="px-4">
-                                            <v-range-slider class="align-center" v-model="priceRange" :min="min" :max="max"  hide-details>
+                                            <v-range-slider class="align-center" v-model="range" :min="min" :max="max"  hide-details>
                                                 <template v-slot:prepend>
-                                                    <v-text-field class="mt-0 pt-0" v-model="priceRange[0]" hide-details single-line type="number" style="width: 60px"></v-text-field>
+                                                    <v-text-field class="mt-0 pt-0" v-model="range[0]" hide-details single-line type="number" style="width: 60px"></v-text-field>
                                                 </template>
                                                 <template v-slot:append>
-                                                    <v-text-field class="mt-0 pt-0" v-model="priceRange[1]" hide-details single-line type="number" style="width: 60px"></v-text-field>
+                                                    <v-text-field class="mt-0 pt-0" v-model="range[1]" hide-details single-line type="number" style="width: 60px"></v-text-field>
                                                 </template>
                                             </v-range-slider>
                                         </v-col>
@@ -135,7 +135,7 @@
                 group: decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/')+1),
                 min: '',
                 max: '',
-                priceRange: [],
+                range: [],
                 selected: []
             }
         },
@@ -154,8 +154,8 @@
                 let prices = response.data.prices;
                 this.min = prices[0];
                 this.max = prices[1];
-                this.priceRange[0] = prices[0];
-                this.priceRange[1] = prices[1];
+                this.range[0] = prices[0];
+                this.range[1] = prices[1];
 
                 /// brandsFilters()
                 this.filtersBrands = response.data.brands;

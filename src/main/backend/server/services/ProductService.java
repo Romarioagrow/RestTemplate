@@ -178,7 +178,7 @@ public class ProductService {
 
                 /// distinctDiapason()
                 filtersList.diapasonsFilters.forEach((key, val) -> {
-                    Double first = Math.floor (val.first());
+                    Double first = Math.floor(val.first());
                     Double last = val.last();
                     val.clear();
                     val.add(first);
