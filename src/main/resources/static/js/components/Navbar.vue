@@ -43,6 +43,12 @@
                     <v-icon>mdi-history</v-icon>
                 </v-btn>
             </router-link>
+            <router-link to="/admin">
+                <v-btn>
+                    <span>Админ</span>
+                    <v-icon>mdi-account-star-outline</v-icon>
+                </v-btn>
+            </router-link>
         </v-bottom-navigation>
     </div>
 </template>

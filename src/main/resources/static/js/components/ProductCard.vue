@@ -9,6 +9,7 @@
             <span>{{product.productType}}</span><br>
             <span>{{product.originalAnnotation}}</span><br>
             <span><strong>{{product.finalPrice}} ₽</strong></span>
+            <span>{{product.supplier}}</span><br>
         </v-card-text>
         <v-card-actions>
             <v-btn text color="orange">

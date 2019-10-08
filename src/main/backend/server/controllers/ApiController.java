@@ -1,40 +1,47 @@
 package server.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import server.domain.Item;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import server.domain.Product;
 import server.dto.FiltersList;
 import server.dto.ProductGroup;
+import server.services.ProductBuilder;
 import server.services.ProductService;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 @AllArgsConstructor
-@Log
 public class ApiController {
     private final ProductService productService;
+    private final ProductBuilder productBuilder;
 
+    /*Products*/
+    @GetMapping("/products/{group}")
+    private List<Product> listProductsByGroup(@PathVariable String group) {
+        return productService.getProductsByGroup(group);
+    }
+    @GetMapping("/products/product/{productID}")
+    private Product listProductByID(@PathVariable String productID) {
+        return productService.getProductByID(productID);
+    }
+
+    /*Catalog*/
     @GetMapping("/catalog/{category}")
     private List<ProductGroup> listProductGroupsOfCategory(@PathVariable String category) {
         return productService.getProductGroups(category);
     }
 
-    @GetMapping("/products/{group}")
-    private List<Item> listProductsByGroup(@PathVariable String group) {
-        return itemService.getProductsByGroup(group);
-    }
-
+    /*Filters*/
     @GetMapping("/filters/construct/{group}")
     private FiltersList createFiltersLists(@PathVariable String group) {
         return productService.createProductsFilterLists(group);
     }
 
-    @GetMapping("/products/product/{productID}")
-    private Product listProductByID(@PathVariable String productID) {
-        return productService.getProductByID(productID);
+    /*Admin*/
+    @PostMapping("/admin/uploadFileDB")
+    private void uploadProductsDBFile(@RequestParam("file") MultipartFile file) {
+        productBuilder.parseDBFile(file);
     }
 }
