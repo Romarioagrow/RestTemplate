@@ -54,7 +54,7 @@
             },
             upload() {
                 axios.post('api/admin/uploadFileDB', this.file).then(response =>{
-                    alert('ok')
+                    console.log('ok')
                 });
             }
         }

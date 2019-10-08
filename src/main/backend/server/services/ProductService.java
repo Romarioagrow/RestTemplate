@@ -3,6 +3,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import server.domain.OriginalProduct;
 import server.domain.Product;
 import server.dto.FiltersList;
 import server.dto.ProductGroup;
@@ -22,7 +23,8 @@ public class ProductService {
     private final ProductRepo productRepo;
 
     public List<Product> getProductsByGroup(String group) {
-        return productRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(group.replaceAll("_"," "));
+        ///return productRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(group.replaceAll("_"," "));
+        return productRepo.findAll();
     }
 
     public List<ProductGroup> getProductGroups(String category) {
@@ -31,7 +33,7 @@ public class ProductService {
 
         /*!!! ПЕРЕПИСАТЬ КОГДА БУДЕТ НОВЫЙ ProductParser С НОВЫМИ ПОЛЯМИ PRODUCTS !!!*/
         /*Находятся все products в категории и просеиваются группы*/
-        productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> groups.add(product.getProductGroup())); ////
+        /*productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> groups.add(product.getProductGroup())); ////
 
         log.info(groups.isEmpty() + "");
         if (!groups.isEmpty())
@@ -64,11 +66,10 @@ public class ProductService {
             }
         }
 
-
         productGroups.sort(Comparator.comparing(ProductGroup::getGroupName));
 
         System.out.println();
-        productGroups.forEach(productGroup -> log.info(productGroup.getGroupName()));
+        productGroups.forEach(productGroup -> log.info(productGroup.getGroupName()));*/
         return productGroups;
     }
 
@@ -77,49 +78,49 @@ public class ProductService {
         List<Integer> allPrices = new LinkedList<>();
 
         /*Наполнение списка товаров нужной группы*/
-        List<Product> products = productRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(group).stream().filter(item ->
+        /*List<OriginalProduct> products = productRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(group).stream().filter(item ->
                 !item.getOriginalAnnotation().isEmpty()).collect(Collectors.toList());
-        /*!!! ОТРЕДАКИТРОВАТЬ КОГДА БУДЕТ ГОТОВ ProductParser !!!*/
+        *//*!!! ОТРЕДАКИТРОВАТЬ КОГДА БУДЕТ ГОТОВ ProductParser !!!*//*
         if (products.isEmpty()) products = productRepo.findByOriginalTypeIgnoreCase(group).stream().filter(item ->
                 !item.getOriginalAnnotation().isEmpty()).collect(Collectors.toList());
 
         try
         {
-            /*Сформировать фильтры-бренды группы*/
+            *//*Сформировать фильтры-бренды группы*//*
             {
                 products.forEach(item -> filtersList.brands.add(StringUtils.capitalize(item.getOriginalBrand().toLowerCase())));
             }
 
-            /*Сформировать фильтры-цены*/
+            *//*Сформировать фильтры-цены*//*
             {
                 products.forEach(item -> allPrices.add(item.getFinalPrice()));
                 allPrices.sort(Comparator.comparingInt(Integer::intValue));
 
-                /*Минимальная и максимальная цена в группе*/
+                *//*Минимальная и максимальная цена в группе*//*
                 filtersList.prices.add(allPrices.get(0));
                 filtersList.prices.add(allPrices.get(allPrices.size()-1));
             }
 
-            /*Сформировать фильтры*/
+            *//*Сформировать фильтры*//*
             {
                 products.forEach(product -> {
                     String supplier   = product.getSupplier();
                     String annotation = product.getOriginalAnnotation();
 
-                    /*Разбиение аннотации экземпляра Product на фильтры*/
+                    *//*Разбиение аннотации экземпляра Product на фильтры*//*
                     String splitter  = supplier.contains("1RBT") ? "; " : ", ";
                     String[] filters = annotation.split(splitter);
 
-                    /*Итерация и отсев неподходящих под фильтры-особенности*/
+                    *//*Итерация и отсев неподходящих под фильтры-особенности*//*
                     for (String filter : filters)
                     {
-                        /*Сформировать фильтры-особенности*/
+                        *//*Сформировать фильтры-особенности*//*
                         if (filterIsFeature(filter, supplier))
                         {
                             /// method()
                             filtersList.features.add(substringBefore(filter, ":").toUpperCase());
 
-                            /*Отсев дублей фильтров и синонимов фильтров*/
+                            *//*Отсев дублей фильтров и синонимов фильтров*//*
                             List<String> remove = new ArrayList<>();
                             filtersList.features.forEach(featureFilter ->
                             {
@@ -137,7 +138,7 @@ public class ProductService {
                             String key = substringBefore(filter, ":");
                             String val = substringAfter(filter, ": ");
 
-                            /*Digit diapasons*/
+                            *//*Digit diapasons*//*
                             if (filterIsDiapasonParam(val))
                             {
                                 /// method()
@@ -160,7 +161,7 @@ public class ProductService {
                                 }
                             }
 
-                            /*Сформировать фильтры-параметры*/
+                            *//*Сформировать фильтры-параметры*//*
                             else
                             {
                                 /// method()
@@ -191,7 +192,7 @@ public class ProductService {
         }
         catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         return filtersList;
     }
 
@@ -266,8 +267,9 @@ public class ProductService {
         return false;
     }
 
-    public Product getProductByID(String productID) {
-        return productRepo.findProductByProductID(productID);
+    public OriginalProduct getProductByID(String productID) {
+        /// return productRepo.findProductByProductID(productID);
+        return new OriginalProduct();
     }
 }
 

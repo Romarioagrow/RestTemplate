@@ -1,13 +1,14 @@
 package server.controllers;
 import lombok.AllArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import server.domain.Product;
+import server.domain.OriginalProduct;
 import server.dto.FiltersList;
 import server.dto.ProductGroup;
 import server.services.ProductBuilder;
 import server.services.ProductService;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -19,11 +20,12 @@ public class ApiController {
 
     /*Products*/
     @GetMapping("/products/{group}")
-    private List<Product> listProductsByGroup(@PathVariable String group) {
-        return productService.getProductsByGroup(group);
+    private List<OriginalProduct> listProductsByGroup(@PathVariable String group) {
+        /// return productService.getProductsByGroup(group);
+        return new ArrayList<>();
     }
     @GetMapping("/products/product/{productID}")
-    private Product listProductByID(@PathVariable String productID) {
+    private OriginalProduct listProductByID(@PathVariable String productID) {
         return productService.getProductByID(productID);
     }
 
@@ -42,6 +44,6 @@ public class ApiController {
     /*Admin*/
     @PostMapping("/admin/uploadFileDB")
     private void uploadProductsDBFile(@RequestParam("file") MultipartFile file) {
-        productBuilder.parseDBFile(file);
+        productBuilder.updateProductsDB(file);
     }
 }
