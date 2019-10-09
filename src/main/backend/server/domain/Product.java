@@ -22,7 +22,7 @@ public class Product {
     private String modelName, fullName, singleTypeName, searchName, groupBrandName;
 
     @Column(length = 20000)
-    private String pic, pics;
+    private String pic, pics, annotation, formattedAnnotation;
 
     private Boolean uniquePrice, coefficientModified, priceModified;
 }
