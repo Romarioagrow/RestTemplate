@@ -1,6 +1,9 @@
 package server.repos;
 import org.springframework.data.jpa.repository.JpaRepository;
-import server.domain.Product;
+import org.springframework.stereotype.Repository;
+import server.domain.OriginalProduct;
 
-public interface OriginalRepo extends JpaRepository<Product, String> {
+@Repository
+public interface OriginalRepo extends JpaRepository<OriginalProduct, String> {
+    OriginalProduct findByProductID(String productID);
 }
