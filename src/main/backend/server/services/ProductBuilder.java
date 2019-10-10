@@ -170,12 +170,6 @@ public class ProductBuilder {
         List<OriginalProduct> originalProducts = originalRepo.findAll();
         LinkedHashMap<String, String> aliases = aliasConfig.aliasesMap();
 
-        /*aliases.forEach((keyArray, valArray) -> {
-            System.out.println();
-            log.info(Arrays.toString(keyArray.split(",")));
-            log.info(Arrays.toString(valArray.split(",")));
-        });*/
-
         for (OriginalProduct originalProduct : originalProducts)
         {
             String originalGroup = originalProduct.getOriginalType();
@@ -277,7 +271,6 @@ public class ProductBuilder {
         catch (NullPointerException | ArrayIndexOutOfBoundsException | NumberFormatException e) {
             e.printStackTrace();
         }
-
     }
 
     private String formatAnnotation(String annotation) {
@@ -330,7 +323,7 @@ public class ProductBuilder {
         String[] uniqueBrands = {"ARDIN","SENTORE","BINATONE","AMCV","DOFFLER","DOFFLER PLUS","EXCOMP","LERAN"};
 
         if (Arrays.asList(uniqueBrands).contains(originalBrand)) {
-            //uniquePrice
+            ///uniquePrice
             return null;
         }
         else
@@ -338,7 +331,6 @@ public class ProductBuilder {
             log.info("ORIGINAL PRICE IN RESOLVE FINAL" + originalProduct.getOriginalPrice());
             return roundPrice(originalProduct.getOriginalPrice(), coefficient);
         }
-        //return finalPrice;
     }
 
     private Integer roundPrice(String originalPrice, Double coefficient) throws NumberFormatException{
@@ -362,11 +354,6 @@ public class ProductBuilder {
 
     private String resolveFullName(String modelName, String singleTypeName, String originalBrand) {
         return singleTypeName.concat(" ").concat(StringUtils.capitalize(originalBrand.toLowerCase())).concat(" ").concat(modelName);
-
-        /*if (supplierRBT) {
-            return singleTypeName.concat(" ").concat(StringUtils.capitalize(originalBrand.toLowerCase())).concat(" ").concat(modelName);
-        }
-        return singleTypeName.concat(" ").concat(StringUtils.capitalize(originalBrand.toLowerCase())).concat(" ").concat(modelName);*/
     }
 
     private String resolveModelName(OriginalProduct originalProduct, boolean supplierRBT) {
@@ -382,39 +369,8 @@ public class ProductBuilder {
         else return StringUtils.substringAfter(originalName, originalBrand).trim();
     }
 
-
-
-    /*private void matchProduct(String alias, String productGroup, double coefficient, String single, String productCategory, OriginalProduct originalProduct) {
-        String[] matches = alias.split(",");
-        String supplier  = originalProduct.getSupplier();
-        String productID = originalProduct.getProductID();
-
-        try
-        {
-            for (String match : matches)
-            {
-                String annotation, modelName, fullName, groupBrand, productType, formattedAnnotation;
-
-                Product product = productRepo.findProductByProductID(productID);
-                if (product == null) {
-                    product = new Product();
-                    product.setProductID(productID);
-                }
-
-                *//**//*
-
-            }
-        }
-        catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-
-
-    }*/
-
     private boolean productValidToMatch(OriginalProduct originalProduct, Product product) {
         return product.getProductGroup() == null && (!originalProduct.getOriginalBrand().isEmpty() && StringUtils.containsIgnoreCase(originalProduct.getOriginalName().replaceAll(" ", "").replaceAll("&", ""), originalProduct.getOriginalBrand().replaceAll(" ", ""))); /// В ЗАПРОС К БД
-
     }
 
     private void resolveDuplicates() {
