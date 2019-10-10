@@ -25,4 +25,6 @@ public class Product {
     private String pic, pics, annotation, formattedAnnotation;
 
     private Boolean uniquePrice, coefficientModified, priceModified;
+
+    private String brand, supplier;
 }

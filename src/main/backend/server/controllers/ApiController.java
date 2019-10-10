@@ -3,6 +3,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import server.domain.OriginalProduct;
+import server.domain.Product;
 import server.dto.FiltersList;
 import server.dto.ProductGroup;
 import server.services.ProductBuilder;
@@ -22,9 +23,9 @@ public class ApiController {
 
     /*Products*/
     @GetMapping("/products/{group}")
-    private List<OriginalProduct> listProductsByGroup(@PathVariable String group) {
-        /// return productService.getProductsByGroup(group);
-        return new ArrayList<>();
+    private List<Product> listProductsByGroup(@PathVariable String group) {
+        return productService.getProductsByGroup(group);
+        //return new ArrayList<>();
     }
     @GetMapping("/products/product/{productID}")
     private OriginalProduct listProductByID(@PathVariable String productID) {
