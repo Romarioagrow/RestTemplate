@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "aliases",
+      "type": "java.lang.String",
+      "description": "Description for aliases."
+  }
+] }

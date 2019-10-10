@@ -8,6 +8,8 @@ import server.dto.ProductGroup;
 import server.services.ProductBuilder;
 import server.services.ProductService;
 
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +45,13 @@ public class ApiController {
 
     /*Admin*/
     @PostMapping("/admin/uploadFileDB")
-    private void uploadProductsDBFile(@RequestParam("file") MultipartFile file) {
-        productBuilder.updateProductsDB(file);
+    private void uploadProductsDBFile(@RequestParam("file") MultipartFile file) throws UnsupportedEncodingException {
+        try
+        {
+            productBuilder.updateProductsDB(file);
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

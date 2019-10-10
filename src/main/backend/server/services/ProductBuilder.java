@@ -8,16 +8,14 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import server.config.AliasConfig;
 import server.domain.OriginalProduct;
 import server.domain.Product;
 import server.repos.OriginalRepo;
 import server.repos.ProductRepo;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Log
 @Service
@@ -25,16 +23,21 @@ import java.util.Objects;
 public class ProductBuilder {
     private final OriginalRepo originalRepo;
     private final ProductRepo productRepo;
+    private final AliasConfig aliasConfig;
 
-    public void updateProductsDB(MultipartFile excelFile) {
+    public void updateProductsDB(MultipartFile excelFile) throws FileNotFoundException {
         log.info(excelFile.getOriginalFilename());
 
-        parseSupplierFile(excelFile);
+        LinkedHashMap<String, String> aliases = aliasConfig.aliasesMap();
+        aliases.forEach((keyArray, valArray) -> log.info(Arrays.toString(keyArray.split(",")) + " : " + Arrays.toString(valArray.split(","))));
+
+        /*parseSupplierFile(excelFile);
         matchProductDetails();
         resolveDuplicates();
-        resolveAvailable();
+        resolveAvailable();*/
     }
 
+    /*#0*/
     /*Обновление данных таблицы поставщиков*/
     private void parseSupplierFile(MultipartFile excelFile) {
         if (!Objects.requireNonNull(excelFile.getOriginalFilename()).isEmpty())
@@ -53,17 +56,14 @@ public class ProductBuilder {
 
                 for (Row row : sheet)
                 {
-                    if (lineIsCorrect(row, supplierRBT))
-                    {
+                    if (lineIsCorrect(row, supplierRBT)) {
                         String productID = resolveProductID(supplierRBT, row);
 
-                        if (originalProductExists(productID))
-                        {
+                        if (originalProductExists(productID)) {
                             updateOriginalProduct(row, productID, supplierRBT);
                             countUpdate++;
                         }
-                        else
-                        {
+                        else {
                             createOriginalProduct(row, productID, supplierRBT);
                             countCreate++;
                         }
@@ -81,6 +81,7 @@ public class ProductBuilder {
             }
         }
     }
+    /*#1*/
     private void createOriginalProduct(Row row, String productID, boolean supplierRBT) {
         try
         {
@@ -95,10 +96,15 @@ public class ProductBuilder {
             String originalPrice        = supplierRBT ? row.getCell(7).toString().trim() : row.getCell(13).toString().trim();
             String originalAmount       = supplierRBT ? row.getCell(6).toString() : row.getCell(7).toString().concat(row.getCell(8).toString());
             String supplier             = supplierRBT ? "RBT" : "RUSBT";
+            String originalBrand;
 
             String originalPicLink;
-            if (supplierRBT) originalPicLink = StringUtils.substringBetween(row.getCell(3).toString(), "\"", "\""); /*при попытке row.getCell(3).getHyperlink().getAddress() вылетает NullPointer*/
-            else if (!row.getCell(15).toString().isEmpty()) originalPicLink = row.getCell(15).getHyperlink().getAddress();
+            if (supplierRBT) {
+                originalPicLink = StringUtils.substringBetween(row.getCell(3).toString(), "\"", "\""); /*при попытке row.getCell(3).getHyperlink().getAddress() вылетает NullPointer*/
+            }
+            else if (!row.getCell(15).toString().isEmpty()) {
+                originalPicLink = row.getCell(15).getHyperlink().getAddress();
+            }
             else originalPicLink = "Ссылки нет!";
 
             originalProduct.setOriginalCategory(originalCategory);
@@ -118,6 +124,7 @@ public class ProductBuilder {
             e.printStackTrace();
         }
     }
+    /*#2*/
     private void updateOriginalProduct(Row row, String productID, boolean supplierRBT) {
         OriginalProduct originalProduct = originalRepo.findByProductID(productID);
 
@@ -130,18 +137,25 @@ public class ProductBuilder {
         originalProduct.setIsAvailable(true);
         originalRepo.save(originalProduct);
     }
+    /*#3*/
     private boolean originalProductExists(String productID) {
         return originalRepo.findByProductID(productID) != null;
     }
+    /*#4*/
     private String resolveProductID(boolean supplierRBT, Row row) {
         return supplierRBT ? row.getCell(0).toString() : row.getCell(5).toString().replaceAll("\\\\", "_");
     }
+    /*#5*/
     private boolean lineIsCorrect(Row row, boolean supplierRBT) throws NullPointerException {
         String firstCell;
-        if (row.getCell(0) != null) firstCell = row.getCell(0).getStringCellValue();
+        if (row.getCell(0) != null) {
+            firstCell = row.getCell(0).getStringCellValue();
+        }
         else return false;
 
-        if (supplierRBT) return (!firstCell.isEmpty() && !firstCell.startsWith("8(351)") && !firstCell.startsWith(".") && !firstCell.startsWith("г. Челябинск") && !firstCell.startsWith("Код товара"));
+        if (supplierRBT) {
+            return (!firstCell.isEmpty() && !firstCell.startsWith("8(351)") && !firstCell.startsWith(".") && !firstCell.startsWith("г. Челябинск") && !firstCell.startsWith("Код товара"));
+        }
         return (!firstCell.isEmpty() && !StringUtils.containsIgnoreCase(firstCell, "Уценка") && !firstCell.contains("Группа 1"));
     }
 
@@ -168,14 +182,27 @@ public class ProductBuilder {
 
             }*/
 
+            /*!!! ЧЕРЕЗ SPRING CONTEXT*/
+            /*
+            * BEAN Matcher
+            * COLLECTION Map<String, String[]> aliases
+            * ЗНАЧЕНИЯ ДЛЯ КАЖДОЙ ENTRY В PROPERTIES
+            * 1элемент - Синоним, 2.group, 3.coeff, 4.singleName, 5.category
+            * В итерации для каждого originalProduct из таблицы Поставщиков
+            * for entry : aliases {
+            *   if(entry.key.startWith(originalProduct.getType)) {
+            *           match new Product()
+            *       }
+            * }*/
+
             /*АВТОТОВАРЫ*/
-            matchProduct("10.01,Акустика"									                                , "Автоакустика"						,1.18	            , "Автоакустика"						, "Автотовары"					, product);
+            /*matchProduct("10.01,Акустика"									                                , "Автоакустика"						,1.18	            , "Автоакустика"						, "Автотовары"					, product);
             matchProduct("10.02,Автомагнитолы"											                    , "Автомагнитолы"						,1.18	            , "Автомагнитола"						, "Автотовары"					, product);
             matchProduct("15.10.04.03,Видеорегистраторы"									                , "Видеорегистраторы"					,1.25	            , "Видеорегистратор"					, "Автотовары"					, product);
             matchProduct("15.10.04.01"													                    , "Радар детекторы"					    ,1.18	            , "Радар детектор"					    , "Автотовары"					, product);
             matchProduct("Автоусилитель"													                , "Автоусилители"						,1.18	            , "Автоусилитель"					    , "Автотовары"					, product);
 
-            /*ИНСТРУМЕНТЫ ДЛЯ ДОМА*/
+            *//*ИНСТРУМЕНТЫ ДЛЯ ДОМА*//*
             matchProduct("06.06.05_Строительные"														    , "Строительные пылесосы"				,1.16	            , "Строительный пылесосы"				, "Инструменты для дома"		    , product);
             matchProduct("06.06.02_Фены промышленные"														, "Промышленные фены"					,1.16	            , "Промышленный фен"					, "Инструменты для дома"		    , product);
             matchProduct("Сверла,15.06.03.04"														        , "Сверла"							    ,1.16	            , "Сверло"						        , "Инструменты для дома"		    , product);
@@ -191,7 +218,7 @@ public class ProductBuilder {
             matchProduct("06.03.01,Электрические цепные пилы,Дисковые пилы,06.10.08"						, "Электропилы"						    ,1.16	            , "Электропила"						    , "Инструменты для дома"		    , product);
             matchProduct("06.03.02_Лобзики"														        , "Лобзики"							    ,1.16	            , "Электролобзик"						, "Инструменты для дома"		    , product);
 
-            /*ПРИБОРЫ ПЕРСОНАЛЬНОГО УХОДА*/
+            *//*ПРИБОРЫ ПЕРСОНАЛЬНОГО УХОДА*//*
             matchProduct("05.02.01., Плойки"										                        , "Плойки"						        ,1.22	            , "Плойки"					            , "Приборы персонального ухода"	, product);
             matchProduct("05.03.01.01, Машинки для стрижки"										        , "Машинки для стрижки"				    ,1.22	            , "Машинка для стрижки"				    , "Приборы персонального ухода"	, product);
             matchProduct("15.05.01.05 Бритвенные станки"										            , "Бритвенные станки"					,1.22	            , "Бритвенный станок"					, "Приборы персонального ухода"	, product);
@@ -208,7 +235,7 @@ public class ProductBuilder {
             matchProduct("05.11,Маникюрные наборы"														    , "Маникюрные наборы"					,1.22               , "Маникюрный набор"					, "Приборы персонального ухода"	, product);
             matchProduct("Машинки для стрижки"															    , "Машинки для стрижки"				    ,1.22               , "Машинка для стрижки"				    , "Приборы персонального ухода"	, product);
 
-            /*КЛИМАТИЧЕСКАЯ ТЕХНИКА*/
+            *//*КЛИМАТИЧЕСКАЯ ТЕХНИКА*//*
             matchProduct("15.04.01.01"											                            , "Аксессуары для климатической техники",2	                , "Аксессуар для климатической техники" , "Климатическая техника"		    , product);
             matchProduct("Термометры,Термометр"											                , "Термометры"						    ,1.15	            , "Термометр"						    , "Климатическая техника"		    , product);
             matchProduct("04.01,Кондиционеры"											                    , "Кондиционеры"						,1.15	            , "Кондиционер"						    , "Климатическая техника"		    , product);
@@ -218,7 +245,7 @@ public class ProductBuilder {
             matchProduct("04.03,Вентиляторы"												                , "Вентиляторы"						    ,1.20	            , "Вентилятор"						    , "Климатическая техника"		    , product);
             matchProduct("04.04.03,Мойки воздуха"										                    , "Очистители воздуха"					,1.20	            , "Очиститель воздуха"				    , "Климатическая техника"		    , product);
 
-            /*КОМПЬЮТЕРЫ И ОРГТЕХНИКА*/
+            *//*КОМПЬЮТЕРЫ И ОРГТЕХНИКА*//*
             //Моноблоки!
             matchProduct("15.08.01.01,15.08.01.03,Сумки и чехлы для ноутбуков"								, "Сумки для ноутбуков"				    ,2	                , "Сумка для ноутбука" 				    , "Компьютеры и оргтехника"		, product);
             matchProduct("15.08.02.02,15.08.02.01,15.08.02.08"								                , "Аксессуары для ноутбуков"			,2	                , "Аксессуар для ноутбука" 			    , "Компьютеры и оргтехника"		, product);
@@ -240,7 +267,7 @@ public class ProductBuilder {
             matchProduct("15.08.02.04"											 		                    , "Внешние жесткие диски"				,1.18	            , "Внешний жесткий диск"				, "Компьютеры и оргтехника"		, product);
             matchProduct("08.01"														                    , "Готовые ПК"							,1.17	            , "Готовый ПК"						    , "Компьютеры и оргтехника"		, product);
 
-            /*ЦИФРОВЫЕ УСТРОЙСТВА*/
+            *//*ЦИФРОВЫЕ УСТРОЙСТВА*//*
             //Планшеты Apple!
             matchProduct("15.24.02.,15.24.02.03,15.09.03.10,06.04.03"			                            , "Зарядные устройства"				    ,2			        , "Зарядное устройство"				    , "Цифровые устройства"			, product);
             matchProduct("15.08.05.01,15.09.01.07,15.09.02.02"			                                    , "Сумки для техники"					,2			        , "Сумка для техники"					, "Цифровые устройства"			, product);
@@ -259,7 +286,7 @@ public class ProductBuilder {
             matchProduct("15.02.29.01,Радиоприемники"													    , "Радиоприемники"						,1.17				, "Радиоприемники"					    , "Цифровые устройства" 		    , product);
             matchProduct("09.05_Радиосвязь"													            , "Рации"						        ,1.17				, "Рации"							    , "Цифровые устройства" 		    , product);
 
-            /*ГАДЖЕТЫ*/
+            *//*ГАДЖЕТЫ*//*
             //15.25.04.12 B-бренды(1.2)!
             matchProduct("15.25.01,Умные спортивные часы"								                    , "Умные часы"							,1.15	            , "Умные часы"						    , "Гаджеты"						, product);
             matchProduct("15.25.04,Портативная акустика"													, "Bluetooth колонки"					,1.15	            , "Bluetooth колонка"					, "Гаджеты"						, product);
@@ -267,7 +294,7 @@ public class ProductBuilder {
             matchProduct("15.25.01.02"													                    , "Фитнес браслеты"				        ,1.15	            , "Фитнес браслет"					    , "Гаджеты"						, product);
             matchProduct("15.25.01.03"													                    , "Детские часы"					    ,1.15	            , "Детские часы"						, "Гаджеты"						, product);
 
-            /*ТЕХНИКА ДЛЯ ДОМА*/
+            *//*ТЕХНИКА ДЛЯ ДОМА*//*
             matchProduct("Аксессуары к стиральным машинам,15.03.01.03,15.03.01.04,15.23.06.08,15.23.06.01"	, "Аксессуары к стиральным машинам"	    ,2				    , "Аксессуар к стиральным машинам"	    , "Техника для дома"			    , product);
             matchProduct("Мешок-пылесборник,15.03.03.01"	                                                , "Пылесборники для пылесосов"		    ,2				    , "Пылесборник для пылесосов"			, "Техника для дома"			    , product);
             matchProduct("HEPA-фильтр,Моторный фильтр,15.03.03.02"	                                        , "Фильтры для пылесосов"		        ,2				    , "Фильтр для пылесосов"				, "Техника для дома"			    , product);
@@ -284,7 +311,7 @@ public class ProductBuilder {
 
             matchProduct("03.03.02,03.03.03,03.03.04,Отпариватели,Ручные отпариватели"					    , "Отпариватели"			            ,1.20				, "Отпариватель"						, "Техника для дома"			    , product);
 
-            /*КУХОННАЯ ТЕХНИКА*/
+            *//*КУХОННАЯ ТЕХНИКА*//*
             matchProduct("15.01.01.01,Аксессуары к холодильникам"											,"Аксессуары к холодильникам"	        ,2				    , "Аксессуар к холодильнику"			, "Кухонная техника"			    , product);
             matchProduct("15.01.06.01,Аксессуары для мультиварок"											,"Аксессуары для мультиварок"	        ,2				    , "Аксессуар для мультиварки"			, "Кухонная техника"			    , product);
             matchProduct("Аксессуары для мясорубок,15.01.07"											    ,"Аксессуары для мясорубок"	            ,2				    , "Аксессуар для мясорубки"			    , "Кухонная техника"			    , product);
@@ -332,7 +359,7 @@ public class ProductBuilder {
             matchProduct("01.17.04,Орешницы"				                                                , "Орешницы"			                ,1.18		        , "Орешница"				            , "Кухонная техника"			    , product);
             matchProduct("01.25_Блинницы электрические, Блинницы"				                            , "Блинницы"			                ,1.18		        , "Блинница"				            , "Кухонная техника"			    , product);
 
-            /*ВСТРАИВАЕМАЯ ТЕХНИКА*/
+            *//*ВСТРАИВАЕМАЯ ТЕХНИКА*//*
             matchProduct("07.01.01,Встраиваемый духовой шкаф"			                                    , "Встраиваемые духовые шкафы"			,1.15	            , "Встраиваемый духовой шкаф"			, "Встраиваемая техника"		    , product);
             matchProduct("07.03, 07.04,Встраиваемая варочная поверхность"	                                , "Встраиваемые варочные панели"		,1.15	            , "Встраиваемая варочная панель"		, "Встраиваемая техника"		    , product);
             matchProduct("07.05.04_Вытяжки встраиваемые,Вытяжка встраиваемая"								, "Встраиваемые вытяжки"				,1.15	            , "Встраиваемая вытяжка"				, "Встраиваемая техника"		    , product);
@@ -340,7 +367,7 @@ public class ProductBuilder {
             matchProduct("07.08,свч печи встраиваемые"									                    , "Встраиваемые СВЧ"					,1.15	            , "Встраиваемая СВЧ"					, "Встраиваемая техника"		    , product);
             matchProduct("07.06,Посудомоечные машины встраиваемые"						                    , "Встраиваемые посудомоечные машины"	,1.15	            , "Встраиваемая посудомоечная машина"	, "Встраиваемая техника"		    , product);
 
-            /*ТЕЛЕ-ВИДЕО-АУДИО*/
+            *//*ТЕЛЕ-ВИДЕО-АУДИО*//*
             matchProduct("Бытовые удлинители,15.24.01.12"												    , "Удлинители"				            ,2				    , "Удлинитель"						    , "Теле-Видео-Аудио"			    , product);
             matchProduct("Батарейка,15.24.01."												                , "Батарейки"				            ,2				    , "Батарейка"						    , "Теле-Видео-Аудио"			    , product);
             matchProduct("Перезаряжаемые батарейки,15.24.01.,15.24.01."									, "Аккумуляторы"				        ,2				    , "Аккумулятор"						    , "Теле-Видео-Аудио"			    , product);
@@ -354,14 +381,14 @@ public class ProductBuilder {
             matchProduct("10.10,Музыкальные центры"										                , "Музыкальные центры"		            ,1.15				, "Музыкальный центр"					, "Теле-Видео-Аудио"			    , product);
             matchProduct("15.02.07,Телемебель"											                    , "Телемебель"				            ,1.40				, "Телемебель"						    , "Теле-Видео-Аудио"			    , product);
             matchProduct("10.17.01,Синтезаторы и цифровые фортепьяно"					                    , "Музыкальные инструменты"	            ,1.15				, "Музыкальный инструмент"			    , "Теле-Видео-Аудио"			    , product);
-
+*/
         }
     }
 
     private void matchProduct(String alias, String productGroup, double coefficient, String single, String productCategory, OriginalProduct originalProduct) {
-        String productID = originalProduct.getProductID();
-        String supplier = originalProduct.getSupplier();
         String[] matches = alias.split(",");
+        String supplier  = originalProduct.getSupplier();
+        String productID = originalProduct.getProductID();
 
         try
         {
@@ -375,6 +402,7 @@ public class ProductBuilder {
                     product.setProductID(productID);
                 }
 
+                /**/
 
             }
         }
@@ -391,9 +419,10 @@ public class ProductBuilder {
     }
 
     private void resolveDuplicates() {
-
+        /**/
     }
 
     private void resolveAvailable() {
+        /**/
     }
 }
