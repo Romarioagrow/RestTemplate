@@ -1,9 +1,8 @@
 package server.domain;
 import lombok.Data;
-import lombok.extern.java.Log;
 import javax.persistence.*;
+import java.time.LocalDate;
 
-@Log
 @Data
 @Entity
 @Table(name = "products")
@@ -24,7 +23,9 @@ public class Product {
     @Column(length = 20000)
     private String pic, pics, annotation, formattedAnnotation;
 
-    private Boolean uniquePrice, coefficientModified, priceModified;
+    private Boolean isAvailable, uniquePrice, coefficientModified, priceModified;
 
     private String brand, supplier;
+
+    private LocalDate updateDate;
 }

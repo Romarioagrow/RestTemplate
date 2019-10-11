@@ -1,4 +1,5 @@
 package server.services;
+import com.opencsv.CSVReader;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.apache.commons.lang3.StringUtils;
@@ -11,12 +12,12 @@ import org.springframework.web.multipart.MultipartFile;
 import server.config.AliasConfig;
 import server.domain.OriginalProduct;
 import server.domain.Product;
+import server.domain.UniqueBrand;
+import server.repos.BrandsRepo;
 import server.repos.OriginalRepo;
 import server.repos.ProductRepo;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+
+import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -29,6 +30,7 @@ public class ProductBuilder {
     private final OriginalRepo originalRepo;
     private final ProductRepo productRepo;
     private final AliasConfig aliasConfig;
+    private final BrandsRepo brandsRepo;
 
     public void updateProductsDB(MultipartFile excelFile) throws FileNotFoundException {
         log.info(excelFile.getOriginalFilename());
@@ -50,9 +52,11 @@ public class ProductBuilder {
                 int countCreate = 0, countUpdate = 0;
                 boolean supplierRBT = excelFile.getOriginalFilename().contains("СП2");
 
+				/// openBook(excelFile)
+				/// XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(new File("D:\\IT\\Dev\\ExpertStoreDev\\Prices\\" + excelFile.getOriginalFilename())));
+
                 File file = new File("D:\\IT\\Dev\\ExpertStoreDev\\Prices\\" + excelFile.getOriginalFilename());
                 FileInputStream inputStream = new FileInputStream(file);
-
                 XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
                 XSSFSheet sheet = workbook.getSheetAt(0);
 
@@ -99,7 +103,6 @@ public class ProductBuilder {
             String originalAmount       = supplierRBT ? row.getCell(6).toString() : row.getCell(7).toString().concat(row.getCell(8).toString());
             String originalBrand        = row.getCell(4).toString();
             String supplier             = supplierRBT ? "RBT" : "RUSBT";
-
 
             String originalPicLink;
             if (supplierRBT) {
@@ -170,7 +173,7 @@ public class ProductBuilder {
         List<OriginalProduct> originalProducts = originalRepo.findAll();
         LinkedHashMap<String, String> aliases = aliasConfig.aliasesMap();
 
-        for (OriginalProduct originalProduct : originalProducts)
+        main: for (OriginalProduct originalProduct : originalProducts)
         {
             String originalGroup = originalProduct.getOriginalType();
             for (Map.Entry<String,String> aliasEntry : aliases.entrySet())
@@ -178,17 +181,42 @@ public class ProductBuilder {
                 for (String alias : aliasEntry.getKey().split(","))
                 {
                     if (StringUtils.startsWithIgnoreCase(originalGroup, alias)) {
-                        //Product product =
                         matchProduct(originalProduct, aliasEntry);
+                        continue main;
                     }
                 }
             }
-            //Product product = alternativeMatch(originalProduct, aliasEntry);
-            /// alternativeMatch()
+            defaultProductMatch(originalProduct);
         }
     }
 
-    private /*Product*/void matchProduct(OriginalProduct originalProduct, Map.Entry<String, String> aliasEntry) {
+    private void defaultProductMatch(OriginalProduct originalProduct) {
+        String productID     = originalProduct.getProductID();
+        String originalBrand = originalProduct.getOriginalBrand();
+        String supplier      = originalProduct.getSupplier().equals("RBT") ? "RBT" : "RUSBT";
+        Integer finalPrice   = resolveFinalPrice(originalProduct, 1.2);
+        Integer bonus        = resolveBonus(finalPrice);
+        /*someOtherFields*/
+
+        Product product = productRepo.findProductByProductID(productID);
+        if (product == null) {
+            product = new Product();
+            product.setProductID(productID);
+        }
+
+        product.setProductCategory(originalProduct.getOriginalCategory());
+        product.setProductGroup(originalProduct.getOriginalType());
+        product.setBrand(originalBrand);
+        product.setFinalPrice(finalPrice);
+        product.setBonus(bonus);
+        product.setSupplier(supplier);
+        /*someOtherDetails*/
+
+        product.setUpdateDate(LocalDate.now());
+        productRepo.save(product);
+    }
+
+    private void matchProduct(OriginalProduct originalProduct, Map.Entry<String, String> aliasEntry) {
         try
         {
             String productID = originalProduct.getProductID();
@@ -207,7 +235,7 @@ public class ProductBuilder {
             String productGroup    = productDetails[0];
             String productType     = originalProduct.getOriginalType();
 
-            Double defaultCoefficient = Double.valueOf(productDetails[1]);
+            Double defaultCoefficient = Double.valueOf(productDetails[1]); /// resolveCoefficient() если product с уникальной ценой
             Integer finalPrice        = resolveFinalPrice(originalProduct, defaultCoefficient);
             Integer bonus             = resolveBonus(finalPrice);
 
@@ -235,6 +263,7 @@ public class ProductBuilder {
             product.setSupplier(originalProduct.getSupplier());
             product.setPic(originalProduct.getOriginalPicLink());
             product.setBrand(originalBrand);
+            product.setUpdateDate(LocalDate.now());
             productRepo.save(product);
 
 
@@ -304,7 +333,7 @@ public class ProductBuilder {
         return singleTypeName.concat(" ").concat(StringUtils.capitalize(originalBrand.toLowerCase()));
     }
 
-    private Integer resolveBonus(Integer finalPrice) throws NullPointerException{
+    private Integer resolveBonus(Integer finalPrice) throws NullPointerException {
         int bonus = finalPrice * 3 / 100;
         String bonusToRound = String.valueOf(bonus);
 
@@ -318,23 +347,25 @@ public class ProductBuilder {
     }
 
     private Integer resolveFinalPrice(OriginalProduct originalProduct, Double coefficient) {
-        Integer finalPrice = null;
+        if (productWithUniquePrice(originalProduct)) {
+            return Integer.parseInt(StringUtils.deleteWhitespace(brandsRepo.findByProductID(originalProduct.getProductID()).getFinalPrice()));
+        }
+        /// else if (productPriceModified())
+        else return makeRoundFinalPrice(originalProduct.getOriginalPrice(), coefficient);
+    }
+
+    private boolean productWithUniquePrice(OriginalProduct originalProduct) {
         String originalBrand = originalProduct.getOriginalBrand().toUpperCase();
         String[] uniqueBrands = {"ARDIN","SENTORE","BINATONE","AMCV","DOFFLER","DOFFLER PLUS","EXCOMP","LERAN"};
 
         if (Arrays.asList(uniqueBrands).contains(originalBrand)) {
-            ///uniquePrice
-            return null;
+            return brandsRepo.findByProductID(originalProduct.getProductID()) != null;
         }
-        else
-        {
-            log.info("ORIGINAL PRICE IN RESOLVE FINAL" + originalProduct.getOriginalPrice());
-            return roundPrice(originalProduct.getOriginalPrice(), coefficient);
-        }
+        return false;
     }
 
-    private Integer roundPrice(String originalPrice, Double coefficient) throws NumberFormatException{
-        log.info(originalPrice+ " " + coefficient);
+    private Integer makeRoundFinalPrice(String originalPrice, Double coefficient) throws NumberFormatException{
+        //log.info(originalPrice + " " + coefficient);
         int finalPrice = (int) (Double.parseDouble(originalPrice) * coefficient);
         String finalPriceToRound = String.valueOf(finalPrice);
 
@@ -379,6 +410,47 @@ public class ProductBuilder {
 
     private void resolveAvailable() {
         /**/
+    }
+
+    public void updateBrandsPrice(MultipartFile file) {
+        log.info(file.getOriginalFilename());
+        try
+        {
+            //BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+            CSVReader reader = new CSVReader(new BufferedReader(new InputStreamReader(file.getInputStream())), ';');
+
+            for (String[] line: reader)
+            {
+                if (!line[0].isEmpty()) {
+                    log.info(line[0]);
+
+                    UniqueBrand brandProduct = brandsRepo.findByProductID(line[0]);
+
+                    if (brandProduct == null) {
+                        brandProduct = new UniqueBrand();
+                        brandProduct.setProductID(line[0]);
+                    }
+
+                    brandProduct.setFullName(line[1]);
+                    brandProduct.setBrand(line[2]);
+                    brandProduct.setAnnotation(line[3]);
+                    brandProduct.setOriginalPrice(line[4]);
+                    brandProduct.setFinalPrice(line[5]);
+                    brandProduct.setPercent(line[6]);
+
+                    //String shortModel = StringUtils.substringAfter(brandProduct.getFullName().toLowerCase(), brandProduct.getBrand().toLowerCase()).replaceAll(" ", "").toLowerCase();
+                    //shortModel = brandProduct.getBrand().toLowerCase().concat(shortModel).replaceAll("\\W", "");
+                    //brandProduct.setShortModel(shortModel);
+
+                    brandsRepo.save(brandProduct);
+                    log.info(brandProduct.getFullName());
+                    //log.info(brandProduct.getShortModel());
+                }
+            }
+        }
+        catch (IOException | ArrayIndexOutOfBoundsException exp) {
+            exp.getStackTrace();
+        }
     }
 }
 

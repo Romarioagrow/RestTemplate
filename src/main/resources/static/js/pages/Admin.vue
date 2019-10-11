@@ -29,13 +29,27 @@
             <v-btn color="success" value=Upload @click="uploadFiles">Загрузить</v-btn>
         </form>-->
 
-        <div>
-            <h1>Обновить БД</h1>
-            <form enctype="multipart/form-data">
-                <v-row><input type="file" name="file" v-on:change="fileChange($event.target.files)" /></v-row>
-                <v-row><v-btn color="success" v-on:click="upload()">Загрузить</v-btn></v-row>
-            </form>
-        </div>
+        <v-card>
+            <v-card-title>Обновить БД</v-card-title>
+            <v-card-actions class="ml-5">
+                <form enctype="multipart/form-data">
+                    <v-row><input type="file" name="file" v-on:change="fileChange($event.target.files)" /></v-row>
+                    <v-row><v-btn color="success" v-on:click="upload()">Загрузить</v-btn></v-row>
+                </form>
+            </v-card-actions>
+        </v-card>
+
+        <v-card class="mt-3">
+            <v-card-title>Doffler-Leran</v-card-title>
+            <v-card-actions class="ml-5">
+                <form enctype="multipart/form-data">
+                    <v-row><input type="file" name="fileBrands" v-on:change="brandsFileChange($event.target.files)" /></v-row>
+                    <v-row><v-btn color="success" v-on:click="uploadBrandsPrice()">Загрузить бренд-прайс</v-btn></v-row>
+                </form>
+            </v-card-actions>
+        </v-card>
+
+
     </v-container>
 </template>
 
@@ -45,15 +59,24 @@
     export default {
         data() {
             return {
-                file: new FormData()
+                file: new FormData(),
+                fileBrands: new FormData(),
             }
         },
         methods: {
             fileChange(fileList) {
                 this.file.append("file", fileList[0], fileList[0].name);
             },
+            brandsFileChange(fileList) {
+                this.fileBrands.append("fileBrands", fileList[0], fileList[0].name);
+            },
             upload() {
                 axios.post('api/admin/uploadFileDB', this.file).then(response =>{
+                    console.log('ok')
+                });
+            },
+            uploadBrandsPrice() {
+                axios.post('api/admin/uploadFileBrands', this.fileBrands).then(response =>{
                     console.log('ok')
                 });
             }

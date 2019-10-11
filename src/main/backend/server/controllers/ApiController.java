@@ -25,7 +25,6 @@ public class ApiController {
     @GetMapping("/products/{group}")
     private List<Product> listProductsByGroup(@PathVariable String group) {
         return productService.getProductsByGroup(group);
-        //return new ArrayList<>();
     }
     @GetMapping("/products/product/{productID}")
     private OriginalProduct listProductByID(@PathVariable String productID) {
@@ -46,7 +45,7 @@ public class ApiController {
 
     /*Admin*/
     @PostMapping("/admin/uploadFileDB")
-    private void uploadProductsDBFile(@RequestParam("file") MultipartFile file) throws UnsupportedEncodingException {
+    private void uploadProductsDBFile(@RequestParam("file") MultipartFile file) {
         try
         {
             productBuilder.updateProductsDB(file);
@@ -54,5 +53,9 @@ public class ApiController {
         catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+    @PostMapping("/admin/uploadFileBrands")
+    private void uploadBrandsPrice(@RequestParam("fileBrands") MultipartFile file) {
+        productBuilder.updateBrandsPrice(file);
     }
 }
