@@ -49,10 +49,15 @@ public class ApiController {
         try
         {
             productBuilder.updateProductsDB(file);
+
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+    @PostMapping("/admin/test")
+    private void uploadProductsDBFile() {
+        productBuilder.test();
     }
     @PostMapping("/admin/uploadFileBrands")
     private void uploadBrandsPrice(@RequestParam("fileBrands") MultipartFile file) {

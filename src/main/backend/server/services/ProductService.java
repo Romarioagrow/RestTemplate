@@ -70,7 +70,7 @@ public class ProductService {
         productGroups.sort(Comparator.comparing(ProductGroup::getGroupName));
 
         System.out.println();
-        productGroups.forEach(productGroup -> log.info(productGroup.getGroupName()));
+        //productGroups.forEach(productGroup -> log.info(productGroup.getGroupName()));
         return productGroups;
     }
 

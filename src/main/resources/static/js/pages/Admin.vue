@@ -29,26 +29,40 @@
             <v-btn color="success" value=Upload @click="uploadFiles">Загрузить</v-btn>
         </form>-->
 
-        <v-card>
-            <v-card-title>Обновить БД</v-card-title>
-            <v-card-actions class="ml-5">
-                <form enctype="multipart/form-data">
-                    <v-row><input type="file" name="file" v-on:change="fileChange($event.target.files)" /></v-row>
-                    <v-row><v-btn color="success" v-on:click="upload()">Загрузить</v-btn></v-row>
-                </form>
-            </v-card-actions>
-        </v-card>
+        <v-row>
+            <v-col>
+                <v-card>
+                    <v-card-title>Обновить БД</v-card-title>
+                    <v-card-actions class="ml-5">
+                        <form enctype="multipart/form-data">
+                            <v-row><input type="file" name="file" v-on:change="fileChange($event.target.files)" /></v-row>
+                            <v-row><v-btn color="success" v-on:click="upload()">Загрузить</v-btn></v-row>
+                        </form>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+            <v-col>
+                <v-card>
+                    <v-card-title>Doffler-Leran</v-card-title>
+                    <v-card-actions class="ml-5">
+                        <form enctype="multipart/form-data">
+                            <v-row><input type="file" name="fileBrands" v-on:change="brandsFileChange($event.target.files)" /></v-row>
+                            <v-row><v-btn color="success" v-on:click="uploadBrandsPrice()">Загрузить бренд-прайс</v-btn></v-row>
+                        </form>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+        </v-row>
+
+
+
 
         <v-card class="mt-3">
-            <v-card-title>Doffler-Leran</v-card-title>
+            <v-card-title>Test</v-card-title>
             <v-card-actions class="ml-5">
-                <form enctype="multipart/form-data">
-                    <v-row><input type="file" name="fileBrands" v-on:change="brandsFileChange($event.target.files)" /></v-row>
-                    <v-row><v-btn color="success" v-on:click="uploadBrandsPrice()">Загрузить бренд-прайс</v-btn></v-row>
-                </form>
+                <v-btn color="red" v-on:click="test()">BANG</v-btn>
             </v-card-actions>
         </v-card>
-
 
     </v-container>
 </template>
@@ -79,6 +93,9 @@
                 axios.post('api/admin/uploadFileBrands', this.fileBrands).then(response =>{
                     console.log('ok')
                 });
+            },
+            test() {
+                axios.post('api/admin/test').then(response => console.log('OK'));
             }
         }
     }

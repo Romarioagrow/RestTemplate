@@ -20,8 +20,10 @@ import server.repos.ProductRepo;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Log
 @Service
@@ -39,6 +41,8 @@ public class ProductBuilder {
         matchProductDetails();
         resolveDuplicates();
         resolveAvailable();
+
+        log.info("Update Complete");
     }
 
     /*#0*/
@@ -52,9 +56,8 @@ public class ProductBuilder {
                 int countCreate = 0, countUpdate = 0;
                 boolean supplierRBT = excelFile.getOriginalFilename().contains("СП2");
 
-				/// openBook(excelFile)
-				/// XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(new File("D:\\IT\\Dev\\ExpertStoreDev\\Prices\\" + excelFile.getOriginalFilename())));
-
+                /// openBook(excelFile)
+                /// XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(new File("D:\\IT\\Dev\\ExpertStoreDev\\Prices\\" + excelFile.getOriginalFilename())));
                 File file = new File("D:\\IT\\Dev\\ExpertStoreDev\\Prices\\" + excelFile.getOriginalFilename());
                 FileInputStream inputStream = new FileInputStream(file);
                 XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
@@ -175,45 +178,24 @@ public class ProductBuilder {
 
         main: for (OriginalProduct originalProduct : originalProducts)
         {
-            String originalGroup = originalProduct.getOriginalType();
-            for (Map.Entry<String,String> aliasEntry : aliases.entrySet())
-            {
-                for (String alias : aliasEntry.getKey().split(","))
+
+            {   /*matchGroup()*/
+                String originalGroup = originalProduct.getOriginalType();
+                for (Map.Entry<String,String> aliasEntry : aliases.entrySet())
                 {
-                    if (StringUtils.startsWithIgnoreCase(originalGroup, alias)) {
-                        matchProduct(originalProduct, aliasEntry);
-                        continue main;
+                    for (String alias : aliasEntry.getKey().split(","))
+                    {
+                        if (StringUtils.startsWithIgnoreCase(originalGroup, alias)) {
+                            matchProduct(originalProduct, aliasEntry);
+                            continue main;
+                        }
                     }
                 }
+                defaultProductMatch(originalProduct);
             }
-            defaultProductMatch(originalProduct);
+
+            /*resolve details*/
         }
-    }
-
-    private void defaultProductMatch(OriginalProduct originalProduct) {
-        String productID     = originalProduct.getProductID();
-        String originalBrand = originalProduct.getOriginalBrand();
-        String supplier      = originalProduct.getSupplier().equals("RBT") ? "RBT" : "RUSBT";
-        Integer finalPrice   = resolveFinalPrice(originalProduct, 1.2);
-        Integer bonus        = resolveBonus(finalPrice);
-        /*someOtherFields*/
-
-        Product product = productRepo.findProductByProductID(productID);
-        if (product == null) {
-            product = new Product();
-            product.setProductID(productID);
-        }
-
-        product.setProductCategory(originalProduct.getOriginalCategory());
-        product.setProductGroup(originalProduct.getOriginalType());
-        product.setBrand(originalBrand);
-        product.setFinalPrice(finalPrice);
-        product.setBonus(bonus);
-        product.setSupplier(supplier);
-        /*someOtherDetails*/
-
-        product.setUpdateDate(LocalDate.now());
-        productRepo.save(product);
     }
 
     private void matchProduct(OriginalProduct originalProduct, Map.Entry<String, String> aliasEntry) {
@@ -231,26 +213,26 @@ public class ProductBuilder {
 
             String[] productDetails = aliasEntry.getValue().split(",");
 
-            String productCategory = productDetails[3];
-            String productGroup    = productDetails[0];
-            String productType     = originalProduct.getOriginalType();
+            Double defaultCoefficient   = Double.valueOf(productDetails[1]); /// resolveCoefficient() если product с уникальной ценой
+            String productGroup         = productDetails[0];
+            String singleTypeName       = productDetails[2];
+            String productCategory      = productDetails[3];
 
-            Double defaultCoefficient = Double.valueOf(productDetails[1]); /// resolveCoefficient() если product с уникальной ценой
-            Integer finalPrice        = resolveFinalPrice(originalProduct, defaultCoefficient);
-            Integer bonus             = resolveBonus(finalPrice);
-
-            String singleTypeName = productDetails[2];
-            String modelName      = resolveModelName(originalProduct, supplierRBT);
+            Integer finalPrice    = resolveFinalPrice(originalProduct, defaultCoefficient);
+            Integer bonus         = resolveBonus(finalPrice);
+            String modelName      = resolveModelName(originalProduct);
             String fullName       = resolveFullName(modelName, singleTypeName, originalBrand);
             String groupBrandName = resolveBrandName(singleTypeName, originalBrand);
             String searchName     = resolveSearchName(modelName, singleTypeName, originalBrand);
+            String shortModelName = resolveShortModel(modelName, singleTypeName, originalBrand);
+            String annotation     = !supplierRBT ? resolveAnnotation(originalProduct) : originalProduct.getOriginalAnnotation();
 
-            String annotation           = supplierRBT ? originalProduct.getOriginalAnnotation() : resolveAnnotation(originalProduct);
             //String formattedAnnotation  = formatAnnotation(annotation);
+            //String productType     = originalProduct.getOriginalType();
 
             product.setProductCategory(productCategory);
             product.setProductGroup(productGroup);
-            product.setProductType(productType);
+            //product.setProductType(productType);
             product.setDefaultCoefficient(defaultCoefficient);
             product.setFinalPrice(finalPrice);
             product.setBonus(bonus);
@@ -259,6 +241,7 @@ public class ProductBuilder {
             product.setFullName(fullName);
             product.setGroupBrandName(groupBrandName);
             product.setSearchName(searchName);
+            product.setShortModelName(shortModelName);
             product.setAnnotation(annotation);
             product.setSupplier(originalProduct.getSupplier());
             product.setPic(originalProduct.getOriginalPicLink());
@@ -281,7 +264,7 @@ public class ProductBuilder {
             /**/
             log.info("productCategory: "    + productCategory);
             log.info("productGroup: "       + productGroup);
-            log.info("productType: "        + productType);
+            //log.info("productType: "        + productType);
             /**/
             log.info("defaultCoefficient: " + defaultCoefficient);
             log.info("finalPrice: "         + finalPrice);
@@ -300,6 +283,92 @@ public class ProductBuilder {
         catch (NullPointerException | ArrayIndexOutOfBoundsException | NumberFormatException e) {
             e.printStackTrace();
         }
+    }
+
+    private void defaultProductMatch(OriginalProduct originalProduct) {
+        String productID     = originalProduct.getProductID();
+        String supplier      = originalProduct.getSupplier().equals("RBT") ? "RBT" : "RUSBT";
+        Integer finalPrice   = resolveFinalPrice(originalProduct, 1.2);
+        Integer bonus        = resolveBonus(finalPrice);
+
+        String defaultBrand = originalProduct.getOriginalBrand();
+        String defaultName  = StringUtils.substringBefore(originalProduct.getOriginalName(), ", ");//resolveFullName(originalProduct);
+        String defaultAnnotation = StringUtils.substringAfter(originalProduct.getOriginalName(), ", ");;
+        String modelName = resolveModelName(originalProduct);
+
+        //String fullName      = resolveFullName(modelName, singleTypeName, originalBrand);
+        ///String shortModelName = resolveShortModel(modelName, singleTypeName, originalBrand);
+        /*someOtherFields*/
+
+        Product product = productRepo.findProductByProductID(productID);
+        if (product == null) {
+            product = new Product();
+            product.setProductID(productID);
+        }
+
+        product.setProductCategory(originalProduct.getOriginalCategory());
+        product.setProductGroup(originalProduct.getOriginalType());
+        product.setBrand(defaultBrand);
+        product.setFinalPrice(finalPrice);
+        product.setBonus(bonus);
+        product.setSupplier(supplier);
+        product.setModelName(modelName);
+        product.setFullName(defaultName);
+        product.setAnnotation(defaultAnnotation);
+        /*someOtherDetails*/
+
+        product.setUpdateDate(LocalDate.now());
+        productRepo.save(product);
+    }
+
+    private String resolveFullName(OriginalProduct originalProduct) {
+        //return null;
+        //^[0-9]{1,2}([,][0-9]{1,2})$
+
+        /*Pattern pattern = Pattern.compile("^[0-9]{1,2}([,][0-9]{1,2})$");
+        Matcher matcher = pattern.matcher(originalProduct.getOriginalName());
+
+        if (matcher.find()) {
+            log.info(originalProduct.getOriginalName());
+        }
+        return null;*/
+
+        /*for (OriginalProduct originalProduct : originalRepo.findAll())
+        {*/
+        String name = originalProduct.getOriginalName();
+
+        if (name.matches("^[а-яА-Я]*\\s[0-9]{1,2}([,][1-9]{1,2})\\s.*$")) {
+            log.info(name);
+            return StringUtils.substringBefore(name, ", ");
+        }
+        return StringUtils.substringBefore(name, ",");
+
+            /*boolean find = Pattern.compile("^[0-9]{1,2}([,][0-9]{1,2})$").matcher(name).find();
+            if (find) log.info(originalProduct.getOriginalName());*/
+
+
+            /*Pattern pattern = Pattern.compile("[0-9]{1,2}([,][0-9]{1,2})");
+            Matcher matcher = pattern.matcher(originalProduct.getOriginalName());
+
+            if (matcher.matches()) {
+                log.info(originalProduct.getOriginalName());
+            }*/
+        //}
+
+    }
+
+    private String resolveShortModel(String modelName, String singleTypeName, String originalBrand) {
+        Pattern pattern = Pattern.compile("^[\\w\\W\\s?]+ [А-ЯA-Z\\W?]{3,20}$");
+        Matcher matcher = pattern.matcher(modelName);
+
+        String shortModelName;
+
+        if (matcher.matches()) {
+            shortModelName = StringUtils.substringBeforeLast(modelName, " ").replaceAll(" ", "");
+        }
+        else shortModelName = modelName.replaceAll(" ", "");
+
+        return shortModelName.replaceAll("-", "").replaceAll("_", "").replaceAll("_", "").replaceAll("\\(", "").replaceAll("\\)", "").replaceAll("/", "").toLowerCase();
     }
 
     private String formatAnnotation(String annotation) {
@@ -365,7 +434,7 @@ public class ProductBuilder {
     }
 
     private Integer makeRoundFinalPrice(String originalPrice, Double coefficient) throws NumberFormatException{
-        //log.info(originalPrice + " " + coefficient);
+        /// round price до ближайшего числа с 90 на конце
         int finalPrice = (int) (Double.parseDouble(originalPrice) * coefficient);
         String finalPriceToRound = String.valueOf(finalPrice);
 
@@ -387,8 +456,8 @@ public class ProductBuilder {
         return singleTypeName.concat(" ").concat(StringUtils.capitalize(originalBrand.toLowerCase())).concat(" ").concat(modelName);
     }
 
-    private String resolveModelName(OriginalProduct originalProduct, boolean supplierRBT) {
-        String originalBrand = originalProduct.getOriginalBrand();
+    private String resolveModelName(OriginalProduct originalProduct) {
+        /*String originalBrand = originalProduct.getOriginalBrand();
         String originalName = originalProduct.getOriginalName();
 
         if (supplierRBT && !originalBrand.isEmpty()) {
@@ -397,15 +466,137 @@ public class ProductBuilder {
         else if (originalName.contains(", ") && originalName.contains(originalBrand) && StringUtils.substringAfter(originalName, originalBrand).contains(",")) {
             return StringUtils.substringBetween(originalName, originalBrand, ",").trim();
         }
-        else return StringUtils.substringAfter(originalName, originalBrand).trim();
+        else return StringUtils.substringAfter(originalName, originalBrand).trim();*/
+
+        /*for (OriginalProduct originalProduct : originalRepo.findAll())
+        {*/
+        String originalBrand = originalProduct.getOriginalBrand().toLowerCase();
+        String originalName = originalProduct.getOriginalName().toLowerCase();
+
+
+            /*if (originalProduct.getSupplier().equals("RBT") && !originalBrand.isEmpty()) {
+                String case1 = StringUtils.substringAfter(originalProduct.getOriginalName().toLowerCase(), originalBrand.toUpperCase().replaceAll(" ", "").replaceAll("&", "")).trim();
+                log.info("case1 " + case1);
+            }
+            else if (originalName.contains(", ") && originalName.contains(originalBrand) && StringUtils.substringAfter(originalName, originalBrand).contains(","))
+            {
+                String case1 = StringUtils.substringBetween(originalName, originalBrand, ",").trim();
+                log.info("case1 " + case1);
+            }*/
+        String modelName;
+
+        if (originalProduct.getSupplier().equals("RBT") && !originalBrand.isEmpty()) {
+            modelName = StringUtils.substringAfter(originalProduct.getOriginalName().toLowerCase(), originalBrand.toUpperCase().replaceAll(" ", "").replaceAll("&", "")).trim();
+                /*if ()
+                System.out.println();
+                log.info("case1, RBT");
+                log.info(originalProduct.getOriginalName());
+                log.info("modelName: " + modelName);*/
+
+        }
+        else if (originalName.contains(", ") && originalName.contains(originalBrand) && StringUtils.substringAfter(originalName, originalBrand).contains(",")) {
+            modelName = StringUtils.substringBetween(originalName, originalBrand, ",").trim();
+                /*System.out.println();
+                log.info("case2, else if, substringAfter contains(,)");
+                log.info(originalProduct.getOriginalName());
+                log.info("case2 " + modelName);*/
+        }
+        else {
+            modelName = StringUtils.substringAfter(originalName, originalBrand).trim();
+                /*System.out.println();
+                log.info("case3, else");
+                log.info(originalProduct.getOriginalName());
+                log.info("modelName: " + modelName);*/
+        }
+
+        if (!modelName.isEmpty()) {
+            return modelName;
+            /* if (originalName.contains(originalBrand)) {
+                modelName = StringUtils.substringAfter(originalName, originalBrand);
+            }
+            else {
+                System.out.println();
+                log.info("OrigBrand: " + originalBrand);
+                log.info("OrigName: " + originalName);
+            }*/
+        }
+        else if (originalName.contains(originalBrand)) {
+            return StringUtils.substringAfter(originalName, originalBrand);
+        }
+        else return "No modelName";
+        //}
     }
 
-    private boolean productValidToMatch(OriginalProduct originalProduct, Product product) {
+    /*private boolean productValidToMatch(OriginalProduct originalProduct, Product product) {
         return product.getProductGroup() == null && (!originalProduct.getOriginalBrand().isEmpty() && StringUtils.containsIgnoreCase(originalProduct.getOriginalName().replaceAll(" ", "").replaceAll("&", ""), originalProduct.getOriginalBrand().replaceAll(" ", ""))); /// В ЗАПРОС К БД
-    }
+    }*/
 
     private void resolveDuplicates() {
-        /**/
+        System.out.println();
+        log.info("Обработка дубликатов...");
+        /*productRepo.findBySupplier("RBT").forEach(product -> {
+            product.setIsDuplicate(null);
+            product.setHasDuplicates(null);
+            productRepo.save(product);
+        });*/
+
+        List<Product> products = productRepo.findBySupplier("RBT");
+        //AtomicInteger count = new AtomicInteger();
+        for (Product product : products)
+        {
+            //product.get
+            product.setIsDuplicate(null);
+            product.setHasDuplicates(null);
+
+            List<Product> duplicates = productRepo.findBySupplier("RUSBT");
+
+            if (!duplicates.isEmpty())
+                for (Product productRUS : duplicates) {
+
+                }
+
+            /*List<Product> duplicates = productRepo.findByShortModelEquals(product.getShortModel());
+            if (duplicates.size() > 1)
+            {
+                duplicates = duplicates.stream().filter(duplicate -> duplicate.getSupplier().equals("2RUS-BT")).collect(Collectors.toList());
+                if (duplicates.size() >= 1)
+                {
+                    duplicates.sort(Comparator.comparing(Product::getFinalPrice));
+                    count.getAndIncrement();
+
+                    Product productOriginal = duplicates.stream().findFirst().get();
+                    if (product.getFinalPrice() > productOriginal.getFinalPrice())
+                    {
+                        productOriginal.setFormattedAnnotation(product.getFormattedAnnotation());
+                        productOriginal.setOriginalPic(product.getOriginalPic());
+                        productOriginal.setHasDuplicates(true);
+                        product.setIsDuplicate(true);
+                        productRepo.save(product);
+                        productRepo.save(productOriginal);
+
+                        duplicates.stream().skip(1).forEach(duplicate ->
+                        {
+                            duplicate.setIsDuplicate(true);
+                            productRepo.save(duplicate);
+                        });
+                    }
+                    else
+                    {
+                        product.setHasDuplicates(true);
+                        duplicates.forEach(duplicate ->
+                        {
+                            duplicate.setIsDuplicate(true);
+                            productRepo.save(duplicate);
+                        });
+                    }
+                }
+            }*/
+        }
+        //
+        //
+        //
+        //
+        // log.info("Товаров с дубликатами: " + count.toString());
     }
 
     private void resolveAvailable() {
@@ -452,7 +643,92 @@ public class ProductBuilder {
             exp.getStackTrace();
         }
     }
+
+    public void test() {
+        /*og.info("test");
+
+        for (OriginalProduct originalProduct : originalRepo.findAll())
+        {
+            String originalBrand = originalProduct.getOriginalBrand().toLowerCase();
+            String originalName = originalProduct.getOriginalName().toLowerCase();
+
+
+            *//*if (originalProduct.getSupplier().equals("RBT") && !originalBrand.isEmpty()) {
+                String case1 = StringUtils.substringAfter(originalProduct.getOriginalName().toLowerCase(), originalBrand.toUpperCase().replaceAll(" ", "").replaceAll("&", "")).trim();
+                log.info("case1 " + case1);
+            }
+            else if (originalName.contains(", ") && originalName.contains(originalBrand) && StringUtils.substringAfter(originalName, originalBrand).contains(","))
+            {
+                String case1 = StringUtils.substringBetween(originalName, originalBrand, ",").trim();
+                log.info("case1 " + case1);
+            }*//*
+            String modelName;
+
+            if (originalProduct.getSupplier().equals("RBT") && !originalBrand.isEmpty()) {
+                modelName = StringUtils.substringAfter(originalProduct.getOriginalName().toLowerCase(), originalBrand.toUpperCase().replaceAll(" ", "").replaceAll("&", "")).trim();
+                *//*if ()
+                System.out.println();
+                log.info("case1, RBT");
+                log.info(originalProduct.getOriginalName());
+                log.info("modelName: " + modelName);*//*
+
+            }
+            else if (originalName.contains(", ") && originalName.contains(originalBrand) && StringUtils.substringAfter(originalName, originalBrand).contains(",")) {
+                modelName = StringUtils.substringBetween(originalName, originalBrand, ",").trim();
+                *//*System.out.println();
+                log.info("case2, else if, substringAfter contains(,)");
+                log.info(originalProduct.getOriginalName());
+                log.info("case2 " + modelName);*//*
+            }
+            else {
+                modelName = StringUtils.substringAfter(originalName, originalBrand).trim();
+                *//*System.out.println();
+                log.info("case3, else");
+                log.info(originalProduct.getOriginalName());
+                log.info("modelName: " + modelName);*//*
+            }
+
+            if (modelName.isEmpty()) {
+                if (originalName.contains(originalBrand)) {
+                    modelName = StringUtils.substringAfter(originalName, originalBrand);
+                }
+                else {
+                    System.out.println();
+                    log.info("OrigBrand: " + originalBrand);
+                    log.info("OrigName: " + originalName);
+                }
+            }
+        }*/
+    }
+        /*// ^[\w\W\s?]+ [0-9]{1,2}([,][0-9]{1,2}) [\w\W\s?]+$
+        // ^[0-9]{1,2}([,][0-9]{1,2})$
+        // ^ [0-9]{1,2}([,][1-9]{1,2}) $
+        // ^[^.]* [0-9]{1,2}([,][1-9]{1,2}) [^.]*$
+        // ^[а-яА-Я]* [0-9]{1,2}([,][1-9]{1,2}) .*$
+
+        log.info("lol");
+        for (OriginalProduct originalProduct : originalRepo.findAll())
+        {
+            String name = originalProduct.getOriginalName();
+
+            if (name.matches("^[а-яА-Я]*\\s[0-9]{1,2}([,][1-9]{1,2})\\s.*$")) {
+                log.info(name);
+            }
+
+            *//*boolean find = Pattern.compile("^[0-9]{1,2}([,][0-9]{1,2})$").matcher(name).find();
+            if (find) log.info(originalProduct.getOriginalName());*//*
+
+
+     *//*Pattern pattern = Pattern.compile("[0-9]{1,2}([,][0-9]{1,2})");
+            Matcher matcher = pattern.matcher(originalProduct.getOriginalName());
+
+            if (matcher.matches()) {
+                log.info(originalProduct.getOriginalName());
+            }*//*
+        }
+        log.info("end");*/
 }
+
 
 /*!!! ЧЕРЕЗ SPRING CONTEXT*/
 /*
