@@ -3,7 +3,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import server.domain.OriginalProduct;
 import server.domain.Product;
 import server.dto.FiltersList;
 import server.dto.ProductGroup;
@@ -33,7 +32,6 @@ public class ProductService {
 
         /*Находятся все products в категории и просеиваются группы*/
         productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> groups.add(product.getProductGroup()));
-
         try
         {
             System.out.println();

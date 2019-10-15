@@ -2,16 +2,12 @@ package server.controllers;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import server.domain.OriginalProduct;
 import server.domain.Product;
 import server.dto.FiltersList;
 import server.dto.ProductGroup;
 import server.services.ProductBuilder;
 import server.services.ProductService;
-
 import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -46,10 +42,8 @@ public class ApiController {
     /*Admin*/
     @PostMapping("/admin/uploadFileDB")
     private void uploadProductsDBFile(@RequestParam("file") MultipartFile file) {
-        try
-        {
+        try {
             productBuilder.updateProductsDB(file);
-
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
