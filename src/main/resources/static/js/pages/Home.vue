@@ -46,13 +46,6 @@
         },
         data() {
             return {
-                /*cats: {
-                    name: '',
-                    groups: {
-                        name: '',
-                        pic: ''
-                    }
-                },*/
                 productGroups: [],
                 categories: [
                     '',
@@ -85,6 +78,4 @@
     }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

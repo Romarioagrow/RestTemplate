@@ -23,8 +23,6 @@ public class ProductService {
     private final ProductRepo productRepo;
 
     public List<Product> getProductsByGroup(String group) {
-        ///return productRepo.findByProductGroupIgnoreCaseAndOriginalPicIsNotNull(group.replaceAll("_"," "));
-        //return productRepo.findAll();
         return productRepo.findProductsByProductGroup(group);
     }
 
