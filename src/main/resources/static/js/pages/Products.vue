@@ -144,7 +144,12 @@
             let url = '/api/products' + requestGroup;
             let filtersRequest = '/api/filters/construct' + requestGroup;
 
-            axios.get(url).then(response => this.products = response.data);
+            console.log(url)
+            axios.get(url).then(response => {
+                console.log(response.data)
+                this.products = response.data
+            });
+            //console.log(this.products)
 
             axios.get(filtersRequest).then(response =>
             {

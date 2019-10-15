@@ -18,10 +18,10 @@
                             <v-list-item-subtitle>{{ product.productType }}</v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
-                    <v-img :src="product.originalPic" contain max-height="300"></v-img>
+                    <v-img :src="product.pic" contain max-height="300"></v-img>
                     <b-card>
                         <b-card-body>
-                            {{ product.originalAnnotation }}
+                            {{ product.annotation }}
                         </b-card-body>
                     </b-card>
                 </v-card>

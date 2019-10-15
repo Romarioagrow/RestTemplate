@@ -27,7 +27,7 @@ public class ApiController {
         return productService.getProductsByGroup(group);
     }
     @GetMapping("/products/product/{productID}")
-    private OriginalProduct listProductByID(@PathVariable String productID) {
+    private Product listProductByID(@PathVariable String productID) {
         return productService.getProductByID(productID);
     }
 

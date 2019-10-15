@@ -23,7 +23,8 @@ public class ProductService {
     private final ProductRepo productRepo;
 
     public List<Product> getProductsByGroup(String group) {
-        return productRepo.findProductsByProductGroup(group);
+        log.info("GROUP: " + group);
+        return productRepo.findProductsByProductGroupIgnoreCase(group);
     }
 
     public List<ProductGroup> getProductGroups(String category) {
@@ -248,13 +249,12 @@ public class ProductService {
                 if (word.contains(checkDuplicate)) return false;
             }
             return true;
-        };
+        }
         return false;
     }
 
-    public OriginalProduct getProductByID(String productID) {
-        /// return productRepo.findProductByProductID(productID);
-        return new OriginalProduct();
+    public Product getProductByID(String productID) {
+        return productRepo.findProductByProductID(productID);
     }
 }
 
