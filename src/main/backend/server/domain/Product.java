@@ -18,7 +18,7 @@ public class Product {
     private Double defaultCoefficient, customCoefficient;
 
     @Column(length = 1000)
-    private String modelName, fullName, singleTypeName, searchName, groupBrandName, shortModelName;
+    private String modelName, fullName, singleTypeName, searchName, groupBrandName, shortModelName, originalName;
 
     @Column(length = 20000)
     private String pic, pics, annotation, formattedAnnotation;
