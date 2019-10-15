@@ -23,7 +23,7 @@ public class Product {
     @Column(length = 20000)
     private String pic, pics, annotation, formattedAnnotation;
 
-    private Boolean isAvailable, uniquePrice, coefficientModified, priceModified, isDuplicate, hasDuplicates;
+    private Boolean isAvailable, uniquePrice, coefficientModified, priceModified, isDuplicate, hasDuplicates, mappedJSON = false;
 
     private String brand, supplier;
 

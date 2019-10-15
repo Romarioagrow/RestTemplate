@@ -30,45 +30,30 @@ public class ProductService {
         Set<String> groups = new HashSet<>();
         List<ProductGroup> productGroups = new ArrayList<>();
 
-        /*!!! ПЕРЕПИСАТЬ КОГДА БУДЕТ НОВЫЙ ProductParser С НОВЫМИ ПОЛЯМИ PRODUCTS !!!*/
         /*Находятся все products в категории и просеиваются группы*/
-        productRepo.findByProductCategoryContainsIgnoreCase(category).forEach(product -> groups.add(product.getProductGroup())); ////
+        productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> groups.add(product.getProductGroup()));
 
-        log.info(groups.isEmpty() + "");
-        if (!groups.isEmpty())
+        try
         {
-            groups.forEach(productGroup -> {
-                String pic = productRepo.findFirstByProductGroup(productGroup).getPic();
+            System.out.println();
+            log.info(category.toUpperCase());
+            groups.forEach(productGroup ->
+            {
+                String pic = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic();
+                if (pic == null) pic = "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
+
                 ProductGroup group = new ProductGroup();
                 group.setGroupName(productGroup);
                 group.setGroupPic(pic);
                 productGroups.add(group);
             });
         }
-        else
-        {
-            try {
-                log.info(category);
-                productRepo.findByProductCategoryContainsIgnoreCase(category).forEach(product -> groups.add(product.getProductType())); ////
-                groups.forEach(originalType -> {
-                    String pic = productRepo.findFirstByProductTypeAndPicIsNotNull(originalType).getPic();
-                    if (pic == null) pic = "/pics/toster.png";
-
-                    ProductGroup group = new ProductGroup();
-                    group.setGroupName(originalType);
-                    group.setGroupPic(pic);
-                    productGroups.add(group);
-                });
-            }
-            catch (NullPointerException e) {
-                e.getSuppressed();
-            }
+        catch (NullPointerException e) {
+            e.getSuppressed();
         }
-
         productGroups.sort(Comparator.comparing(ProductGroup::getGroupName));
-
-        System.out.println();
-        //productGroups.forEach(productGroup -> log.info(productGroup.getGroupName()));
+        productGroups.forEach(productGroup -> log.info(productGroup.getGroupName()));
+        log.info("Групп: " + productGroups.size());
         return productGroups;
     }
 
@@ -155,7 +140,7 @@ public class ProductService {
                                         filtersList.diapasonsFilters.put(key, vals);
                                     }
                                     else filtersList.diapasonsFilters.putIfAbsent(key, new TreeSet<>(Collections.singleton(parsedValue)));
-                                                                    }
+                                }
                                 catch (ParseException e) {
                                     e.getSuppressed();
                                 }

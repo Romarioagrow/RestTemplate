@@ -38,7 +38,7 @@ public class ProductBuilder {
         matchProductDetails();
         resolveDuplicates();
         resolveAvailable();
-        log.info("Update Complete\n");
+        log.info("Update Complete! Products available: " + productRepo.findAll().size());
     }
 
     /*#0*/
@@ -85,8 +85,8 @@ public class ProductBuilder {
     }
 
     private void matchProductDetails() throws FileNotFoundException {
-        log.info("Маппинг группы и параметров");
-
+        log.info("Маппинг группы и параметров...");
+        int countJSON = 0, countDefault = 0;
         List<OriginalProduct> originalProducts = originalRepo.findAll();
         LinkedHashMap<String, String> aliases = aliasConfig.aliasesMap();
 
@@ -106,16 +106,20 @@ public class ProductBuilder {
                 {
                     if (StringUtils.startsWithIgnoreCase(originalGroup, alias)) {
                         product = matchProductJSON(aliasEntry, product);
+                        countJSON++;
                         break mapping;
                     }
                 }
             }
-            if (product.getProductGroup() == null ) {
+            if (product.getMappedJSON()) {
                 product = defaultProductMatch(originalProduct, product);
+                countDefault++;
             }
             product = resolveProductsDetails(originalProduct, product);
             productRepo.save(product);
         }
+        log.info("JSON разметка: " + countJSON);
+        log.info("Auto разметка: " + countDefault);
     }
 
     private Product resolveProductsDetails(OriginalProduct originalProduct, Product product) {
@@ -149,7 +153,6 @@ public class ProductBuilder {
         product.setBrand(originalBrand);
         product.setUpdateDate(LocalDate.now());
         return product;
-
     }
 
     private void createOriginalProduct(Row row, String productID, boolean supplierRBT) {
@@ -245,6 +248,7 @@ public class ProductBuilder {
             product.setProductGroup(productGroup);
             product.setDefaultCoefficient(defaultCoefficient);
             product.setSingleTypeName(singleTypeName);
+            product.setMappedJSON(true);
             return product;
         }
         catch (NullPointerException | ArrayIndexOutOfBoundsException | NumberFormatException e) {
@@ -254,8 +258,8 @@ public class ProductBuilder {
     }
     private Product defaultProductMatch(OriginalProduct originalProduct, Product product) {
         Double defaultCoefficient = 1.2;
-        String defaultCategory      = originalProduct.getOriginalCategory();
-        String defaultProductGroup  = originalProduct.getOriginalType();
+        String defaultCategory      = resolveDefaultCategory(originalProduct.getOriginalCategory());
+        String defaultProductGroup  = resolveDefaultGroup(originalProduct.getOriginalType());//originalProduct.getOriginalType();
         String singleTypeName       = StringUtils.substringBefore(originalProduct.getOriginalName().toLowerCase(), originalProduct.getOriginalBrand().toLowerCase());
 
         product.setProductCategory(defaultCategory);
@@ -263,6 +267,31 @@ public class ProductBuilder {
         product.setSingleTypeName(singleTypeName);
         product.setDefaultCoefficient(defaultCoefficient);
         return product;
+    }
+
+    private String resolveDefaultGroup(String originalType) {
+        if (originalType.contains("_")) {
+            originalType = StringUtils.substringAfter(originalType, "_");
+        }
+        return originalType;
+    }
+
+    private String resolveDefaultCategory(String originalCategory) {
+        if (originalCategory.contains("_")) {
+            originalCategory = StringUtils.substringAfter(originalCategory, "_");
+        }
+
+        switch (originalCategory) {
+            case "Аудио": return "Автотовары";
+            case "Электроника": return "Теле-Видео-Аудио";
+            case "Крупная техника для кухни":
+            case "Мелкая техника для кухни": return "Кухонная техника";
+            case "Красота и здоровье":return "Приборы персонального ухода";
+            case "Инструменты для дома, дачи и авто":
+            case "Инструмент": return "Строительные инструменты";
+            case "Гаджеты": return "Цифровые устройства";
+            default: return originalCategory;
+        }
     }
 
     private String resolveShortModel(String modelName, String singleTypeName, String originalBrand) {
@@ -288,7 +317,7 @@ public class ProductBuilder {
 
     private String resolveAnnotation(OriginalProduct originalProduct, boolean supplierRBT) {
         if (supplierRBT) {
-            return StringUtils.substringAfter(originalProduct.getOriginalName(), ", ");
+            return originalProduct.getOriginalAnnotation();//StringUtils.substringAfter(originalProduct.getOriginalName(), ", ");
         }
         String annotation = StringUtils.substringAfter(originalProduct.getOriginalName(), ", ");
         return !annotation.isEmpty() ? annotation : StringUtils.substringAfter(originalProduct.getOriginalName(), ", ");
@@ -393,7 +422,7 @@ public class ProductBuilder {
 
     /// Оптимизировать скорость
     private void resolveDuplicates() {
-        log.info("Обработка дубликатов");
+        log.info("Обработка дубликатов...");
         int count = 0;
         productRepo.findAll().forEach(product -> {
             product.setIsDuplicate(null);
@@ -432,7 +461,7 @@ public class ProductBuilder {
     }
 
     private void resolveAvailable() {
-        log.info("Resolving available");
+        log.info("Resolving available...");
         productRepo.findAll().forEach(product -> {
             if (!product.getUpdateDate().toString().equals(LocalDate.now().toString())) {
                 productRepo.delete(product);
@@ -486,6 +515,28 @@ public class ProductBuilder {
     }*/
 
     public void test() {
+        /*for (Product product : productRepo.findAll()) {
+            if (product.getProductCategory().contains("_")) {
+                product.setProductCategory(StringUtils.substringAfter(product.getProductCategory(), "_"));
+                productRepo.save(product);
+            }
+        }*/
+
+        Set<String> categories = new TreeSet<>();
+        productRepo.findAll().forEach(product -> categories.add(product.getProductCategory()));
+        categories.forEach(log::info);
+
+        Set<String> groups = new TreeSet<>();
+        productRepo.findByProductCategoryIgnoreCase("Электроника").forEach(product -> groups.add(product.getProductGroup()));
+        System.out.println();
+        groups.forEach(log::info);
+
+
+
+
+
+
+
         /*og.info("test");
 
         for (OriginalProduct originalProduct : originalRepo.findAll())
