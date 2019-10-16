@@ -16,7 +16,6 @@ import server.domain.UniqueBrand;
 import server.repos.BrandsRepo;
 import server.repos.OriginalRepo;
 import server.repos.ProductRepo;
-
 import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
@@ -87,7 +86,7 @@ public class ProductBuilder {
     private void matchProductDetails() throws FileNotFoundException {
         log.info("Маппинг группы и параметров...");
         int countJSON = 0, countDefault = 0;
-        List<OriginalProduct> originalProducts = originalRepo.findAll();
+        List<OriginalProduct> originalProducts = originalRepo.findByUpdateDate(LocalDate.now());
         LinkedHashMap<String, String> aliases = aliasConfig.aliasesMap();
 
         for (OriginalProduct originalProduct : originalProducts)
@@ -111,7 +110,7 @@ public class ProductBuilder {
                     }
                 }
             }
-            if (product.getMappedJSON()) {
+            if (!product.getMappedJSON()) {
                 product = defaultProductMatch(originalProduct, product);
                 countDefault++;
             }
@@ -122,7 +121,7 @@ public class ProductBuilder {
         log.info("Auto разметка: " + countDefault);
     }
 
-    private Product resolveProductsDetails(OriginalProduct originalProduct, Product product) {
+    private Product resolveProductsDetails(OriginalProduct originalProduct, Product product) throws NumberFormatException {
         String singleTypeName = product.getSingleTypeName();
         String originalBrand  = originalProduct.getOriginalBrand();
         String originalName   = originalProduct.getOriginalName();
@@ -356,7 +355,7 @@ public class ProductBuilder {
         }
     }
 
-    private Integer resolveFinalPrice(OriginalProduct originalProduct, Double coefficient) {
+    private Integer resolveFinalPrice(OriginalProduct originalProduct, Double coefficient) throws NumberFormatException {
         if (productWithUniquePrice(originalProduct)) {
             return Integer.parseInt(StringUtils.deleteWhitespace(brandsRepo.findByProductID(originalProduct.getProductID()).getFinalPrice()));
         }
@@ -374,23 +373,29 @@ public class ProductBuilder {
         return false;
     }
 
-    private Integer makeRoundFinalPrice(String originalPrice, Double coefficient) throws NumberFormatException{
-        /// round price до ближайшего числа с 90 на конце
-        int finalPrice = (int) (Double.parseDouble(originalPrice) * coefficient);
-        String finalPriceToRound = String.valueOf(finalPrice);
+    private Integer makeRoundFinalPrice(String originalPrice, Double coefficient) {
+        try
+        {
+            int finalPrice = (int) (Double.parseDouble(originalPrice) * coefficient);
+            String finalPriceToRound = String.valueOf(finalPrice);
 
-        if (finalPrice > 0 && finalPrice <= 10) {
-            return 10;
+            if (finalPrice > 0 && finalPrice <= 10) {
+                return 10;
+            }
+            else if (finalPrice > 10 && finalPrice < 1000) {
+                finalPriceToRound = finalPriceToRound.substring(0, finalPriceToRound.length()-1).concat("9");
+                return Integer.parseInt(finalPriceToRound);
+            }
+            else if (finalPrice > 1000) {
+                finalPriceToRound = finalPriceToRound.substring(0, finalPriceToRound.length()-2).concat("90");
+                return Integer.parseInt(finalPriceToRound);
+            }
+            else return finalPrice;
         }
-        else if (finalPrice > 10 && finalPrice < 1000) {
-            finalPriceToRound = finalPriceToRound.substring(0, finalPriceToRound.length()-1).concat("9");
-            return Integer.parseInt(finalPriceToRound);
+        catch (NumberFormatException e) {
+            e.printStackTrace();
         }
-        else if (finalPrice > 1000) {
-            finalPriceToRound = finalPriceToRound.substring(0, finalPriceToRound.length()-2).concat("90");
-            return Integer.parseInt(finalPriceToRound);
-        }
-        else return finalPrice;
+        return (int) (Double.parseDouble(originalPrice) * 1.2);
     }
 
     private String resolveFullName(String originalName, String modelName, String singleTypeName, String originalBrand) {
@@ -522,6 +527,16 @@ public class ProductBuilder {
             }
         }*/
 
+        /*for (OriginalProduct product : originalRepo.findAll()) {
+            product.setUpdateDate(LocalDate.ofYearDay(2019, 63));
+            originalRepo.save(product);
+        }
+
+        for (Product product : productRepo.findAll()) {
+            product.setUpdateDate(LocalDate.ofYearDay(2019, 63));
+            productRepo.save(product);
+        }*/
+
         Set<String> categories = new TreeSet<>();
         productRepo.findAll().forEach(product -> categories.add(product.getProductCategory()));
         categories.forEach(log::info);
@@ -530,10 +545,6 @@ public class ProductBuilder {
         productRepo.findByProductCategoryIgnoreCase("Электроника").forEach(product -> groups.add(product.getProductGroup()));
         System.out.println();
         groups.forEach(log::info);
-
-
-
-
 
 
 
