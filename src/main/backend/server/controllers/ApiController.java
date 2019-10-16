@@ -9,11 +9,9 @@ import server.dto.ProductGroup;
 import server.services.ProductBuilder;
 import server.services.ProductService;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-@Log
 @RestController
 @RequestMapping("/api")
 @AllArgsConstructor
@@ -57,12 +55,12 @@ public class ApiController {
             e.printStackTrace();
         }
     }
-    @PostMapping("/admin/test")
-    private void uploadProductsDBFile() {
-        productBuilder.test();
-    }
     @PostMapping("/admin/uploadFileBrands")
     private void uploadBrandsPrice(@RequestParam("fileBrands") MultipartFile file) {
         productBuilder.updateBrandsPrice(file);
+    }
+    @PostMapping("/admin/test")
+    private void uploadProductsDBFile() {
+        productBuilder.test();
     }
 }

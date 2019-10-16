@@ -259,11 +259,10 @@ public class ProductService {
         LinkedHashMap<String, List<ProductGroup>> fullCatalog = new LinkedHashMap<>();
         for (String category : categories)
         {
-            Set<String> categoryGroups = new TreeSet<>();
             List<ProductGroup> productGroups = new ArrayList<>();
+            Set<String> categoryGroups = new TreeSet<>();
 
             productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> categoryGroups.add(product.getProductGroup()));
-
             categoryGroups.forEach(productGroup ->
             {
                 String pic = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic();
@@ -276,7 +275,6 @@ public class ProductService {
             });
             fullCatalog.put(category, productGroups);
         }
-        //fullCatalog.forEach((category, productGroups) -> log.info(category + ": " + Collections.singletonList(productGroups)));
         return fullCatalog;
     }
 }
