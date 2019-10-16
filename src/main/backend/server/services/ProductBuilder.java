@@ -289,6 +289,7 @@ public class ProductBuilder {
             case "Инструменты для дома, дачи и авто":
             case "Инструмент": return "Строительные инструменты";
             case "Гаджеты": return "Цифровые устройства";
+            case "Отдых и Развлечения" : return "Спорт и отдых";
             default: return originalCategory;
         }
     }
@@ -542,7 +543,7 @@ public class ProductBuilder {
         categories.forEach(log::info);
 
         Set<String> groups = new TreeSet<>();
-        productRepo.findByProductCategoryIgnoreCase("Электроника").forEach(product -> groups.add(product.getProductGroup()));
+        productRepo.findByProductCategoryIgnoreCase("Отдых и Развлечения").forEach(product -> groups.add(product.getProductGroup()));
         System.out.println();
         groups.forEach(log::info);
 

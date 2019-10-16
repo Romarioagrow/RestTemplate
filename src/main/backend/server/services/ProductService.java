@@ -34,8 +34,8 @@ public class ProductService {
         productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> groups.add(product.getProductGroup()));
         try
         {
-            System.out.println();
-            log.info(category.toUpperCase());
+            /*System.out.println();
+            log.info(category.toUpperCase());*/
             groups.forEach(productGroup ->
             {
                 String pic = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic();
@@ -51,8 +51,8 @@ public class ProductService {
             e.getSuppressed();
         }
         productGroups.sort(Comparator.comparing(ProductGroup::getGroupName));
-        productGroups.forEach(productGroup -> log.info(productGroup.getGroupName()));
-        log.info("Групп: " + productGroups.size());
+        /*productGroups.forEach(productGroup -> log.info(productGroup.getGroupName()));
+        log.info("Групп: " + productGroups.size());*/
         return productGroups;
     }
 
@@ -253,6 +253,31 @@ public class ProductService {
 
     public Product getProductByID(String productID) {
         return productRepo.findProductByProductID(productID);
+    }
+
+    public LinkedHashMap<String, List<ProductGroup>> getAllCategories(String[] categories) {
+        LinkedHashMap<String, List<ProductGroup>> fullCatalog = new LinkedHashMap<>();
+        for (String category : categories)
+        {
+            Set<String> categoryGroups = new TreeSet<>();
+            List<ProductGroup> productGroups = new ArrayList<>();
+
+            productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> categoryGroups.add(product.getProductGroup()));
+
+            categoryGroups.forEach(productGroup ->
+            {
+                String pic = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic();
+                if (pic == null) pic = "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
+
+                ProductGroup group = new ProductGroup();
+                group.setGroupName(productGroup);
+                group.setGroupPic(pic);
+                productGroups.add(group);
+            });
+            fullCatalog.put(category, productGroups);
+        }
+        //fullCatalog.forEach((category, productGroups) -> log.info(category + ": " + Collections.singletonList(productGroups)));
+        return fullCatalog;
     }
 }
 

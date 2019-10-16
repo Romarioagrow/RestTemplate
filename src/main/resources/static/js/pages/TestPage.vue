@@ -18,11 +18,7 @@
                 max-width="700"
         >
             <v-slide-group multiple show-arrows>
-                <v-slide-item
-                        v-for="n in 25"
-                        :key="n"
-                        v-slot:default="{ active, toggle }"
-                >
+                <v-slide-item v-for="n in 25" :key="n" v-slot:default="{ active, toggle }">
                     <v-btn
                             class="mx-2"
                             :input-value="active"

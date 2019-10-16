@@ -74,7 +74,7 @@
                         </v-expansion-panel>
 
                         <!--Автовывод фильтров-параметров-->
-                        <v-expansion-panel class="mt-2" v-for="[key, val] of filtersParams" :key="key" >
+                        <v-expansion-panel class="mt-2" v-for="[key, val] of filtersParams" :key="key">
                             <v-expansion-panel-header>{{ key }}</v-expansion-panel-header>
                             <v-expansion-panel-content class="ml-3">
                                 <div v-for="(param, i) in val" :key="i" :brand="param">
@@ -175,6 +175,7 @@
                 ///
                 let params = response.data.paramFilters;
                 for (const [key, value] of Object.entries(params)) this.filtersParams.set(key, value)
+                console.log(this.filtersParams)
             });
         },
         computed: {

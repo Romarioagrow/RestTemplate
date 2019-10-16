@@ -1,5 +1,6 @@
 package server.controllers;
 import lombok.AllArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import server.domain.Product;
@@ -8,8 +9,11 @@ import server.dto.ProductGroup;
 import server.services.ProductBuilder;
 import server.services.ProductService;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 
+@Log
 @RestController
 @RequestMapping("/api")
 @AllArgsConstructor
@@ -28,6 +32,10 @@ public class ApiController {
     }
 
     /*Catalog*/
+    @PostMapping("/all/catalog")
+    private LinkedHashMap<String, List<ProductGroup>> listFullCatalog(@RequestBody String[] categories) {
+        return productService.getAllCategories(categories);
+    }
     @GetMapping("/catalog/{category}")
     private List<ProductGroup> listProductGroupsOfCategory(@PathVariable String category) {
         return productService.getProductGroups(category);
