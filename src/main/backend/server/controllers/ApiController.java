@@ -1,11 +1,8 @@
 package server.controllers;
 import lombok.AllArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import server.domain.Product;
@@ -34,7 +31,6 @@ public class ApiController {
         return productService.getProductByID(productID);
     }
 
-
     /*Catalog*/
     @PostMapping("/all/catalog")
     private LinkedHashMap<String, List<ProductGroup>> listFullCatalog(@RequestBody String[] categories) {
@@ -45,17 +41,11 @@ public class ApiController {
         return productService.getProductGroups(category);
     }
 
-
     /*Page*/
     @GetMapping("/page/filters/{group}")
     private FiltersList createFiltersLists(@PathVariable String group) {
         return productService.createProductsFilterLists(group);
     }
-    @GetMapping("/page/paginator/{group}")
-    private FiltersList createPaginator(@PathVariable String group) {
-        return productService.createPaginator(group);
-    }
-
 
     /*Admin*/
     @PostMapping("/admin/uploadFileDB")

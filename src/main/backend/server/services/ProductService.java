@@ -287,10 +287,6 @@ public class ProductService {
         }
         return fullCatalog;
     }
-
-    public FiltersList createPaginator(String group) {
-        return null;
-    }
 }
 
 /*
@@ -325,7 +321,6 @@ public class ProductService {
  * в списке оставлять свойство с наименьшим количеством слов в названии: из DVB-T2 и Приём DVB-T2 оставить DVB-T2,
  * фильтровать по contains */
 
-/// Заметки
 /*
  * При фильтрации в filterService фильтров-особенностей
  * искать по contains(filter) || contains(filter.concat(": есть"))

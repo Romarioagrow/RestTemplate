@@ -316,11 +316,14 @@ public class ProductBuilder {
     }
 
     private String resolveAnnotation(OriginalProduct originalProduct, boolean supplierRBT) {
+        String annotation;
         if (supplierRBT) {
-            return originalProduct.getOriginalAnnotation();//StringUtils.substringAfter(originalProduct.getOriginalName(), ", ");
+            annotation = originalProduct.getOriginalAnnotation();
+            return !annotation.isEmpty() ? annotation : originalProduct.getOriginalName();
         }
-        String annotation = StringUtils.substringAfter(originalProduct.getOriginalName(), ", ");
-        return !annotation.isEmpty() ? annotation : StringUtils.substringAfter(originalProduct.getOriginalName(), ", ");
+        annotation = StringUtils.substringAfter(originalProduct.getOriginalName(), ", ");
+        return !annotation.isEmpty() ? annotation : originalProduct.getOriginalName();
+        // return !annotation.isEmpty() ? annotation : StringUtils.substringAfter(originalProduct.getOriginalName(), ", ");
     }
 
     private String resolveSearchName(String modelName, String singleTypeName, String originalBrand) {
@@ -426,10 +429,12 @@ public class ProductBuilder {
         else return "No modelName";
     }
 
-    /// Оптимизировать скорость
+    /// Оптимизировать скорость!
     private void resolveDuplicates() {
         log.info("Обработка дубликатов...");
         int count = 0;
+
+        /// delete
         productRepo.findAll().forEach(product -> {
             product.setIsDuplicate(null);
             product.setHasDuplicates(null);
@@ -439,6 +444,9 @@ public class ProductBuilder {
         List<Product> products = productRepo.findBySupplier("RBT");
         for (Product product : products)
         {
+            /*product.setIsDuplicate(false);
+            product.setHasDuplicates(false);*/
+
             String shortModel = product.getShortModelName();
             List<Product> duplicates = productRepo.findBySupplierAndShortModelNameIgnoreCase("RUSBT", shortModel);
 
@@ -462,6 +470,7 @@ public class ProductBuilder {
                 }
                 count++;
             }
+            /*else productRepo.save(product);*/
         }
         log.info("Товаров с дубликатами: " + count);
     }

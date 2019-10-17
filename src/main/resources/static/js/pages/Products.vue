@@ -105,7 +105,7 @@
                         </v-slide-group>
                     </v-sheet>
                     <!---->
-                    <v-row class="mt-1 ml-1">
+                    <v-row class="mt-1 ml-1" v-if="pageAmount !== 1">
                         <div class="text-center">
                             <v-pagination v-model="page" :length="pageAmount" :total-visible="7" @input="loadPage(page)"></v-pagination>
                         </div>
@@ -114,7 +114,7 @@
                         <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
                     </v-row>
                     <v-row>
-                        <div class="text-center">
+                        <div class="text-center" v-if="pageAmount !== 1">
                             <v-pagination v-model="page" :length="pageAmount" :total-visible="7" @input="loadPage(page)"></v-pagination>
                         </div>
                     </v-row>
@@ -199,12 +199,7 @@
             loadPage(page) {
                 const requestGroup = (decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/'))).replace('_', ' ');
                 let productsRequest = '/api/products' + requestGroup + '/' + page;
-
-                console.log(productsRequest)
-                axios.get(productsRequest).then(response => {
-                    this.products = response.data.content
-                    //this.pageAmount = response.data.totalPages
-                })
+                axios.get(productsRequest).then(response => this.products = response.data.content)
             }
         }
     }
