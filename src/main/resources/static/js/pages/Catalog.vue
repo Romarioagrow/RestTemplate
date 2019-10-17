@@ -47,29 +47,7 @@
                 loading: true
             }
         },
-        methods: {
-            lol() {
-                console.log(this.allCategories)
-            },
-            /*loadGroups(group) {
-                console.log(group);
-                axios.get('/api/catalog/'+ group).then(response => {
-                    this.productGroups = response.data;
-                })
-            },
-            loadCatalog() {
-                axios.post('/api/all/catalog/', this.categories).then(response =>
-                {
-                    const fullCatalog = response.data
-                    Object.entries(fullCatalog).forEach(([category, groupsList]) => {
-                        this.allCategories.set(category, groupsList)
-                    });
-                    console.log(this.allCategories)
-                })
-            }*/
-        },
         beforeCreate() {
-            //this.loading = true
             this.categories = [
                 'Теле-видео-аудио',
                 'Кухонная техника',
@@ -93,11 +71,6 @@
                 this.allCategories = response.data
                 this.loading = false
             })
-            //alert("before")
-        },
-        created() {
-
-            //alert("after")
         }
     }
 </script>

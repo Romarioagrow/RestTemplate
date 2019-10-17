@@ -107,7 +107,7 @@
                     <!---->
                     <v-row class="mt-1 ml-1">
                         <div class="text-center">
-                            <v-pagination v-model="page" :length="3" :total-visible="7"></v-pagination>
+                            <v-pagination v-model="page" :length="pageAmount" :total-visible="7" @input="loadPage(page)"></v-pagination>
                         </div>
                     </v-row>
                     <v-row>
@@ -115,7 +115,7 @@
                     </v-row>
                     <v-row>
                         <div class="text-center">
-                            <v-pagination v-model="page" :length="15" :total-visible="7"></v-pagination>
+                            <v-pagination v-model="page" :length="pageAmount" :total-visible="7" @input="loadPage(page)"></v-pagination>
                         </div>
                     </v-row>
                 </v-container>
@@ -130,8 +130,6 @@
     import ProductCard from "components/ProductCard.vue";
     export default {
         components: {ProductCard},
-        methods: {
-        },
         data() {
             return {
                 loading: true,
@@ -151,44 +149,36 @@
                 range: [],
                 selected: [],
                 page: 1,
+                pageAmount:''
             }
         },
         beforeCreate() {
             const requestGroup = (decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/'))).replace('_', ' ');
-            let url = '/api/products' + requestGroup + '/0';
-            let filtersRequest = '/api/filters/construct' + requestGroup;
+            let productsRequest = '/api/products' + requestGroup + '/0';
+            let filtersRequest  = '/api/page/filters' + requestGroup;
 
-            console.log(url)
-            axios.get(url).then(response => {
-                console.log(response.data.content)
+            /*loadProducts*/
+            axios.get(productsRequest).then(response => {
                 this.products = response.data.content
-            });
+                this.pageAmount = response.data.totalPages
+            })
 
-            axios.get(filtersRequest).then(response =>
-            {
-                //console.log(response.data) ///
-
-                /// priceFilters()
+            /*loadFilters*/
+            axios.get(filtersRequest).then(response => {
                 let prices = response.data.prices
                 this.min = prices[0]
                 this.max = prices[1]
                 this.range[0] = prices[0]
                 this.range[1] = prices[1]
 
-                /// brandsFilters()
                 this.filtersBrands = response.data.brands
+                this.filtersFeats  = response.data.features
 
-                /// featuresFilters()
-                this.filtersFeats = response.data.features
-
-                ///
                 let diapasons = response.data.diapasonsFilters
                 for (const [key, value] of Object.entries(diapasons)) this.filtersDiapasons.set(key, value)
 
-                ///
                 let params = response.data.paramFilters;
                 for (const [key, value] of Object.entries(params)) this.filtersParams.set(key, value)
-                console.log(this.filtersParams)
                 this.loading = false
             });
         },
@@ -203,6 +193,18 @@
                     })
                 }
                 return twoColsBrands
+            },
+        },
+        methods: {
+            loadPage(page) {
+                const requestGroup = (decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/'))).replace('_', ' ');
+                let productsRequest = '/api/products' + requestGroup + '/' + page;
+
+                console.log(productsRequest)
+                axios.get(productsRequest).then(response => {
+                    this.products = response.data.content
+                    //this.pageAmount = response.data.totalPages
+                })
             }
         }
     }

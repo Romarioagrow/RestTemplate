@@ -1,4 +1,5 @@
 package server.domain;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ public class Product {
     @Column(length = 20000)
     private String pic, pics, annotation, formattedAnnotation;
 
+    @JsonIgnore
     private Boolean isAvailable, uniquePrice, coefficientModified, priceModified, isDuplicate, hasDuplicates, mappedJSON = false;
 
     private String brand, supplier;

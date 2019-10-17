@@ -287,7 +287,14 @@ public class ProductService {
         }
         return fullCatalog;
     }
+
+    public FiltersList createPaginator(String group) {
+        return null;
+    }
 }
+
+/*
+* ПРИ ФИЛЬТРАЦИИ ВЫВОДИТЬ TOTAL PAGES ТАК ЖЕ КАК ПРИ ЗАГРУЗКЕ ВСЕХ PRODUCTS*/
 
 /*
  * ДЛЯ ФИЛЬТРАЦИИ RUSBT ДОБАВЛЯТЬ ЕДИНИЦУ ИЗМЕРЕНИЯ ИЗ АННОТАЦИИ*/

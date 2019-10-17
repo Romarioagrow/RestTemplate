@@ -24,6 +24,7 @@ public class ApiController {
     private final ProductService productService;
     private final ProductBuilder productBuilder;
 
+    /*Products*/
     @GetMapping("/products/{group}/{page}")
     private Page<Product> listProductsByGroupPage(@PathVariable String group, @PathVariable(required = false) int page) {
         return productService.getProductsByGroup(group, PageRequest.of(page, 15, Sort.Direction.ASC, "pic"));
@@ -32,6 +33,7 @@ public class ApiController {
     private Product listProductByID(@PathVariable String productID) {
         return productService.getProductByID(productID);
     }
+
 
     /*Catalog*/
     @PostMapping("/all/catalog")
@@ -43,11 +45,17 @@ public class ApiController {
         return productService.getProductGroups(category);
     }
 
-    /*Filters*/
-    @GetMapping("/filters/construct/{group}")
+
+    /*Page*/
+    @GetMapping("/page/filters/{group}")
     private FiltersList createFiltersLists(@PathVariable String group) {
         return productService.createProductsFilterLists(group);
     }
+    @GetMapping("/page/paginator/{group}")
+    private FiltersList createPaginator(@PathVariable String group) {
+        return productService.createPaginator(group);
+    }
+
 
     /*Admin*/
     @PostMapping("/admin/uploadFileDB")
