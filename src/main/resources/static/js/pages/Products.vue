@@ -155,7 +155,7 @@
         },
         beforeCreate() {
             const requestGroup = (decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/'))).replace('_', ' ');
-            let url = '/api/products' + requestGroup + '/1';
+            let url = '/api/products' + requestGroup + '/0';
             let filtersRequest = '/api/filters/construct' + requestGroup;
 
             console.log(url)
