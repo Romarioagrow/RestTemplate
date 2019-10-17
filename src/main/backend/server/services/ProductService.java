@@ -2,9 +2,7 @@ package server.services;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import server.domain.Product;
@@ -33,17 +31,9 @@ public class ProductService {
       после завершения всех операций loading = false
     * */
 
-    /*public Page<Product> getProductsByGroup(String group, int page) {
-        log.info("GROUP: " + group);
 
-        Pageable pageable = new PageRequest(1, 15, Sort.Direction.ASC, "productGroup");
+    public Page<Product> getProductsByGroup(String group, Pageable pageable) {
         return productRepo.findByProductGroupIgnoreCase(group, pageable);
-        //productRepo.findAll(new PageRequest(1, 15));
-
-    }*/
-
-    public List<Product> getProductsByGroup(String group) {
-        return productRepo.findByProductGroupIgnoreCase(group);
     }
 
     public List<ProductGroup> getProductGroups(String category) {

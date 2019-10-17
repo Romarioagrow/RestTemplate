@@ -160,8 +160,8 @@
 
             console.log(url)
             axios.get(url).then(response => {
-                console.log(response.data)
-                this.products = response.data
+                console.log(response.data.content)
+                this.products = response.data.content
             });
 
             axios.get(filtersRequest).then(response =>
