@@ -36,10 +36,10 @@ public class ApiController {
     private LinkedHashMap<String, List<ProductGroup>> listFullCatalog(@RequestBody String[] categories) {
         return productService.getAllCategories(categories);
     }
-    @GetMapping("/catalog/{category}")
+    /*@GetMapping("/catalog/{category}")
     private List<ProductGroup> listProductGroupsOfCategory(@PathVariable String category) {
         return productService.getProductGroups(category);
-    }
+    }*/
 
     /*Page*/
     @GetMapping("/page/filters/{group}")
