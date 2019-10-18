@@ -14,9 +14,23 @@
             <v-btn text color="orange">
                 В корзину
             </v-btn>
-            <v-btn text color="orange">
+                <v-dialog v-model="dialog" max-width="500">
+                    <template v-slot:activator="{ on }">
+                        <v-btn text color="orange" v-on="on">Купить в 1 клик</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title class="headline">Оформить заказ</v-card-title>
+                        <v-card-text>Цена: {{product.finalPrice}} ₽</v-card-text>
+                        <v-card-actions>
+                            <div class="flex-grow-1"></div>
+                            <v-btn color="green darken-1" text @click="dialog = false">Оформить</v-btn>
+                            <v-btn color="green darken-1" text @click="dialog = false">Отмена</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+            <!--<v-btn text color="orange">
                 Купить в 1 клик
-            </v-btn>
+            </v-btn>-->
         </v-card-actions>
     </v-card>
     </v-item>
@@ -27,7 +41,8 @@
         props: ['product'],
         data() {
             return {
-                productID: '/products/product/' + this.product.productID
+                productID: '/products/product/' + this.product.productID,
+                dialog: false
             }
         }
     }

@@ -97,9 +97,11 @@
             <!---->
             <v-row justify="center" class="mt-3">
                 <v-dialog v-model="dialog" persistent max-width="500">
+
                     <template v-slot:activator="{ on }">
                         <v-btn color="primary" dark v-on="on">Ну че там?</v-btn>
                     </template>
+
                     <v-card>
                         <v-card-title class="headline">Нахуя ты это открыл?</v-card-title>
                         <v-card-text>Блять ну вроде бы нормальный современный фреймворк, но вроде бы чуть-чуть все равно через жопу</v-card-text>
