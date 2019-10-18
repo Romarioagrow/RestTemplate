@@ -23,6 +23,12 @@ import static org.apache.commons.lang3.StringUtils.*;
 public class ProductService {
     private final ProductRepo productRepo;
 
+    ///!!!
+    /*
+    * НАПОЛНЯТЬ MAP С ГРУППАМИ ПРИ ЗАПУСКЕ СЕРВЕРА И СОХРАНЯТЬ ЕГО В JSON В ПАПКЕ
+    * НА КЛИЕНТЕ В MAIN.JS ИМПОРТИРОВАТЬ ФАЙЛ В ОБЪЕКТ И ОТПРАВИТЬ В CATALOG.DATA
+    * РЕНЕДЕР СТРУКТРУЫ СРАЗУ ИЗ ОБЪЕКТА DATA*/
+
     public Page<Product> getProductsByGroup(String group, Pageable pageable) {
         return productRepo.findByProductGroupIgnoreCase(group, pageable);
     }
@@ -241,6 +247,8 @@ public class ProductService {
         return productRepo.findProductByProductID(productID);
     }
 
+    ////!!!
+    /*СОЗДАВАТЬ В JSON И СОХРАНЯТЬ В ПАПКУ*/
     public LinkedHashMap<String, List<ProductGroup>> getAllCategories(String[] categories) {
         LinkedHashMap<String, List<ProductGroup>> fullCatalog = new LinkedHashMap<>();
         for (String category : categories)

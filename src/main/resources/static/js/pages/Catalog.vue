@@ -6,6 +6,9 @@
                 <h1>
                     Каталог товаров
                 </h1>
+
+                <v-img max-width="250px" position="center" src="@/assets/logo.png"></v-img>
+
                 <v-card>
                     <v-tabs center-active dark show-arrows background-color="teal darken-3" :centered="true" :icons-and-text="true">
                         <v-tabs-slider color="teal lighten-3"></v-tabs-slider>
@@ -35,16 +38,20 @@
 
 <script>
     import CatalogGroups from "components/CatalogGroups.vue";
+    /*import fullCatalog from 'fullCatalog'*/
+
     import axios from 'axios'
     export default {
         components: {
-            CatalogGroups
+            CatalogGroups//,fullCatalog
         },
         data() {
             return {
+                //image_src: require("./assets/logo.png"),
                 allCategories: new Map(),
                 categories: [],
-                loading: true
+                loading: true,
+                //fullCatalog: fullCatalog
             }
         },
         beforeCreate() {

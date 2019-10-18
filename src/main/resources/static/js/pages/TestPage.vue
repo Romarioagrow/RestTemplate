@@ -1,6 +1,10 @@
 <template>
     <!---->
     <v-content>
+
+
+        <h1>suka</h1>
+        <v-img src="D:\Projects\Rest\src\main\resources\static\pics\logo.png"></v-img>
            <!-- <v-row>
                 <v-navigation-drawer v-show="true" expand-on-hover="true"
                                      height="300" width="500">

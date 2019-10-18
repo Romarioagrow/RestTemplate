@@ -12,6 +12,11 @@ import Vuesax from 'vuesax'
 import 'vuesax/dist/vuesax.css'
 import 'material-icons/iconfont/material-icons.css';
 
+/*import fullCatalogJSON from /papaka/fullCatalogJSON.json */
+/*const fullCatalog = fullCatalogJSON.parseJSON
+* Vue.use(fullCatalog)*/
+
+
 Vue.use(VueResource);
 Vue.use(Vuetify);
 Vue.use(BootstrapVue);

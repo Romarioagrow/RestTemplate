@@ -1,9 +1,27 @@
 <template>
     <div>
-        <v-app-bar color="deep-purple accent-4" dark >
-            <v-app-bar-nav-icon></v-app-bar-nav-icon>
-            <v-toolbar-title>PleaseDo</v-toolbar-title>
-            <div class="flex-grow-1"></div>
+        <v-app-bar color="#65656"
+                   dark
+                   :collapse="!collapseOnScroll"
+                   :collapse-on-scroll="collapseOnScroll">
+
+            <router-link to="/" class="mr-5">
+                <v-app-bar-nav-icon></v-app-bar-nav-icon>
+            </router-link>
+
+
+            <v-toolbar-title>Expert</v-toolbar-title>
+
+            <router-link to="/test" class="ml-5">
+                <v-btn>
+                    <span>Test</span>
+                    <v-icon>mdi-history</v-icon>
+                </v-btn>
+            </router-link>
+
+<!--max-height="125"
+                        class="grey darken-4"-->
+            <!--<div class="flex-grow-1"></div>
             <v-btn icon>
                 <v-icon>mdi-heart</v-icon>
             </v-btn>
@@ -25,10 +43,10 @@
                         <v-list-item-title>Option {{ n }}</v-list-item-title>
                     </v-list-item>
                 </v-list>
-            </v-menu>
+            </v-menu>-->
         </v-app-bar>
         <!---->
-        <v-bottom-navigation
+        <!--<v-bottom-navigation
                 color="deep-purple accent-4"
         >
             <router-link to="/">
@@ -49,13 +67,16 @@
                     <v-icon>mdi-account-star-outline</v-icon>
                 </v-btn>
             </router-link>
-        </v-bottom-navigation>
+        </v-bottom-navigation>-->
     </div>
 </template>
 
 <script>
     export default {
-        name: "Navbar"
+        name: "Navbar",
+        data: () => ({
+            collapseOnScroll: true,
+        }),
     }
 </script>
 

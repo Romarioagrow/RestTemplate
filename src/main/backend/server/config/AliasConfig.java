@@ -15,7 +15,6 @@ public class AliasConfig {
         JsonReader reader = new JsonReader(new FileReader("D:\\Projects\\Rest\\src\\main\\resources\\aliases.json"));
         return gson.fromJson(reader, LinkedHashMap.class);
     }
-
     /*@Bean
     public Map<String, String> aliases() {
         @Value("#{${aliases}}")

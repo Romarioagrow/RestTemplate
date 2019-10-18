@@ -110,6 +110,9 @@
                             <v-pagination v-model="page" :length="pageAmount" :total-visible="7" @input="loadPage(page)"></v-pagination>
                         </div>
                     </v-row>
+
+                    <v-img src="D:\Projects\Rest\src\main\resources\static\pics\logo.png"></v-img>
+
                     <v-row>
                         <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
                     </v-row>
