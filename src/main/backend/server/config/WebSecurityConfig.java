@@ -1,11 +1,7 @@
 package server.config;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.ConfigurableWebServerFactory;
-import org.springframework.boot.web.server.ErrorPage;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,7 +17,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
