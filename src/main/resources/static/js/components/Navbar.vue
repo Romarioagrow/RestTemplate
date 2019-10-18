@@ -1,73 +1,49 @@
 <template>
     <div>
-        <v-app-bar color="#65656"
-                   dark
-                   :collapse="!collapseOnScroll"
-                   :collapse-on-scroll="collapseOnScroll">
+        <v-app-bar color="#343a40" dark>
 
             <router-link to="/" class="mr-5">
                 <v-app-bar-nav-icon></v-app-bar-nav-icon>
             </router-link>
 
-
             <v-toolbar-title>Expert</v-toolbar-title>
+
+            <v-autocomplete
+                    v-model="select"
+                    :loading="loading"
+                    :items="items"
+                    :search-input.sync="search"
+                    cache-items
+                    class="mx-4"
+                    flat
+                    hide-no-data
+                    hide-details
+                    label="Найдите что вам нужно"
+                    solo-inverted
+            ></v-autocomplete>
 
             <router-link to="/test" class="ml-5">
                 <v-btn>
-                    <span>Test</span>
-                    <v-icon>mdi-history</v-icon>
+                    <span>Корзина</span>
+                    <v-icon>mdi-cart</v-icon>
                 </v-btn>
             </router-link>
 
-<!--max-height="125"
-                        class="grey darken-4"-->
-            <!--<div class="flex-grow-1"></div>
-            <v-btn icon>
-                <v-icon>mdi-heart</v-icon>
-            </v-btn>
-            <v-btn icon>
-                <v-icon>mdi-magnify</v-icon>
-            </v-btn>
-            <v-menu left bottom>
-                <template v-slot:activator="{ on }">
-                    <v-btn icon v-on="on">
-                        <v-icon>mdi-dots-vertical</v-icon>
-                    </v-btn>
-                </template>
-                <v-list>
-                    <v-list-item
-                            v-for="n in 5"
-                            :key="n"
-                            @click="() => {}"
-                    >
-                        <v-list-item-title>Option {{ n }}</v-list-item-title>
-                    </v-list-item>
-                </v-list>
-            </v-menu>-->
+            <router-link to="/test" class="ml-5">
+                <v-btn>
+                    <span>Вход</span>
+                    <v-icon>mdi-login-variant</v-icon>
+                </v-btn>
+            </router-link>
+
+            <router-link to="/admin" class="ml-5">
+                <v-btn>
+                    <span>Admin</span>
+                    <v-icon>mdi-account-badge-horizontal</v-icon>
+                </v-btn>
+            </router-link>
+
         </v-app-bar>
-        <!---->
-        <!--<v-bottom-navigation
-                color="deep-purple accent-4"
-        >
-            <router-link to="/">
-                <v-btn>
-                    <span>Каталог</span>
-                    <v-icon>mdi-heart</v-icon>
-                </v-btn>
-            </router-link>
-            <router-link to="/test">
-                <v-btn>
-                    <span>Товары</span>
-                    <v-icon>mdi-history</v-icon>
-                </v-btn>
-            </router-link>
-            <router-link to="/admin">
-                <v-btn>
-                    <span>Админ</span>
-                    <v-icon>mdi-account-star-outline</v-icon>
-                </v-btn>
-            </router-link>
-        </v-bottom-navigation>-->
     </div>
 </template>
 
@@ -76,10 +52,96 @@
         name: "Navbar",
         data: () => ({
             collapseOnScroll: true,
+            loading: false,
+            items: [],
+            search: null,
+            select: null,
+            states: [
+                'Alabama',
+                'Alaska',
+                'American Samoa',
+                'Arizona',
+                'Arkansas',
+                'California',
+                'Colorado',
+                'Connecticut',
+                'Delaware',
+                'District of Columbia',
+                'Federated States of Micronesia',
+                'Florida',
+                'Georgia',
+                'Guam',
+                'Hawaii',
+                'Idaho',
+                'Illinois',
+                'Indiana',
+                'Iowa',
+                'Kansas',
+                'Kentucky',
+                'Louisiana',
+                'Maine',
+                'Marshall Islands',
+                'Maryland',
+                'Massachusetts',
+                'Michigan',
+                'Minnesota',
+                'Mississippi',
+                'Missouri',
+                'Montana',
+                'Nebraska',
+                'Nevada',
+                'New Hampshire',
+                'New Jersey',
+                'New Mexico',
+                'New York',
+                'North Carolina',
+                'North Dakota',
+                'Northern Mariana Islands',
+                'Ohio',
+                'Oklahoma',
+                'Oregon',
+                'Palau',
+                'Pennsylvania',
+                'Puerto Rico',
+                'Rhode Island',
+                'South Carolina',
+                'South Dakota',
+                'Tennessee',
+                'Texas',
+                'Utah',
+                'Vermont',
+                'Virgin Island',
+                'Virginia',
+                'Washington',
+                'West Virginia',
+                'Wisconsin',
+                'Wyoming',
+            ],
         }),
+        watch: {
+            search (val) {
+                val && val !== this.select && this.querySelections(val)
+            },
+        },
+        methods: {
+            querySelections (v) {
+                this.loading = true
+                // Simulated ajax query
+                setTimeout(() => {
+                    this.items = this.states.filter(e => {
+                        return (e || '').toLowerCase().indexOf((v || '').toLowerCase()) > -1
+                    })
+                    this.loading = false
+                }, 500)
+            },
+        },
     }
 </script>
 
 <style scoped>
-
 </style>
+
+<!--
+:collapse="!collapseOnScroll"
+:collapse-on-scroll="collapseOnScroll"
+-->

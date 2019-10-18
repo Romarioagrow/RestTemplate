@@ -7,7 +7,6 @@
             </v-card-title>
         </v-card>
     </router-link>
-
 </template>
 
 <script>

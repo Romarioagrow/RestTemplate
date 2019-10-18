@@ -18,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/api")
 public class ApiController {
+    /*!!!ВМЕСТО ОБРАБОТКИ ЗАПРОСВ КАЖДЫЙ РАЗ ЧЕРЕЗ API, СОЗДАНИЕ JSON C ДАННЫМИ ДЛЯ КАЖДОГО СЕРВИСА!!!*/
     private final ProductService productService;
     private final ProductBuilder productBuilder;
 

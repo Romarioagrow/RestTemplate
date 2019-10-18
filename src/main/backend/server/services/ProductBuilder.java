@@ -462,8 +462,8 @@ public class ProductBuilder {
                     else {
                         product.setIsDuplicate(true);
                         duplicateProduct.setHasDuplicates(true);
-                        duplicateProduct.setPic(product.getPic());
-                        duplicateProduct.setAnnotation(product.getAnnotation());
+                        //duplicateProduct.setPic(product.getPic());
+                        //duplicateProduct.setAnnotation(product.getAnnotation());
                     }
                     productRepo.save(product);
                     productRepo.save(duplicateProduct);

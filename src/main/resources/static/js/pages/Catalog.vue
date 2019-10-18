@@ -1,8 +1,8 @@
 <template>
     <div>
-        <v-progress-linear indeterminate color="green" v-if="loading"></v-progress-linear>
-        <v-container fluid>
-            <div v-if="!loading">
+        <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
+        <b-container fluid>
+            <div v-if="!loading" class="indent">
                 <h1>
                     Каталог товаров
                 </h1>
@@ -10,8 +10,8 @@
                 <v-img max-width="250px" position="center" src="@/assets/logo.png"></v-img>
 
                 <v-card>
-                    <v-tabs center-active dark show-arrows background-color="teal darken-3" :centered="true" :icons-and-text="true">
-                        <v-tabs-slider color="teal lighten-3"></v-tabs-slider>
+                    <v-tabs center-active dark show-arrows background-color="#635A4F" :centered="true" :icons-and-text="true">
+                        <v-tabs-slider color="#e52d00"></v-tabs-slider>
 
                         <v-tab v-for="(value, key, index) of allCategories" :key="index" :href="'#tab-' + index" @click="loadCatalog()">
                             {{key}}
@@ -21,18 +21,18 @@
                         <v-tab-item v-for="(value, key, index) of allCategories" :key="index" :value="'tab-' + index">
                             <v-card flat tile>
                                 <v-item-group>
-                                    <v-container>
+                                    <b-container fluid>
                                         <v-row align="stretch" justify="space-around">
                                             <catalog-groups v-for="(group, i) in value" :key="group.groupName" :group="group" :index="i"></catalog-groups>
                                         </v-row>
-                                    </v-container>
+                                    </b-container>
                                 </v-item-group>
                             </v-card>
                         </v-tab-item>
                     </v-tabs>
                 </v-card>
             </div>
-        </v-container>
+        </b-container>
     </div>
 </template>
 
@@ -81,4 +81,10 @@
         }
     }
 </script>
-<style scoped></style>
+<style scoped>
+    .indent {
+        padding-top: 2rem;
+        padding-left: 8rem;
+        padding-right: 8rem;
+    }
+</style>

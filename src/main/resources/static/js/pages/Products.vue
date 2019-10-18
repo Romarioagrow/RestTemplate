@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-progress-linear indeterminate color="green" v-if="loading"></v-progress-linear>
+        <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
         <v-row v-if="!loading">
             <v-navigation-drawer class="mt-5" v-show="drawer" v-model="drawer" :mini-variant.sync="mini" width="500">
                 <v-list-item>
@@ -95,6 +95,8 @@
             <!---->
             <v-item-group multiple>
                 <v-container fluid>
+                    <v-breadcrumbs :items="items" large></v-breadcrumbs>
+
                     <v-sheet class="mx-auto mt-2">
                         <v-slide-group multiple show-arrows>
                             <v-slide-item v-for="feature in filtersFeats" :key="feature" v-slot:default="{ active, toggle }">
@@ -107,7 +109,7 @@
                     <!---->
                     <v-row class="mt-1 ml-1" v-if="pageAmount !== 1">
                         <div class="text-center">
-                            <v-pagination v-model="page" :length="pageAmount" :total-visible="7" @input="loadPage(page)"></v-pagination>
+                            <v-pagination color="#e52d00" v-model="page" :length="pageAmount" :total-visible="7" @input="loadPage(page)"></v-pagination>
                         </div>
                     </v-row>
 
@@ -152,7 +154,24 @@
                 range: [],
                 selected: [],
                 page: 1,
-                pageAmount:''
+                pageAmount:'',
+                items: [
+                    {
+                        text: 'Catalog',
+                        disabled: false,
+                        href: '/',
+                    },
+                    {
+                        text: 'Category',
+                        disabled: false,
+                        href: '#breadcrumbs_link_1',
+                    },
+                    {
+                        text: 'Group',
+                        disabled: true,
+                        href: '#breadcrumbs_link_2',
+                    },
+                ]
             }
         },
         beforeCreate() {
