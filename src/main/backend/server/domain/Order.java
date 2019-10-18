@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Table(name = "ordr")
 @AllArgsConstructor
-class Order implements Serializable {
+public class Order implements Serializable {
     @Id
     @Column(name = "order_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

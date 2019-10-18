@@ -15,8 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
 @AllArgsConstructor
+@RequestMapping("/api")
 public class ApiController {
     private final ProductService productService;
     private final ProductBuilder productBuilder;
@@ -36,10 +36,6 @@ public class ApiController {
     private LinkedHashMap<String, List<ProductGroup>> listFullCatalog(@RequestBody String[] categories) {
         return productService.getAllCategories(categories);
     }
-    /*@GetMapping("/catalog/{category}")
-    private List<ProductGroup> listProductGroupsOfCategory(@PathVariable String category) {
-        return productService.getProductGroups(category);
-    }*/
 
     /*Page*/
     @GetMapping("/page/filters/{group}")
