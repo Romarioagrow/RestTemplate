@@ -71,7 +71,6 @@
                                                         <v-text-field v-if="val[1] !== undefined" v-model="val[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
                                                         <v-text-field v-else v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
                                                     </template>
-
                                                 </v-range-slider>
                                             </v-col>
                                         </v-row>
@@ -85,7 +84,7 @@
                                     <div v-for="(param, i) in val" :key="i" :brand="param">
                                         <v-row>
                                             <v-col class="p-0 m-0">
-                                                <v-checkbox v-model="selectedParams" :label="param" :value="param" height="2"></v-checkbox>
+                                                <v-checkbox @change="filterProducts(key)" v-model="selectedParams" :label="param" :value="key +': '+param" height="2"></v-checkbox>
                                             </v-col>
                                         </v-row>
                                     </div>
@@ -231,6 +230,9 @@
             loadPage(page) {
                 let pageRequest = this.pageRequest + '/' + page
                 axios.get(pageRequest).then(response => this.products = response.data.content)
+            },
+            filterProducts() {
+                console.log('params: ' + this.selectedParams)
             }
         }
     }
