@@ -111,9 +111,9 @@
                         </v-slide-group>
                     </v-sheet>
                     <!---->
-                    <v-row class="mt-1 ml-1" v-if="pageAmount !== 1">
+                    <v-row class="mt-1 ml-1" v-if="totalPages !== 1">
                         <div class="text-center">
-                            <v-pagination color="#e52d00" v-model="page" :length="pageAmount" :total-visible="7" @input="loadPage(page)"></v-pagination>
+                            <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="7" @input="loadPage(page)"></v-pagination>
                         </div>
                     </v-row>
 
@@ -122,11 +122,11 @@
                     <v-row>
                         <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
                     </v-row>
-                    <v-row>
-                        <div class="text-center" v-if="pageAmount !== 1">
-                            <v-pagination v-model="page" :length="pageAmount" :total-visible="7" @input="loadPage(page)"></v-pagination>
+                    <!--<v-row>
+                        <div class="text-center" v-if="totalPages !== 1">
+                            <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="7" @input="loadPage(page)"></v-pagination>
                         </div>
-                    </v-row>
+                    </v-row>-->
                 </v-container>
             </v-item-group>
 
@@ -158,7 +158,7 @@
                 range: [],
                 selected: [],
                 page: 1,
-                pageAmount:'',
+                totalPages: 0,
                 items: [
                     {
                         text: 'Catalog',
@@ -191,7 +191,12 @@
             /*loadProducts*/
             axios.get(this.productsRequest).then(response => {
                 this.products = response.data.content
-                this.pageAmount = response.data.totalPages
+                this.totalPages = response.data.totalPages
+                console.log(response.data.totalPages)
+
+                /*console.log(response.data.content)
+                console.log(response.data)
+                console.log(this.pageAmount)*/
             })
 
             /*loadFilters*/
