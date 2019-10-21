@@ -46,10 +46,10 @@
                                     <div v-for="brand in twoColsBrands" >
                                         <v-row>
                                             <v-col class="p-0 m-0">
-                                                <v-checkbox v-model="selectedBrands" :label="brand.firstBrand" :value="brand.firstBrand" height="2"></v-checkbox>
+                                                <v-checkbox @change="filterProducts()" v-model="selectedBrands" :label="brand.firstBrand" :value="brand.firstBrand" height="2"></v-checkbox>
                                             </v-col>
                                             <v-col class="p-0 m-0" v-if="brand.secondBrand !== undefined">
-                                                <v-checkbox v-model="selectedBrands" :label="brand.secondBrand" :value="brand.secondBrand" height="2"></v-checkbox>
+                                                <v-checkbox @change="filterProducts()" v-model="selectedBrands" :label="brand.secondBrand" :value="brand.secondBrand" height="2"></v-checkbox>
                                             </v-col>
                                         </v-row>
                                     </div>
@@ -84,7 +84,7 @@
                                     <div v-for="(param, i) in val" :key="i" :brand="param">
                                         <v-row>
                                             <v-col class="p-0 m-0">
-                                                <v-checkbox @change="filterProducts(key)" v-model="selectedParams" :label="param" :value="key +': '+param" height="2"></v-checkbox>
+                                                <v-checkbox @change="filterProducts()" v-model="selectedParams" :label="param" :value="key +': '+param" height="2"></v-checkbox>
                                             </v-col>
                                         </v-row>
                                     </div>
@@ -233,8 +233,9 @@
                 axios.get(pageRequest).then(response => this.products = response.data.content)
             },
             filterProducts() {
+                console.log('price: ' + this.priceRange[0] + ' ' + this.priceRange[1])
+                console.log('brands: ' + this.selectedBrands)
                 console.log('params: ' + this.selectedParams)
-                console.log(this.priceRange[0] + ' ' + this.priceRange[1])
             }
         }
     }
