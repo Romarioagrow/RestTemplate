@@ -247,8 +247,8 @@ public class ProductService {
         return productRepo.findProductByProductID(productID);
     }
 
-    ////!!!
-    /*СОЗДАВАТЬ В JSON И СОХРАНЯТЬ В ПАПКУ*/
+
+    /*!!!СОЗДАВАТЬ В JSON И СОХРАНЯТЬ В ПАПКУ!!!*/
     public LinkedHashMap<String, List<ProductGroup>> getAllCategories(String[] categories) {
         LinkedHashMap<String, List<ProductGroup>> fullCatalog = new LinkedHashMap<>();
         for (String category : categories)
@@ -272,6 +272,8 @@ public class ProductService {
         return fullCatalog;
     }
 }
+
+/*!!FORMATTED ANNOTATION: УДАЛИТЬ ИЗ АННОТАЦИИ ВСЕ "НЕТ", "-" И ТД, B ВСТАВИТЬ ПЕРЕНОС СТРОКИ ДЛЯ КАЖДОГО*/
 
 /*
     * ЗАГРУЗКА ДАННЫХ НА СТРАНИЦЕ PRODUCTS

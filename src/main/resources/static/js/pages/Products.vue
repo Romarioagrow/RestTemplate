@@ -171,22 +171,27 @@
                         disabled: true,
                         href: '#breadcrumbs_link_2',
                     },
-                ]
+                ],
+                requestGroup:'',
+                productsRequest: '',
+                filtersRequest: '',
+                pageRequest: ''
             }
         },
-        beforeCreate() {
-            const requestGroup = (decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/'))).replace('_', ' ');
-            let productsRequest = '/api/products' + requestGroup + '/0';
-            let filtersRequest  = '/api/page/filters' + requestGroup;
+        created() {
+            this.requestGroup = (decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/'))).replace('_', ' ')
+            this.pageRequest = '/api/products' + this.requestGroup
+            this.productsRequest = '/api/products' + this.requestGroup + '/0'
+            this.filtersRequest  = '/api/page/filters' + this.requestGroup
 
             /*loadProducts*/
-            axios.get(productsRequest).then(response => {
+            axios.get(this.productsRequest).then(response => {
                 this.products = response.data.content
                 this.pageAmount = response.data.totalPages
             })
 
             /*loadFilters*/
-            axios.get(filtersRequest).then(response => {
+            axios.get(this.filtersRequest).then(response => {
                 let prices = response.data.prices
                 this.min = prices[0]
                 this.max = prices[1]
@@ -199,7 +204,7 @@
                 let diapasons = response.data.diapasonsFilters
                 for (const [key, value] of Object.entries(diapasons)) this.filtersDiapasons.set(key, value)
 
-                let params = response.data.paramFilters;
+                let params = response.data.paramFilters
                 for (const [key, value] of Object.entries(params)) this.filtersParams.set(key, value)
                 this.loading = false
             });
@@ -208,8 +213,8 @@
             twoColsBrands() {
                 const twoColsBrands = []
                 for (let i = 0; i < this.filtersBrands.length; i+=2) {
-                    let first = this.filtersBrands[i];
-                    let second = this.filtersBrands[i+1];
+                    let first = this.filtersBrands[i]
+                    let second = this.filtersBrands[i+1]
                     twoColsBrands.push({
                         firstBrand: first, secondBrand: second
                     })
@@ -219,9 +224,8 @@
         },
         methods: {
             loadPage(page) {
-                const requestGroup = (decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/'))).replace('_', ' ');
-                let productsRequest = '/api/products' + requestGroup + '/' + page;
-                axios.get(productsRequest).then(response => this.products = response.data.content)
+                let pageRequest = this.pageRequest + '/' + page
+                axios.get(pageRequest).then(response => this.products = response.data.content)
             }
         }
     }
