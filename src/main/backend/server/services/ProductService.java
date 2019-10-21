@@ -81,6 +81,7 @@ public class ProductService {
             filtersList.prices.add(allPrices.get(allPrices.size()-1));
 
             /*Сформировать обрабатываемые фильтры*/
+            System.out.println();
             products.forEach(product ->
             {
                 String supplier   = product.getSupplier();
@@ -90,17 +91,15 @@ public class ProductService {
                 String splitter  = supplier.contains("RBT") ? "; " : ", ";
                 String[] filters = annotation.split(splitter);
 
+                log.info(product.getSupplier() + ": " + Arrays.toString(filters));
                 /*Итерация и отсев неподходящих под фильтры-особенности*/
                 for (String filter : filters)
                 {
-                    log.info(filter);
                     /*Сформировать фильтры-особенности*/
                     if (filterIsFeature(filter, supplier))
                     {
-                        //log.info(filter);
                         /*Наполнение фильтров-особенностей*/
                         filtersList.features.add(substringBefore(filter, ":").toUpperCase());
-
 
                         /*Отсев дублей фильтров и синонимов фильтров*/ ///
                         List<String> remove = new ArrayList<>();
@@ -163,10 +162,8 @@ public class ProductService {
                 val.add(first);
                 val.add(last);
             });
-
             //filtersList.showDiapasons();
-            //filtersList.showInfo();
-
+            filtersList.showInfo();
         }
         catch (Exception e) {
             e.printStackTrace();

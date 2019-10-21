@@ -17,7 +17,7 @@ public class FiltersList {
     public void showInfo() {
         //brands.forEach(log::info);
         //prices.forEach(integer -> log.info(integer + ""));
-
+        System.out.println();
         log.info("Prices: " + prices.toString());
         log.info("Brands: " + brands.toString());
         log.info("Features: " + features.toString());

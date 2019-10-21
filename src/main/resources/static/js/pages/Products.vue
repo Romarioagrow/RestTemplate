@@ -57,27 +57,30 @@
                             </v-expansion-panel>
 
                             <!--Автовывод фильтров-диапазонов-->
+
                             <v-expansion-panel class="mt-2" v-for="[key, val] of filtersDiapasons" :key="key" >
-                                <v-expansion-panel-header>{{ key }}</v-expansion-panel-header>
-                                <v-expansion-panel-content class="ml-3">
-                                    <v-row>
-                                        <v-col class="px-4">
-                                            <v-range-slider v-model="val" :min="val[0]" :max="val[1]"  hide-details class="align-center">
-                                                <template v-slot:prepend>
-                                                    <v-text-field v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
-                                                </template>
-                                                <template v-slot:append>
-                                                    <v-text-field v-model="val[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
-                                                </template>
-                                            </v-range-slider>
-                                        </v-col>
-                                    </v-row>
-                                </v-expansion-panel-content>
+                                    <v-expansion-panel-header :class="{'red': val[1] === undefined}">{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
+                                    <v-expansion-panel-content class="ml-3">
+                                        <v-row>
+                                            <v-col class="px-4">
+                                                <v-range-slider v-model="val" :min="val[0]" :max="val[1]" hide-details class="align-center">
+                                                    <template v-slot:prepend>
+                                                        <v-text-field v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                    </template>
+                                                    <template v-slot:append>
+                                                        <v-text-field v-if="val[1] !== undefined" v-model="val[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                        <v-text-field v-else v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                    </template>
+
+                                                </v-range-slider>
+                                            </v-col>
+                                        </v-row>
+                                    </v-expansion-panel-content>
                             </v-expansion-panel>
 
                             <!--Автовывод фильтров-параметров-->
                             <v-expansion-panel class="mt-2" v-for="[key, val] of filtersParams" :key="key">
-                                <v-expansion-panel-header>{{ key }}</v-expansion-panel-header>
+                                <v-expansion-panel-header>{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
                                 <v-expansion-panel-content class="ml-3">
                                     <div v-for="(param, i) in val" :key="i" :brand="param">
                                         <v-row>
@@ -92,6 +95,8 @@
                     </v-container>
                 </v-list-item>
             </v-navigation-drawer>
+
+
             <!---->
             <v-item-group multiple>
                 <v-container fluid>
@@ -231,4 +236,8 @@
     }
 </script>
 
-<style scoped></style>
+<style scoped>
+    .red {
+        background-color: darkred;
+    }
+</style>
