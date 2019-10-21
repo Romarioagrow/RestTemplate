@@ -10,7 +10,7 @@
                     <v-container>
                         <v-row>
                             <v-col cols="10">
-                                <div>Фильтры для {{group}}</div>
+                                <span><strong>{{ (group.charAt(0).toUpperCase() + group.substr(1)).replace('_',' ') }}</strong></span>
                             </v-col>
                             <v-col>
                                 <v-icon>mdi-chevron-left</v-icon>
@@ -64,11 +64,11 @@
                                         <v-col class="px-4">
                                             <v-range-slider v-model="val" :min="val[0]" :max="val[1]" hide-details class="align-center" @end="filterProducts(key +':'+ val)">
                                                 <template v-slot:prepend>
-                                                    <v-text-field @input="filterProducts()" v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                    <v-text-field @input="filterProducts(key +':'+ val)" v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
                                                 </template>
                                                 <template v-slot:append>
-                                                    <v-text-field @input="filterProducts()" v-if="val[1] !== undefined" v-model="val[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
-                                                    <v-text-field @input="filterProducts()" v-else v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                    <v-text-field @input="filterProducts(key +':'+ val)" v-if="val[1] !== undefined" v-model="val[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                    <v-text-field @input="filterProducts(key +':'+ val)" v-else v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
                                                 </template>
                                             </v-range-slider>
                                         </v-col>
@@ -94,16 +94,14 @@
                 </v-list-item>
             </v-navigation-drawer>
 
-
             <!---->
             <v-item-group multiple>
                 <v-container fluid>
                     <v-breadcrumbs :items="items" large></v-breadcrumbs>
-
                     <v-sheet class="mx-auto mt-2">
                         <v-slide-group multiple show-arrows>
                             <v-slide-item v-for="feature in filtersFeats" :key="feature" v-slot:default="{ active, toggle }">
-                                <v-btn class="mx-2" :input-value="active" active-class="purple white text" depressed rounded @click="toggle">
+                                <v-btn class="mx-2"  :input-value="active" active-class="purple white text" depressed rounded @click="toggle" @mousedown="filterProducts(feature)">
                                     {{ feature }}
                                 </v-btn>
                             </v-slide-item>
@@ -115,17 +113,15 @@
                             <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="7" @input="loadPage(page)"></v-pagination>
                         </div>
                     </v-row>
-
-                    <v-img src="D:\Projects\Rest\src\main\resources\static\pics\logo.png"></v-img>
-
+                    <!--<v-img src="D:\Projects\Rest\src\main\resources\static\pics\logo.png"></v-img>-->
                     <v-row>
                         <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
                     </v-row>
-                    <!--<v-row>
+                    <v-row>
                         <div class="text-center" v-if="totalPages !== 1">
                             <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="7" @input="loadPage(page)"></v-pagination>
                         </div>
-                    </v-row>-->
+                    </v-row>
                 </v-container>
             </v-item-group>
 
@@ -142,15 +138,20 @@
         data() {
             return {
                 loading: true,
+
                 selectedBrands: [],
                 selectedParams: [],
                 selectedDiapasons: {},
+                selectedFeatures: [],
+
                 products: [],
+
                 filtersPrice: [],
                 filtersBrands: [],
                 filtersFeats: [],
                 filtersDiapasons: new Map(),
                 filtersParams: new Map(),
+
                 drawer: true,
                 mini: false,
                 group: decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/')+1),
@@ -184,8 +185,8 @@
             }
         },
         created() {
-            this.requestGroup = (decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/'))).replace('_', ' ')
-            this.pageRequest = '/api/products' + this.requestGroup
+            this.requestGroup    = (decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/'))).replace('_', ' ')
+            this.pageRequest     = '/api/products' + this.requestGroup
             this.productsRequest = '/api/products' + this.requestGroup + '/0'
             this.filtersRequest  = '/api/page/filters' + this.requestGroup
 
@@ -233,27 +234,30 @@
                 let pageRequest = this.pageRequest + '/' + page
                 axios.get(pageRequest).then(response => this.products = response.data.content)
             },
-            filterProducts(diapason) {
+            filterProducts(param) {
                 let filters = {}
 
-                if (diapason !== undefined) {
-                    let key = diapason.substr(0, diapason.indexOf(':'));
-                    this.selectedDiapasons[key] = diapason.substr(diapason.indexOf(':') + 1)
-
+                if (param !== undefined)
+                {
+                    console.log(param)
+                    if (param.includes(':')) {
+                        let key = param.substr(0, param.indexOf(':'));
+                        this.selectedDiapasons[key] = param.substr(param.indexOf(':') + 1)
+                    }
+                    else {
+                        if (!this.selectedFeatures.includes(param)) this.selectedFeatures.push(param)
+                        else this.selectedFeatures.splice(this.selectedFeatures.indexOf(param), 1);
+                    }
                 }
 
-                /*console.log('price: ' + this.priceRange)
-                console.log('brands: ' + this.selectedBrands)
-                console.log('params: ' + this.selectedParams)
-                console.log('diapasons: ' + this.selectedDiapasons)*/
-
-                filters['prices'] = this.priceRange
-                filters['brands'] = this.selectedBrands
-                filters['params'] = this.selectedParams
+                filters['prices']   = this.priceRange
+                filters['brands']   = this.selectedBrands
+                filters['params']   = this.selectedParams
+                filters['features'] = this.selectedFeatures
                 filters['selectedDiapasons'] = this.selectedDiapasons
 
                 axios.post('/api/filters/filterProducts', filters).then(response => {
-                    console.log('k')
+                    console.log('200')
                 })
             }
         }
