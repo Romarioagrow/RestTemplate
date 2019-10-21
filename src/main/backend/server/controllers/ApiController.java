@@ -1,5 +1,6 @@
 package server.controllers;
 import lombok.AllArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -13,7 +14,9 @@ import server.services.ProductService;
 import java.io.FileNotFoundException;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+@Log
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api")
@@ -21,6 +24,15 @@ public class ApiController {
     /*!!!ВМЕСТО ОБРАБОТКИ ЗАПРОСВ КАЖДЫЙ РАЗ ЧЕРЕЗ API, СОЗДАНИЕ JSON C ДАННЫМИ ДЛЯ КАЖДОГО СЕРВИСА!!!*/
     private final ProductService productService;
     private final ProductBuilder productBuilder;
+
+
+    /*Filters*/
+    @PostMapping("/filters/filterProducts")
+    private void filterProducts(@RequestBody Map<String, Object> diapasons) {
+        System.out.println();
+        log.info("filterParams");
+        diapasons.forEach((s, s2) -> log.info(s+" "+s2));
+    }
 
     /*Products*/
     @GetMapping("/products/{group}/{page}")

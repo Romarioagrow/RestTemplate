@@ -57,24 +57,23 @@
                             </v-expansion-panel>
 
                             <!--Автовывод фильтров-диапазонов-->
-
                             <v-expansion-panel class="mt-2" v-for="[key, val] of filtersDiapasons" :key="key" >
-                                    <v-expansion-panel-header :class="{'red': val[1] === undefined}">{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
-                                    <v-expansion-panel-content class="ml-3">
-                                        <v-row>
-                                            <v-col class="px-4">
-                                                <v-range-slider v-model="val" :min="val[0]" :max="val[1]" hide-details class="align-center">
-                                                    <template v-slot:prepend>
-                                                        <v-text-field v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
-                                                    </template>
-                                                    <template v-slot:append>
-                                                        <v-text-field v-if="val[1] !== undefined" v-model="val[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
-                                                        <v-text-field v-else v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
-                                                    </template>
-                                                </v-range-slider>
-                                            </v-col>
-                                        </v-row>
-                                    </v-expansion-panel-content>
+                                <v-expansion-panel-header :class="{'red': val[1] === undefined}">{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
+                                <v-expansion-panel-content class="ml-3">
+                                    <v-row>
+                                        <v-col class="px-4">
+                                            <v-range-slider v-model="val" :min="val[0]" :max="val[1]" hide-details class="align-center" @end="filterProducts(key +':'+ val)">
+                                                <template v-slot:prepend>
+                                                    <v-text-field @input="filterProducts()" v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                </template>
+                                                <template v-slot:append>
+                                                    <v-text-field @input="filterProducts()" v-if="val[1] !== undefined" v-model="val[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                    <v-text-field @input="filterProducts()" v-else v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                </template>
+                                            </v-range-slider>
+                                        </v-col>
+                                    </v-row>
+                                </v-expansion-panel-content>
                             </v-expansion-panel>
 
                             <!--Автовывод фильтров-параметров-->
@@ -137,6 +136,7 @@
 <script>
     import axios from 'axios'
     import ProductCard from "components/ProductCard.vue";
+
     export default {
         components: {ProductCard},
         data() {
@@ -144,6 +144,7 @@
                 loading: true,
                 selectedBrands: [],
                 selectedParams: [],
+                selectedDiapasons: {},
                 products: [],
                 filtersPrice: [],
                 filtersBrands: [],
@@ -232,10 +233,28 @@
                 let pageRequest = this.pageRequest + '/' + page
                 axios.get(pageRequest).then(response => this.products = response.data.content)
             },
-            filterProducts() {
-                console.log('price: ' + this.priceRange[0] + ' ' + this.priceRange[1])
+            filterProducts(diapason) {
+                let filters = {}
+
+                if (diapason !== undefined) {
+                    let key = diapason.substr(0, diapason.indexOf(':'));
+                    this.selectedDiapasons[key] = diapason.substr(diapason.indexOf(':') + 1)
+
+                }
+
+                /*console.log('price: ' + this.priceRange)
                 console.log('brands: ' + this.selectedBrands)
                 console.log('params: ' + this.selectedParams)
+                console.log('diapasons: ' + this.selectedDiapasons)*/
+
+                filters['prices'] = this.priceRange
+                filters['brands'] = this.selectedBrands
+                filters['params'] = this.selectedParams
+                filters['selectedDiapasons'] = this.selectedDiapasons
+
+                axios.post('/api/filters/filterProducts', filters).then(response => {
+                    console.log('k')
+                })
             }
         }
     }
