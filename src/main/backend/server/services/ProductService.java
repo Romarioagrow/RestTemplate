@@ -287,11 +287,14 @@ public class ProductService {
             }).collect(Collectors.toList());
 
             /*Фильтры по брендам*/
-            products = products.stream().filter(product ->
-            {
-                String brandFilters = (filters.get("brands").toString().replaceAll("\\[|\\]","").toUpperCase());
-                return org.apache.commons.lang3.StringUtils.containsIgnoreCase(brandFilters, product.getBrand().trim());
-            }).collect(Collectors.toList());
+            if (!filters.get("brands").toString().equals("[]")) {
+                products = products.stream().filter(product ->
+                {
+                    String brandFilters = (filters.get("brands").toString().replaceAll("\\[|\\]","").toUpperCase());
+                    return org.apache.commons.lang3.StringUtils.containsIgnoreCase(brandFilters, product.getBrand().trim());
+                }).collect(Collectors.toList());
+            }
+
 
 
 
@@ -301,8 +304,6 @@ public class ProductService {
         }
 
         products.sort(Comparator.comparingLong(Product::getFinalPrice));
-
-        //products.forEach(product -> log.info(product.getFinalPrice() + ""));
         return productsPage(products);
     }
 
