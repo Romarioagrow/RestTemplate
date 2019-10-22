@@ -277,23 +277,37 @@ public class ProductService {
 
         try
         {
+            /*Фильтры по цене*/
             products = products.stream().filter(product ->
             {
-                String[] priceFilters = (filters.get("prices").toString().replaceAll("\\[|\\]","")).split(",");
+                String[] priceFilters = (filters.get("prices").toString().replaceAll("\\[|\\]","")).split(","); ///extractFilterValues()
                 int minPrice = Integer.parseInt(priceFilters[0].trim());
                 int maxPrice = Integer.parseInt(priceFilters[1].trim());
                 return product.getFinalPrice() >= minPrice && product.getFinalPrice() <= maxPrice;
             }).collect(Collectors.toList());
+
+            /*Фильтры по брендам*/
+            products = products.stream().filter(product ->
+            {
+                String brandFilters = (filters.get("brands").toString().replaceAll("\\[|\\]","").toUpperCase());
+                return org.apache.commons.lang3.StringUtils.containsIgnoreCase(brandFilters, product.getBrand().trim());
+            }).collect(Collectors.toList());
+
+
+
         }
         catch (NullPointerException e) {
             e.printStackTrace();
         }
-        products.forEach(product -> log.info(product.getFinalPrice() + ""));
+
+        products.sort(Comparator.comparingLong(Product::getFinalPrice));
+
+        //products.forEach(product -> log.info(product.getFinalPrice() + ""));
         return productsPage(products);
     }
 
     private Page<Product> productsPage(List<Product> products) {
-        Pageable pageable = PageRequest.of(0, 15, Sort.Direction.ASC, "pic");
+        Pageable pageable = PageRequest.of(0, 30, Sort.Direction.ASC, "pic");
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), products.size());
         return new PageImpl<>(products.subList(start, end), pageable, products.size());
