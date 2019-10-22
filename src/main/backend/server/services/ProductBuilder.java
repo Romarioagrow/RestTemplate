@@ -2,7 +2,6 @@ package server.services;
 import com.opencsv.CSVReader;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.OLE2NotOfficeXmlFileException;
 import org.apache.poi.ss.usermodel.Row;
@@ -132,7 +131,7 @@ public class ProductBuilder {
         Integer finalPrice    = resolveFinalPrice(originalProduct, product.getDefaultCoefficient());
         String modelName      = resolveModelName(originalProduct).toUpperCase().trim();
         String annotation     = resolveAnnotation(originalProduct, supplierRBT);
-        String shortAnnotation = resolveShortAnnotation(originalProduct, supplierRBT);
+        String shortAnnotation = resolveShortAnnotation(annotation, supplierRBT);
 
         Integer bonus         = resolveBonus(finalPrice);
         String fullName       = resolveFullName(originalName, modelName, singleTypeName, originalBrand).trim();
@@ -158,18 +157,20 @@ public class ProductBuilder {
         return product;
     }
 
-    private String resolveShortAnnotation(OriginalProduct originalProduct, boolean supplierRBT) {
-        String originalAnnotation = originalProduct.getOriginalAnnotation();
-
-        if (!originalAnnotation.isEmpty())
+    private String resolveShortAnnotation(String annotation, boolean supplierRBT) {
+        if (!annotation.isEmpty())
         {
+            String shortAnnotation;
             String splitter  = supplierRBT ? "; " : ", ";
             String[] stopList = {": нет", ": 0",  ": -", "количество шт в"};
 
-            List<String> filters = new LinkedList<>(Arrays.asList(originalProduct.getOriginalAnnotation().split(splitter)));
+            List<String> filters = new LinkedList<>(Arrays.asList(annotation.split(splitter)));
             filters.removeIf(filter -> Arrays.stream(stopList).parallel().anyMatch(filter::contains));
 
-            return filters.toString().replaceAll("\\[|\\]","");
+            shortAnnotation = filters.toString().replaceAll("\\[|\\]","");
+            //shortAnnotation = shortAnnotation.replaceAll(", ", ";");
+            if (!shortAnnotation.endsWith(";")) shortAnnotation = annotation.concat(";");
+            return shortAnnotation.replaceAll(", ", ";");
         }
         return "Original Annotation is empty!";
     }

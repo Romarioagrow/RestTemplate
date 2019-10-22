@@ -295,19 +295,37 @@ public class ProductService {
                 }).collect(Collectors.toList());
             }
 
-            if (!Arrays.toString(filters.get("selectedDiapasons")).equals("{}")) {
+            /*Фильтры по диапазонам*/
+            if (!Arrays.toString(filters.get("selectedDiapasons")).equals("[]")) { /// check()
                 products = products.stream().filter(product ->
                 {
                     String[] selectedDiapasons = filters.get("selectedDiapasons");
-                    //log.info(Arrays.toString(selectedDiapasons));
-                    //log.info(Arrays.toString(selectedDiapasons));
+                    String annotation = product.getShortAnnotation();
+                    String splitter = product.getSupplier().equals("RBT") ? ";" : ", ";
+
+                    System.out.println();
+                    for (String diapason : selectedDiapasons)
+                    {
+                        log.info(diapason);
+                        String diapasonKey  = org.apache.commons.lang3.StringUtils.substringBefore(diapason, ":");
+                        Double minimum = Double.parseDouble(org.apache.commons.lang3.StringUtils.substringBetween(diapason, ":",","));
+                        Double maximum = Double.parseDouble(org.apache.commons.lang3.StringUtils.substringAfter(diapason, ","));
+
+                        if (minimum == null || maximum == null) return false;
+
+                        /*log.info(diapasonKey);
+                        log.info("minimum: "+minimum);
+                        log.info("maximum: "+maximum);
+*/
+                        if (annotation.contains(diapasonKey)) {
+                            Double checkVal = Double.parseDouble(org.apache.commons.lang3.StringUtils.substringBetween(diapasonKey, splitter));
+                            if (checkVal == null || checkVal < minimum || checkVal > maximum) return false;
+                        }
+                    }
                     return true;
 
                 }).collect(Collectors.toList());
             }
-
-
-
         }
         catch (NullPointerException e) {
             e.printStackTrace();
