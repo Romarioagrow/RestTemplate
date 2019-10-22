@@ -303,22 +303,19 @@ public class ProductService {
                     String annotation = product.getShortAnnotation();
                     String splitter = product.getSupplier().equals("RBT") ? ";" : ", ";
 
-                    System.out.println();
                     for (String diapason : selectedDiapasons)
                     {
-                        log.info(diapason);
                         String diapasonKey  = org.apache.commons.lang3.StringUtils.substringBefore(diapason, ":");
                         Double minimum = Double.parseDouble(org.apache.commons.lang3.StringUtils.substringBetween(diapason, ":",","));
                         Double maximum = Double.parseDouble(org.apache.commons.lang3.StringUtils.substringAfter(diapason, ","));
 
                         if (minimum == null || maximum == null) return false;
 
-                        /*log.info(diapasonKey);
-                        log.info("minimum: "+minimum);
-                        log.info("maximum: "+maximum);
-*/
                         if (annotation.contains(diapasonKey)) {
-                            Double checkVal = Double.parseDouble(org.apache.commons.lang3.StringUtils.substringBetween(diapasonKey, splitter));
+                            String parseValue = org.apache.commons.lang3.StringUtils.substringBetween(annotation, diapasonKey, splitter);
+                            if (parseValue.contains(": ")) parseValue = org.apache.commons.lang3.StringUtils.substringAfter(parseValue, ": ");
+
+                            Double checkVal = Double.parseDouble(parseValue.replaceAll(",","."));
                             if (checkVal == null || checkVal < minimum || checkVal > maximum) return false;
                         }
                     }
