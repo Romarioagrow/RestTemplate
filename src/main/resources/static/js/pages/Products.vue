@@ -98,6 +98,14 @@
             <v-item-group multiple>
                 <v-container fluid>
                     <v-breadcrumbs :items="items" large></v-breadcrumbs>
+                    <!---->
+                    <strong class="ml-3" v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</strong>
+                    <v-row class="mt-1 ml-1" v-if="totalPages !== 1">
+                        <div class="text-center">
+                            <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="7" @input="loadPage(page)"></v-pagination>
+                        </div>
+                    </v-row>
+                    <!---->
                     <v-sheet class="mx-auto mt-2">
                         <v-slide-group multiple show-arrows>
                             <v-slide-item v-for="feature in filtersFeats" :key="feature" v-slot:default="{ active, toggle }">
@@ -107,12 +115,7 @@
                             </v-slide-item>
                         </v-slide-group>
                     </v-sheet>
-                    <!---->
-                    <v-row class="mt-1 ml-1" v-if="totalPages !== 1">
-                        <div class="text-center">
-                            <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="7" @input="loadPage(page)"></v-pagination>
-                        </div>
-                    </v-row>
+
                     <!--<v-img src="D:\Projects\Rest\src\main\resources\static\pics\logo.png"></v-img>-->
                     <v-row>
                         <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
@@ -180,7 +183,8 @@
                 requestGroup:'',
                 productsRequest: '',
                 filtersRequest: '',
-                pageRequest: ''
+                pageRequest: '',
+                totalProductsFound: 0
             }
         },
         created() {
@@ -188,12 +192,6 @@
             this.pageRequest     = '/api/products' + this.requestGroup
             this.productsRequest = '/api/products' + this.requestGroup + '/0'
             this.filtersRequest  = '/api/page/filters' + this.requestGroup
-
-            /*loadProducts*/
-            axios.get(this.productsRequest).then(response => {
-                this.products = response.data.content
-                this.totalPages = response.data.totalPages
-            })
 
             /*loadFilters*/
             axios.get(this.filtersRequest).then(response => {
@@ -211,8 +209,16 @@
 
                 let params = response.data.paramFilters
                 for (const [key, value] of Object.entries(params)) this.filtersParams.set(key, value)
-                this.loading = false
             });
+
+            /*loadProducts*/
+            axios.get(this.productsRequest).then(response => {
+                console.log(response.data)
+                this.products = response.data.content
+                this.totalPages = response.data.totalPages
+                this.totalProductsFound = response.data.totalElements
+                this.loading = false
+            })
         },
         computed: {
             twoColsBrands() {
@@ -254,12 +260,12 @@
                 filters['selectedDiapasons'] = this.selectedDiapasons
 
                 //filters = JSON.stringify(filters);
+                //console.log('/api/filters/filterProducts'+this.requestGroup)
 
-                console.log('/api/filters/filterProducts'+this.requestGroup)
-                axios.post('/api/filters/filterProducts'+this.requestGroup, filters).then(response => {
-                    //console.log('200')
+                axios.post('/api/filters/filterProducts' + this.requestGroup, filters).then(response => {
                     this.products = response.data.content
                     this.totalPages = response.data.totalPages
+                    this.totalProductsFound = response.data.totalElements
                 })
             }
         }

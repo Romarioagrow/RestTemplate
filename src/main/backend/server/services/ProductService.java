@@ -24,9 +24,9 @@ public class ProductService {
 
     ///!!!
     /*
-    * НАПОЛНЯТЬ MAP С ГРУППАМИ ПРИ ЗАПУСКЕ СЕРВЕРА И СОХРАНЯТЬ ЕГО В JSON В ПАПКЕ
-    * НА КЛИЕНТЕ В MAIN.JS ИМПОРТИРОВАТЬ ФАЙЛ В ОБЪЕКТ И ОТПРАВИТЬ В CATALOG.DATA
-    * РЕНЕДЕР СТРУКТРУЫ СРАЗУ ИЗ ОБЪЕКТА DATA*/
+     * НАПОЛНЯТЬ MAP С ГРУППАМИ ПРИ ЗАПУСКЕ СЕРВЕРА И СОХРАНЯТЬ ЕГО В JSON В ПАПКЕ
+     * НА КЛИЕНТЕ В MAIN.JS ИМПОРТИРОВАТЬ ФАЙЛ В ОБЪЕКТ И ОТПРАВИТЬ В CATALOG.DATA
+     * РЕНЕДЕР СТРУКТРУЫ СРАЗУ ИЗ ОБЪЕКТА DATA*/
 
     public Page<Product> getProductsByGroup(String group, Pageable pageable) {
         return productRepo.findByProductGroupIgnoreCase(group, pageable);
@@ -275,42 +275,21 @@ public class ProductService {
 
         List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
 
-        products = products.stream().filter(product ->
+        try
         {
-            String[] priceFilters = (filters.get("prices").toString().replaceAll("\\[|\\]","")).split(",");
-            int minPrice = Integer.parseInt(priceFilters[0].trim());
-            int maxPrice = Integer.parseInt(priceFilters[1].trim());
-            return product.getFinalPrice() >= minPrice && product.getFinalPrice() <= maxPrice;
-        }).collect(Collectors.toList());
-
+            products = products.stream().filter(product ->
+            {
+                String[] priceFilters = (filters.get("prices").toString().replaceAll("\\[|\\]","")).split(",");
+                int minPrice = Integer.parseInt(priceFilters[0].trim());
+                int maxPrice = Integer.parseInt(priceFilters[1].trim());
+                return product.getFinalPrice() >= minPrice && product.getFinalPrice() <= maxPrice;
+            }).collect(Collectors.toList());
+        }
+        catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         products.forEach(product -> log.info(product.getFinalPrice() + ""));
         return productsPage(products);
-
-        //return new PageImpl<>(products.subList())
-        //return products;
-
-        /*return products.stream().filter(product ->
-        {
-            String[] priceFilters = (filters.get("prices").toString().replaceAll("\\[|\\]","")).split(",");
-            int minPrice = Integer.parseInt(priceFilters[0].trim());
-            int maxPrice = Integer.parseInt(priceFilters[1].trim());
-
-
-
-            log.info("minPrice: "+minPrice);
-            log.info("maxPrice: "+maxPrice);
-
-            *//*String[] strings = Arrays.stream(filters.get("prices")).map(Object::toString).
-                    toArray(String[]::new);*//*
-
-            //String[] strings = Arrays.stream(filters.get("prices")).toArray(String[]::new);
-
-            //List<Object> priceFilters = Collections.singletonList(filters.get("prices"));
-            //log.info(priceFilters.toString());
-            return true;
-        }).collect(Collectors.toList());*/
-        //filters
-
     }
 
     private Page<Product> productsPage(List<Product> products) {
