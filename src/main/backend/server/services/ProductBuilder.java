@@ -2,6 +2,7 @@ package server.services;
 import com.opencsv.CSVReader;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.OLE2NotOfficeXmlFileException;
 import org.apache.poi.ss.usermodel.Row;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Log
 @Service
@@ -130,6 +132,7 @@ public class ProductBuilder {
         Integer finalPrice    = resolveFinalPrice(originalProduct, product.getDefaultCoefficient());
         String modelName      = resolveModelName(originalProduct).toUpperCase().trim();
         String annotation     = resolveAnnotation(originalProduct, supplierRBT);
+        String shortAnnotation = resolveShortAnnotation(originalProduct, supplierRBT);
 
         Integer bonus         = resolveBonus(finalPrice);
         String fullName       = resolveFullName(originalName, modelName, singleTypeName, originalBrand).trim();
@@ -146,12 +149,29 @@ public class ProductBuilder {
         product.setSearchName(searchName);
         product.setShortModelName(shortModelName);
         product.setAnnotation(annotation);
+        product.setShortAnnotation(shortAnnotation);
 
         product.setSupplier(originalProduct.getSupplier());
         product.setPic(originalProduct.getOriginalPicLink());
         product.setBrand(originalBrand);
         product.setUpdateDate(LocalDate.now());
         return product;
+    }
+
+    private String resolveShortAnnotation(OriginalProduct originalProduct, boolean supplierRBT) {
+        String originalAnnotation = originalProduct.getOriginalAnnotation();
+
+        if (!originalAnnotation.isEmpty())
+        {
+            String splitter  = supplierRBT ? "; " : ", ";
+            String[] stopList = {": нет", ": 0",  ": -", "количество шт в"};
+
+            List<String> filters = new LinkedList<>(Arrays.asList(originalProduct.getOriginalAnnotation().split(splitter)));
+            filters.removeIf(filter -> Arrays.stream(stopList).parallel().anyMatch(filter::contains));
+
+            return filters.toString().replaceAll("\\[|\\]","");
+        }
+        return "Original Annotation is empty!";
     }
 
     private void createOriginalProduct(Row row, String productID, boolean supplierRBT) {
@@ -323,7 +343,6 @@ public class ProductBuilder {
         }
         annotation = StringUtils.substringAfter(originalProduct.getOriginalName(), ", ");
         return !annotation.isEmpty() ? annotation : originalProduct.getOriginalName();
-        // return !annotation.isEmpty() ? annotation : StringUtils.substringAfter(originalProduct.getOriginalName(), ", ");
     }
 
     private String resolveSearchName(String modelName, String singleTypeName, String originalBrand) {
@@ -547,14 +566,55 @@ public class ProductBuilder {
             productRepo.save(product);
         }*/
 
-        Set<String> categories = new TreeSet<>();
+        String[] notParams = {": нет", ": 0",  ": -", "количество шт в"};
+
+        for (OriginalProduct product : originalRepo.findAll().stream().filter(originalProduct -> !originalProduct.getOriginalAnnotation().isEmpty()).collect(Collectors.toList())) {
+            String splitter  = product.getSupplier().equals("RBT") ? "; " : ", ";
+            //List<String> filters = Arrays.asList(product.getOriginalAnnotation().split(splitter));
+
+            List<String> filters = new LinkedList<>(Arrays.asList(product.getOriginalAnnotation().split(splitter)));
+
+
+            System.out.println();
+            log.info(filters.toString());
+
+            filters.removeIf(filter -> Arrays.stream(notParams).parallel().anyMatch(filter::contains));
+
+
+            /*filters.forEach(filter -> {
+                boolean stop = Arrays.stream(notParams).parallel().anyMatch(filter::contains);
+
+
+                *//*if (stop) {
+                    log.info(filter);
+                    filters.remove(filter);
+                    //ArrayUtils.remove(filters, filter);
+
+                }*//*
+            });*/
+
+            /*for (String filter : filters) {
+                boolean stop = Arrays.stream(notParams).parallel().anyMatch(filter::contains);
+                if (stop) {
+                    log.info(filter);
+                    filters.remove(filter);
+                    //ArrayUtils.remove(filters, filter);
+
+                }
+            }*/
+            log.info(filters.toString());
+        }
+
+
+
+        /*Set<String> categories = new TreeSet<>();
         productRepo.findAll().forEach(product -> categories.add(product.getProductCategory()));
         categories.forEach(log::info);
 
         Set<String> groups = new TreeSet<>();
         productRepo.findByProductCategoryIgnoreCase("Отдых и Развлечения").forEach(product -> groups.add(product.getProductGroup()));
         System.out.println();
-        groups.forEach(log::info);
+        groups.forEach(log::info);*/
 
 
 

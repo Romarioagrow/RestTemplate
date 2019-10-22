@@ -1,8 +1,7 @@
 package server.services;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import server.domain.Product;
@@ -268,6 +267,92 @@ public class ProductService {
         }
         return fullCatalog;
     }
+
+    public Page<Product> filterProducts(Map<String, Object> filters, String group) {
+        System.out.println();
+        log.info(group);
+        filters.forEach((filterKey, values) -> log.info(filterKey + " " + values));
+
+        List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
+
+        products = products.stream().filter(product ->
+        {
+            String[] priceFilters = (filters.get("prices").toString().replaceAll("\\[|\\]","")).split(",");
+            int minPrice = Integer.parseInt(priceFilters[0].trim());
+            int maxPrice = Integer.parseInt(priceFilters[1].trim());
+            return product.getFinalPrice() >= minPrice && product.getFinalPrice() <= maxPrice;
+        }).collect(Collectors.toList());
+
+        products.forEach(product -> log.info(product.getFinalPrice() + ""));
+        return productsPage(products);
+
+        //return new PageImpl<>(products.subList())
+        //return products;
+
+        /*return products.stream().filter(product ->
+        {
+            String[] priceFilters = (filters.get("prices").toString().replaceAll("\\[|\\]","")).split(",");
+            int minPrice = Integer.parseInt(priceFilters[0].trim());
+            int maxPrice = Integer.parseInt(priceFilters[1].trim());
+
+
+
+            log.info("minPrice: "+minPrice);
+            log.info("maxPrice: "+maxPrice);
+
+            *//*String[] strings = Arrays.stream(filters.get("prices")).map(Object::toString).
+                    toArray(String[]::new);*//*
+
+            //String[] strings = Arrays.stream(filters.get("prices")).toArray(String[]::new);
+
+            //List<Object> priceFilters = Collections.singletonList(filters.get("prices"));
+            //log.info(priceFilters.toString());
+            return true;
+        }).collect(Collectors.toList());*/
+        //filters
+
+    }
+
+    private Page<Product> productsPage(List<Product> products) {
+        Pageable pageable = PageRequest.of(0, 15, Sort.Direction.ASC, "pic");
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), products.size());
+        return new PageImpl<>(products.subList(start, end), pageable, products.size());
+    }
+
+
+    /*public List<Product> filterProducts(Map<String, Object/*String[]> filters, String group) {
+        System.out.println();
+        log.info(group);
+        filters.forEach((filterKey, values) -> log.info(filterKey + " " + values));
+
+        List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
+
+
+
+        return products.stream().filter(product ->
+        {
+            String[] priceFilters = (filters.get("prices").toString().replaceAll("\\[|\\]","")).split(",");
+            int minPrice = Integer.parseInt(priceFilters[0].trim());
+            int maxPrice = Integer.parseInt(priceFilters[1].trim());
+
+
+
+            log.info("minPrice: "+minPrice);
+            log.info("maxPrice: "+maxPrice);
+
+            /*String[] strings = Arrays.stream(filters.get("prices")).map(Object::toString).
+                    toArray(String[]::new);
+
+            //String[] strings = Arrays.stream(filters.get("prices")).toArray(String[]::new);
+
+            //List<Object> priceFilters = Collections.singletonList(filters.get("prices"));
+            //log.info(priceFilters.toString());
+            return true;
+        }).collect(Collectors.toList());
+        //filters
+
+    }*/
 }
 
 /*!!FORMATTED ANNOTATION: УДАЛИТЬ ИЗ АННОТАЦИИ ВСЕ "НЕТ", "-" И ТД, B ВСТАВИТЬ ПЕРЕНОС СТРОКИ ДЛЯ КАЖДОГО*/

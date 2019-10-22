@@ -12,6 +12,7 @@ import server.dto.ProductGroup;
 import server.services.ProductBuilder;
 import server.services.ProductService;
 import java.io.FileNotFoundException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,11 +28,9 @@ public class ApiController {
 
 
     /*Filters*/
-    @PostMapping("/filters/filterProducts")
-    private void filterProducts(@RequestBody Map<String, Object> diapasons) {
-        System.out.println();
-        log.info("filterParams");
-        diapasons.forEach((s, s2) -> log.info(s+" "+s2));
+    @PostMapping("/filters/filterProducts/{group}")
+    private Page<Product> filterProducts(@RequestBody Map<String, Object> filters, @PathVariable String group) {
+        return productService.filterProducts(filters, group);
     }
 
     /*Products*/

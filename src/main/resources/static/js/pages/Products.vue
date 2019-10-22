@@ -27,10 +27,10 @@
                                             <v-col class="px-4">
                                                 <v-range-slider class="align-center" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
                                                     <template v-slot:prepend>
-                                                        <v-text-field class="mt-0 pt-0" @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" style="width: 60px"></v-text-field>
+                                                        <v-text-field class="" @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
                                                     </template>
                                                     <template v-slot:append>
-                                                        <v-text-field class="mt-0 pt-0" @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" style="width: 60px"></v-text-field>
+                                                        <v-text-field class="" @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
                                                     </template>
                                                 </v-range-slider>
                                             </v-col>
@@ -124,7 +124,6 @@
                     </v-row>
                 </v-container>
             </v-item-group>
-
         </v-row>
     </div>
 </template>
@@ -154,7 +153,7 @@
 
                 drawer: true,
                 mini: false,
-                group: decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/')+1),
+                group: decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/') + 1),
                 min: '',
                 max: '',
                 priceRange: [],
@@ -194,7 +193,6 @@
             axios.get(this.productsRequest).then(response => {
                 this.products = response.data.content
                 this.totalPages = response.data.totalPages
-                console.log(response.data.totalPages)
             })
 
             /*loadFilters*/
@@ -239,7 +237,6 @@
 
                 if (param !== undefined)
                 {
-                    console.log(param)
                     if (param.includes(':')) {
                         let key = param.substr(0, param.indexOf(':'));
                         this.selectedDiapasons[key] = param.substr(param.indexOf(':') + 1)
@@ -256,8 +253,13 @@
                 filters['features'] = this.selectedFeatures
                 filters['selectedDiapasons'] = this.selectedDiapasons
 
-                axios.post('/api/filters/filterProducts', filters).then(response => {
-                    console.log('200')
+                //filters = JSON.stringify(filters);
+
+                console.log('/api/filters/filterProducts'+this.requestGroup)
+                axios.post('/api/filters/filterProducts'+this.requestGroup, filters).then(response => {
+                    //console.log('200')
+                    this.products = response.data.content
+                    this.totalPages = response.data.totalPages
                 })
             }
         }
