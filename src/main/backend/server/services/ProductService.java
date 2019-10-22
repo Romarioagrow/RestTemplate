@@ -268,10 +268,10 @@ public class ProductService {
         return fullCatalog;
     }
 
-    public Page<Product> filterProducts(Map<String, Object> filters, String group) {
+    public Page<Product> filterProducts(Map<String, String[]> filters, String group) {
         System.out.println();
         log.info(group);
-        filters.forEach((filterKey, values) -> log.info(filterKey + " " + values));
+        filters.forEach((filterKey, values) -> log.info(filterKey + " " + Arrays.toString(values)));
 
         List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
 
@@ -280,21 +280,31 @@ public class ProductService {
             /*Фильтры по цене*/
             products = products.stream().filter(product ->
             {
-                String[] priceFilters = (filters.get("prices").toString().replaceAll("\\[|\\]","")).split(","); ///extractFilterValues()
+                String[] priceFilters = filters.get("prices");
                 int minPrice = Integer.parseInt(priceFilters[0].trim());
                 int maxPrice = Integer.parseInt(priceFilters[1].trim());
                 return product.getFinalPrice() >= minPrice && product.getFinalPrice() <= maxPrice;
             }).collect(Collectors.toList());
 
             /*Фильтры по брендам*/
-            if (!filters.get("brands").toString().equals("[]")) {
+            if (!Arrays.toString(filters.get("brands")).equals("[]")) {
                 products = products.stream().filter(product ->
                 {
-                    String brandFilters = (filters.get("brands").toString().replaceAll("\\[|\\]","").toUpperCase());
+                    String brandFilters = Arrays.toString(filters.get("brands"));
                     return org.apache.commons.lang3.StringUtils.containsIgnoreCase(brandFilters, product.getBrand().trim());
                 }).collect(Collectors.toList());
             }
 
+            if (!Arrays.toString(filters.get("selectedDiapasons")).equals("{}")) {
+                products = products.stream().filter(product ->
+                {
+                    String[] selectedDiapasons = filters.get("selectedDiapasons");
+                    //log.info(Arrays.toString(selectedDiapasons));
+                    //log.info(Arrays.toString(selectedDiapasons));
+                    return true;
+
+                }).collect(Collectors.toList());
+            }
 
 
 

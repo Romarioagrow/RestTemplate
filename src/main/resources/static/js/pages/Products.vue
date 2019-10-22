@@ -257,7 +257,16 @@
                 filters['brands']   = this.selectedBrands
                 filters['params']   = this.selectedParams
                 filters['features'] = this.selectedFeatures
-                filters['selectedDiapasons'] = this.selectedDiapasons
+                //filters['selectedDiapasons'] = this.selectedDiapasons
+
+
+                let selectedDiapasons = []
+                for (const [key, value] of Object.entries(this.selectedDiapasons)) selectedDiapasons.push(key+':'+value)
+                filters['selectedDiapasons'] = selectedDiapasons
+
+
+                //console.log(selectedDiapasons)
+
 
                 //filters = JSON.stringify(filters);
                 //console.log('/api/filters/filterProducts'+this.requestGroup)

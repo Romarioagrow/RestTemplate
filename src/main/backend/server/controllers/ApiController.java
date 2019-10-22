@@ -29,7 +29,7 @@ public class ApiController {
 
     /*Filters*/
     @PostMapping("/filters/filterProducts/{group}")
-    private Page<Product> filterProducts(@RequestBody Map<String, Object> filters, @PathVariable String group) {
+    private Page<Product> filterProducts(@RequestBody Map<String, String[]> filters, @PathVariable String group) {
         return productService.filterProducts(filters, group);
     }
 
