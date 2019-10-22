@@ -327,13 +327,12 @@ public class ProductService {
         catch (NullPointerException e) {
             e.printStackTrace();
         }
-
-        products.sort(Comparator.comparingLong(Product::getFinalPrice));
+        products.sort(Comparator.comparing(Product::getSupplier));
         return productsPage(products);
     }
 
     private Page<Product> productsPage(List<Product> products) {
-        Pageable pageable = PageRequest.of(0, 30, Sort.Direction.ASC, "pic");
+        Pageable pageable = PageRequest.of(0, 30, Sort.Direction.DESC, "supplier");
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), products.size());
         return new PageImpl<>(products.subList(start, end), pageable, products.size());
