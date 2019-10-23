@@ -276,7 +276,9 @@ public class ProductService {
         List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
 
         try
-                /*КАК ВАРИАНТ СОЗДАТЬ ШАБЛОНЫ ДЛЯ ДОБАЛВЕНИЯ KEY/VALUE ДЛЯ RUSBT SHORTANNO*/
+            /*КАК ВАРИАНТ СОЗДАТЬ ШАБЛОНЫ ДЛЯ ДОБАЛВЕНИЯ KEY/VALUE ДЛЯ RUSBT SHORTANNO*/
+            /*ДОБАВЛЯТЬ СИНОНИМЫ ЧЕРЕЗ ИЛИ*/
+            /*НУЖНО ЧТО БЫ ПРОДОЛЖАЛ ФИЛЬТРОВАТЬ УЖЕ ОТФИЛЬТРОВАННЫЕ ОДИН РАЗ ТОВАРЫ*/
         {
             /*Фильтры по цене*/
             products = products.stream().filter(product ->
@@ -288,7 +290,7 @@ public class ProductService {
             }).collect(Collectors.toList());
 
             /*Фильтры по брендам*/
-            if (!Arrays.toString(filters.get("brands")).equals("[]")) {
+            if (filterHasContent(filters, "brands")) {
                 products = products.stream().filter(product ->
                 {
                     String brandFilters = Arrays.toString(filters.get("brands"));
@@ -297,12 +299,11 @@ public class ProductService {
             }
 
             /*Фильтры по диапазонам*/
-            if (!Arrays.toString(filters.get("selectedDiapasons")).equals("[]")) { /// check()
+            if (filterHasContent(filters, "selectedDiapasons")) {
                 products = products.stream().filter(product ->
                 {
                     String[] selectedDiapasons = filters.get("selectedDiapasons");
                     String annotation = product.getShortAnnotation();
-                    String splitter = product.getSupplier().equals("RBT") ? ";" : ", ";
 
                     for (String diapason : selectedDiapasons)
                     {
@@ -313,7 +314,7 @@ public class ProductService {
                         if (minimum == null || maximum == null) return false;
 
                         if (annotation.contains(diapasonKey)) {
-                            String parseValue = org.apache.commons.lang3.StringUtils.substringBetween(annotation, diapasonKey, splitter);
+                            String parseValue = org.apache.commons.lang3.StringUtils.substringBetween(annotation, diapasonKey, ";");
                             if (parseValue.contains(": ")) parseValue = org.apache.commons.lang3.StringUtils.substringAfter(parseValue, ": ");
 
                             Double checkVal = Double.parseDouble(parseValue.replaceAll(",","."));
@@ -321,17 +322,35 @@ public class ProductService {
                         }
                     }
                     return true;
-
                 }).collect(Collectors.toList());
             }
 
-            /*ДОБАВЛЯТЬ СИНОНИМЫ ЧЕРЕЗ ИЛИ*/
+            /*Фильтры по параметрам*/
+            if (filterHasContent(filters, "params")) {
+                log.info("param");
+                products = products.stream().filter(product ->
+                {
+                    String annotation = product.getShortAnnotation();
+                    log.info("\n");
+                    log.info("annotatoin: " + annotation);
+                    log.info("params: " +Arrays.toString(filters.get("params")));
+                    for (String param : filters.get("params")) {
+                        log.info("param for: "+param);
+                        if (annotation.contains(param)) return true;
+                    }
+                    return false;
+                }).collect(Collectors.toList());
+            }
         }
         catch (NullPointerException e) {
             e.printStackTrace();
         }
         products.sort(Comparator.comparing(Product::getSupplier));
         return productsPage(products);
+    }
+
+    private boolean filterHasContent(Map<String, String[]> filters, String selectedDiapasons) {
+        return !Arrays.toString(filters.get(selectedDiapasons)).equals("[]");
     }
 
     private Page<Product> productsPage(List<Product> products) {
@@ -349,15 +368,11 @@ public class ProductService {
 
         List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
 
-
-
         return products.stream().filter(product ->
         {
             String[] priceFilters = (filters.get("prices").toString().replaceAll("\\[|\\]","")).split(",");
             int minPrice = Integer.parseInt(priceFilters[0].trim());
             int maxPrice = Integer.parseInt(priceFilters[1].trim());
-
-
 
             log.info("minPrice: "+minPrice);
             log.info("maxPrice: "+maxPrice);

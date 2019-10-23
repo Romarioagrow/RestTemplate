@@ -12,7 +12,6 @@ import server.dto.ProductGroup;
 import server.services.ProductBuilder;
 import server.services.ProductService;
 import java.io.FileNotFoundException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,6 @@ public class ApiController {
     /*!!!ВМЕСТО ОБРАБОТКИ ЗАПРОСВ КАЖДЫЙ РАЗ ЧЕРЕЗ API, СОЗДАНИЕ JSON C ДАННЫМИ ДЛЯ КАЖДОГО СЕРВИСА!!!*/
     private final ProductService productService;
     private final ProductBuilder productBuilder;
-
 
     /*Filters*/
     @PostMapping("/filters/filterProducts/{group}")

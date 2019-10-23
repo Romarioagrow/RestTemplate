@@ -6,14 +6,9 @@
             <router-link :to=productID>
                 <v-card-title class="align-end fill-height">{{product.fullName}}</v-card-title>
             </router-link>
-
-
             <ul>
                 <li v-for="anno in annotations" v-if="anno">{{anno}}</li>
             </ul>
-
-
-
             <h3>{{product.finalPrice}} ₽</h3>
             <span>{{product.supplier}}</span>
         </v-card-text>

@@ -139,13 +139,12 @@
         data() {
             return {
                 loading: true,
+                products: [],
 
                 selectedBrands: [],
                 selectedParams: [],
                 selectedDiapasons: {},
                 selectedFeatures: [],
-
-                products: [],
 
                 filtersPrice: [],
                 filtersBrands: [],
@@ -153,7 +152,6 @@
 
                 filtersDiapasons: new Map(),
                 diapasonValues: new Map(),
-
                 filtersParams: new Map(),
 
                 drawer: true,
@@ -208,7 +206,6 @@
 
                 let diapasons = response.data.diapasonsFilters
                 for (let [key, value] of Object.entries(diapasons)) {
-                    //console.log("x: "+key + ' ' + value.slice(","))
                     this.filtersDiapasons.set(key, value.slice(","))
                     this.diapasonValues.set(key, value.slice(","))
                 }
@@ -219,7 +216,6 @@
 
             /*loadProducts*/
             axios.get(this.productsRequest).then(response => {
-                //console.log(response.data)
                 this.products = response.data.content
                 this.totalPages = response.data.totalPages
                 this.totalProductsFound = response.data.totalElements
