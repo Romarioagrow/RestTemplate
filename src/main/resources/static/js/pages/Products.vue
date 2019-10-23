@@ -64,11 +64,10 @@
                                         <v-col class="px-4">
                                             <v-range-slider v-model="val" :min="val[0]" :max="val[1]" hide-details class="align-center" @end="filterProducts(key +':'+ val)">
                                                 <template v-slot:prepend>
-                                                    <v-text-field @input="filterProducts(key +':'+ val)" v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                    <v-text-field @input="filterProducts(key +':'+ val)" v-model="diapasonValues.get(key)[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
                                                 </template>
                                                 <template v-slot:append>
-                                                    <v-text-field @input="filterProducts(key +':'+ val)" v-if="val[1] !== undefined" v-model="val[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
-                                                    <v-text-field @input="filterProducts(key +':'+ val)" v-else v-model="val[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                    <v-text-field @input="filterProducts(key +':'+ val)" v-model="diapasonValues.get(key)[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
                                                 </template>
                                             </v-range-slider>
                                         </v-col>
@@ -151,7 +150,10 @@
                 filtersPrice: [],
                 filtersBrands: [],
                 filtersFeats: [],
+
                 filtersDiapasons: new Map(),
+                diapasonValues: new Map(),
+
                 filtersParams: new Map(),
 
                 drawer: true,
@@ -205,7 +207,11 @@
                 this.filtersFeats  = response.data.features
 
                 let diapasons = response.data.diapasonsFilters
-                for (const [key, value] of Object.entries(diapasons)) this.filtersDiapasons.set(key, value)
+                for (let [key, value] of Object.entries(diapasons)) {
+                    console.log("x: "+key + ' ' + value.slice(","))
+                    this.filtersDiapasons.set(key, value.slice(","))
+                    this.diapasonValues.set(key, value.slice(","))
+                }
 
                 let params = response.data.paramFilters
                 for (const [key, value] of Object.entries(params)) this.filtersParams.set(key, value)
@@ -245,7 +251,14 @@
                 {
                     if (param.includes(':')) {
                         let key = param.substr(0, param.indexOf(':'));
-                        this.selectedDiapasons[key] = param.substr(param.indexOf(':') + 1)
+
+                        let val = (param.substr(param.indexOf(':') + 1)).slice(',')
+                        const valArray = val.split(',').map(Number);
+
+                        /*to filter API*/
+                        this.selectedDiapasons[key] = val
+                        /*to input slider*/
+                        this.diapasonValues.set(key, valArray)
                     }
                     else {
                         if (!this.selectedFeatures.includes(param)) this.selectedFeatures.push(param)

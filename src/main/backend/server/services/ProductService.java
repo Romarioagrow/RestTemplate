@@ -323,6 +323,8 @@ public class ProductService {
 
                 }).collect(Collectors.toList());
             }
+
+            /*ДОБАВЛЯТЬ СИНОНИМЫ ЧЕРЕЗ ИЛИ*/
         }
         catch (NullPointerException e) {
             e.printStackTrace();
