@@ -64,10 +64,10 @@
                                         <v-col class="px-4">
                                             <v-range-slider v-model="val" :min="val[0]" :max="val[1]" hide-details class="align-center" @end="filterProducts(key +':'+ val)">
                                                 <template v-slot:prepend>
-                                                    <v-text-field @input="filterProducts(key +':'+ val)" v-model="diapasonValues.get(key)[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                    <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
                                                 </template>
                                                 <template v-slot:append>
-                                                    <v-text-field @input="filterProducts(key +':'+ val)" v-model="diapasonValues.get(key)[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                    <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
                                                 </template>
                                             </v-range-slider>
                                         </v-col>
@@ -208,7 +208,7 @@
 
                 let diapasons = response.data.diapasonsFilters
                 for (let [key, value] of Object.entries(diapasons)) {
-                    console.log("x: "+key + ' ' + value.slice(","))
+                    //console.log("x: "+key + ' ' + value.slice(","))
                     this.filtersDiapasons.set(key, value.slice(","))
                     this.diapasonValues.set(key, value.slice(","))
                 }
@@ -219,7 +219,7 @@
 
             /*loadProducts*/
             axios.get(this.productsRequest).then(response => {
-                console.log(response.data)
+                //console.log(response.data)
                 this.products = response.data.content
                 this.totalPages = response.data.totalPages
                 this.totalProductsFound = response.data.totalElements
@@ -249,10 +249,11 @@
 
                 if (param !== undefined)
                 {
+                    //console.log('input ' + param)
                     if (param.includes(':')) {
                         let key = param.substr(0, param.indexOf(':'));
 
-                        let val = (param.substr(param.indexOf(':') + 1)).slice(',')
+                        let val = (param.substr(param.indexOf(':') + 1))
                         const valArray = val.split(',').map(Number);
 
                         /*to filter API*/

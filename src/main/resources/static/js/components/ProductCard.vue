@@ -6,7 +6,14 @@
             <router-link :to=productID>
                 <v-card-title class="align-end fill-height">{{product.fullName}}</v-card-title>
             </router-link>
-            <span>{{product.annotation}}</span><br>
+
+
+            <ul>
+                <li v-for="anno in annotations" v-if="anno">{{anno}}</li>
+            </ul>
+
+
+
             <h3>{{product.finalPrice}} ₽</h3>
             <span>{{product.supplier}}</span>
         </v-card-text>
@@ -42,7 +49,8 @@
         data() {
             return {
                 productID: '/products/product/' + this.product.productID,
-                dialog: false
+                dialog: false,
+                annotations: this.product.shortAnnotation.split(';').map(String),
             }
         }
     }

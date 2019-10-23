@@ -276,6 +276,7 @@ public class ProductService {
         List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
 
         try
+                /*КАК ВАРИАНТ СОЗДАТЬ ШАБЛОНЫ ДЛЯ ДОБАЛВЕНИЯ KEY/VALUE ДЛЯ RUSBT SHORTANNO*/
         {
             /*Фильтры по цене*/
             products = products.stream().filter(product ->

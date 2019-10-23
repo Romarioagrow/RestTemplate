@@ -132,6 +132,7 @@ public class ProductBuilder {
         String modelName      = resolveModelName(originalProduct).toUpperCase().trim();
         String annotation     = resolveAnnotation(originalProduct, supplierRBT);
         String shortAnnotation = resolveShortAnnotation(annotation, supplierRBT);
+        String formattedAnnotation = shortAnnotation.replaceAll(";", "<br>");
 
         Integer bonus         = resolveBonus(finalPrice);
         String fullName       = resolveFullName(originalName, modelName, singleTypeName, originalBrand).trim();
@@ -149,6 +150,7 @@ public class ProductBuilder {
         product.setShortModelName(shortModelName);
         product.setAnnotation(annotation);
         product.setShortAnnotation(shortAnnotation);
+        product.setFormattedAnnotation(formattedAnnotation);
 
         product.setSupplier(originalProduct.getSupplier());
         product.setPic(originalProduct.getOriginalPicLink());
@@ -162,15 +164,17 @@ public class ProductBuilder {
         {
             String shortAnnotation;
             String splitter  = supplierRBT ? "; " : ", ";
-            String[] stopList = {": нет", ": 0",  ": -", "количество шт в"};
+            String[] stopList = {": нет", ": 0",  ": -", "количество шт в", "Количество изделий"};
 
             List<String> filters = new LinkedList<>(Arrays.asList(annotation.split(splitter)));
             filters.removeIf(filter -> Arrays.stream(stopList).parallel().anyMatch(filter::contains));
 
             shortAnnotation = filters.toString().replaceAll("\\[|\\]","");
-            //shortAnnotation = shortAnnotation.replaceAll(", ", ";");
-            if (!shortAnnotation.endsWith(";")) shortAnnotation = annotation.concat(";");
-            return shortAnnotation.replaceAll(", ", ";");
+
+            if (!shortAnnotation.endsWith(";")) shortAnnotation = shortAnnotation.concat(";");
+            shortAnnotation = shortAnnotation.replaceAll(", ", ";");
+
+            return shortAnnotation;
         }
         return "Original Annotation is empty!";
     }

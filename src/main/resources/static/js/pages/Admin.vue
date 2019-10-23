@@ -86,6 +86,7 @@
             },
             upload() {
                 axios.post('api/admin/uploadFileDB', this.file).then(response =>{
+                    this.file = new FormData()
                     console.log('ok')
                 });
             },
