@@ -279,6 +279,7 @@ public class ProductService {
             /*КАК ВАРИАНТ СОЗДАТЬ ШАБЛОНЫ ДЛЯ ДОБАЛВЕНИЯ KEY/VALUE ДЛЯ RUSBT SHORTANNO*/
             /*ДОБАВЛЯТЬ СИНОНИМЫ ЧЕРЕЗ ИЛИ*/
             /*НУЖНО ЧТО БЫ ПРОДОЛЖАЛ ФИЛЬТРОВАТЬ УЖЕ ОТФИЛЬТРОВАННЫЕ ОДИН РАЗ ТОВАРЫ*/
+                /*ДЛЯ КАЖДОЙ ФИЛЬТРАЦИИ ОТПРАВЛЯТЬ СПИСОК УЖЕ ОТФИЛЬТРОВАННЫХ ТОВАРОВ*/
         {
             /*Фильтры по цене*/
             products = products.stream().filter(product ->
@@ -327,16 +328,22 @@ public class ProductService {
 
             /*Фильтры по параметрам*/
             if (filterHasContent(filters, "params")) {
-                log.info("param");
                 products = products.stream().filter(product ->
                 {
                     String annotation = product.getShortAnnotation();
-                    log.info("\n");
-                    log.info("annotatoin: " + annotation);
-                    log.info("params: " +Arrays.toString(filters.get("params")));
                     for (String param : filters.get("params")) {
-                        log.info("param for: "+param);
                         if (annotation.contains(param)) return true;
+                    }
+                    return false;
+                }).collect(Collectors.toList());
+            }
+
+            if (filterHasContent(filters, "features")) {
+                products = products.stream().filter(product ->
+                {
+                    String annotation = product.getShortAnnotation();
+                    for (String feature : filters.get("features")) {
+                        if (org.apache.commons.lang3.StringUtils.containsIgnoreCase(annotation, feature)) return true;
                     }
                     return false;
                 }).collect(Collectors.toList());
