@@ -32,35 +32,36 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .antMatcher("/**")
+                /*.antMatcher("/**")
                 .authorizeRequests()
                 .antMatchers("/", "/api/**","/login**", "/js/**", "/error**").permitAll()
                 .anyRequest().authenticated()
                 .and().logout().logoutSuccessUrl("/").permitAll()
                 .and()
-                .csrf().disable();
-    }
-
-                /*.authorizeRequests()
-                    .antMatchers("/supplier", "/supplier/products", "/supplier/products/*").hasAuthority("ADMIN")
-                    .mvcMatchers("/user/cabinet").authenticated()
-                    .anyRequest().permitAll()
-                .and()
-                    .formLogin()
-                    .loginPage("/login")
-                    .permitAll()
-                .and()
-                    .logout()
-                    .permitAll()
-                    .logoutUrl("/user/logout")
-                    .logoutSuccessUrl("/")
-                .and()
                 .csrf().disable();*/
+
+
+                .authorizeRequests()
+                .antMatchers("/supplier", "/supplier/products", "/supplier/products/*").hasAuthority("ADMIN")
+                .mvcMatchers("/user/cabinet").authenticated()
+                .anyRequest().permitAll()
+                .and()
+                .formLogin()
+                .loginPage("/user/login")
+                .defaultSuccessUrl("/", true)
+                .permitAll()
+                .and()
+                .logout()
+                .permitAll()
+                .logoutUrl("/user/logout")
+                .logoutSuccessUrl("/")
+                .and()
+                .csrf().disable();
 
                 /*.authorizeRequests()
                 .mvcMatchers("/").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable();*/
-
+    }
 }

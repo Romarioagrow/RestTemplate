@@ -105,6 +105,19 @@
                 })
             },
             loginUser() {
+                axios.post('http://localhost:9000/user/login', { username: this.username, password: this.password }).then(response => {
+                    console.log(response)
+                })
+
+
+                /*this.$http.post('http://localhost:9000/login', { username: this.username, password: this.password })
+                    .then(request => {
+                        //this.loginSuccessful(request)
+                        console.log(request)
+                    })*/
+                //.catch(() => this.loginFailed())
+            }
+            /*loginUser() {
                 let loginData = {}
                 loginData['username'] = this.username
                 loginData['password'] = this.password
@@ -112,7 +125,7 @@
                 axios.post('/api/user/login', loginData).then(response => {
                     console.log(response)
                 })
-            }
+            }*/
         }
     }
 </script>

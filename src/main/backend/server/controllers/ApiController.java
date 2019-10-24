@@ -39,24 +39,24 @@ public class ApiController {
         return userService.registerUser(userDetails);
     }
 
-    @PostMapping("/user/login")
+    /*@PostMapping("/user/login")
     private void login(@AuthenticationPrincipal User user, Authentication auth) {//@RequestBody Map<String, String> userDetails) {
-        /*log.info(userDetails.toString());
+        *//*log.info(userDetails.toString());
         UserDetails userDetails1 = userService.loadUserByUsername(userDetails.get("username"));
-        log.info(userDetails1.getUsername());*/
+        log.info(userDetails1.getUsername());*//*
         log.info(auth.toString());
-        /*try {
+        *//*try {
             log.info(auth.toString());
             log.info(auth.getPrincipal().toString());
             log.info(user.toString());
         }
         catch (NullPointerException e) {
             e.getStackTrace();
-        }*/
+        }*//*
 
         //log.info(userDetails1.getPassword());
         //log.info(userDetails1.toString());
-    }
+    }*/
 
     /*Filters*/
     @PostMapping("/filters/filterProducts/{group}")
