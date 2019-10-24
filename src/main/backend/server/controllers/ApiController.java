@@ -4,13 +4,18 @@ import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import server.domain.Product;
+import server.domain.User;
 import server.dto.FiltersList;
 import server.dto.ProductGroup;
 import server.services.ProductBuilder;
 import server.services.ProductService;
+import server.services.UserService;
 import java.io.FileNotFoundException;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,6 +29,34 @@ public class ApiController {
     /*!!!ВМЕСТО ОБРАБОТКИ ЗАПРОСВ КАЖДЫЙ РАЗ ЧЕРЕЗ API, СОЗДАНИЕ JSON C ДАННЫМИ ДЛЯ КАЖДОГО СЕРВИСА!!!*/
     private final ProductService productService;
     private final ProductBuilder productBuilder;
+    private final UserService userService;
+
+
+    /*Users*/
+    @PostMapping("/user/registration")
+    private boolean registration(@RequestBody Map<String, String> userDetails) {
+        log.info(userDetails.toString());
+        return userService.registerUser(userDetails);
+    }
+
+    @PostMapping("/user/login")
+    private void login(@AuthenticationPrincipal User user, Authentication auth) {//@RequestBody Map<String, String> userDetails) {
+        /*log.info(userDetails.toString());
+        UserDetails userDetails1 = userService.loadUserByUsername(userDetails.get("username"));
+        log.info(userDetails1.getUsername());*/
+        log.info(auth.toString());
+        /*try {
+            log.info(auth.toString());
+            log.info(auth.getPrincipal().toString());
+            log.info(user.toString());
+        }
+        catch (NullPointerException e) {
+            e.getStackTrace();
+        }*/
+
+        //log.info(userDetails1.getPassword());
+        //log.info(userDetails1.toString());
+    }
 
     /*Filters*/
     @PostMapping("/filters/filterProducts/{group}")

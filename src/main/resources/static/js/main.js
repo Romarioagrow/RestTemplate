@@ -5,6 +5,7 @@ import App          from "pages/App.vue"
 import Vuetify      from "vuetify";
 import BootstrapVue from 'bootstrap-vue'
 import Vuesax       from 'vuesax'
+import VueMask      from 'v-mask'
 import 'vuetify/dist/vuetify.min.css'
 import 'vue-material-design-icons/styles.css';
 import 'bootstrap/dist/css/bootstrap.css'
@@ -17,6 +18,7 @@ Vue.use(VueResource);
 Vue.use(Vuetify);
 Vue.use(BootstrapVue);
 Vue.use(Vuesax);
+Vue.use(VueMask);
 
 new Vue({
     el: '#app',

@@ -23,12 +23,12 @@ public class User implements UserDetails {
     private Long userID;
 
     @NotBlank(message = "Введите номер телефона!")
-    @Pattern(regexp = "\\+7(-\\d{3}){2}-\\d{4}")
+    //@Pattern(regexp = "\7(-\\d{3}){2}-\\d{4}")
     private String username;
 
     @JsonIgnore
     @NotBlank(message = "Введите пароль!")
-    private String password, passwordMatch;
+    private String password;
 
     @Size(min=2, message = "Минимум 2 символа")
     @NotBlank(message = "Введите имя!")
@@ -38,7 +38,7 @@ public class User implements UserDetails {
     @NotBlank(message = "Введите фамилию!")
     private String lastName;
 
-    private String email, otchestvo;
+    private String email, patronymic;
 
     @Column(name = "pic")
     private String userPic;
