@@ -1,9 +1,9 @@
 <template>
     <router-link :to="path">
         <v-card class="mx-auto mt-3" width="300" height="300">
-            <v-img class="white--text w-50" :src="group.groupPic" contain width="200" height="200"></v-img>
+            <v-img class="white--text w-50" :src="group[1]" contain width="200" height="200"></v-img>
             <v-card-title>
-                <div>{{group.groupName}}</div>
+                <div>{{group[0]}}</div>
             </v-card-title>
         </v-card>
     </router-link>
@@ -12,15 +12,11 @@
 <script>
     export default {
         props: {
-            group: {
-                type: Object,
-                required: true
-            },
-            index: Number
+            group: []
         },
         data() {
             return {
-                path: '/products/' + this.group.groupName.toLowerCase().replace(' ', '_'),
+                path: '/products/' + this.group[0].toLowerCase().replace(' ', '_'),
             }
         }
     }

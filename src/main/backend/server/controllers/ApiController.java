@@ -42,11 +42,14 @@ public class ApiController {
     }
 
     /*Catalog*/
+    /*@PostMapping("/all/catalog")
+    private LinkedHashMap<String, List<ProductGroup>> listFullCatalog(@RequestBody String[] categories) {
+        return productService.mapCatalogJSON(categories);
+    }*/
     @PostMapping("/all/catalog")
     private LinkedHashMap<String, List<ProductGroup>> listFullCatalog(@RequestBody String[] categories) {
         return productService.getAllCategories(categories);
     }
-
     /*Page*/
     @GetMapping("/page/filters/{group}")
     private FiltersList createFiltersLists(@PathVariable String group) {

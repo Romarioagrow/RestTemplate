@@ -1,4 +1,6 @@
 package server.services;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.data.domain.*;
@@ -8,6 +10,9 @@ import server.domain.Product;
 import server.dto.FiltersList;
 import server.dto.ProductGroup;
 import server.repos.ProductRepo;
+
+import java.io.File;
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
@@ -244,7 +249,6 @@ public class ProductService {
     }
 
 
-    /*!!!СОЗДАВАТЬ В JSON И СОХРАНЯТЬ В ПАПКУ!!!*/
     public LinkedHashMap<String, List<ProductGroup>> getAllCategories(String[] categories) {
         LinkedHashMap<String, List<ProductGroup>> fullCatalog = new LinkedHashMap<>();
         for (String category : categories)
@@ -279,7 +283,9 @@ public class ProductService {
             /*КАК ВАРИАНТ СОЗДАТЬ ШАБЛОНЫ ДЛЯ ДОБАЛВЕНИЯ KEY/VALUE ДЛЯ RUSBT SHORTANNO*/
             /*ДОБАВЛЯТЬ СИНОНИМЫ ЧЕРЕЗ ИЛИ*/
             /*НУЖНО ЧТО БЫ ПРОДОЛЖАЛ ФИЛЬТРОВАТЬ УЖЕ ОТФИЛЬТРОВАННЫЕ ОДИН РАЗ ТОВАРЫ*/
-                /*ДЛЯ КАЖДОЙ ФИЛЬТРАЦИИ ОТПРАВЛЯТЬ СПИСОК УЖЕ ОТФИЛЬТРОВАННЫХ ТОВАРОВ*/
+            /*ДЛЯ КАЖДОЙ ФИЛЬТРАЦИИ ОТПРАВЛЯТЬ СПИСОК УЖЕ ОТФИЛЬТРОВАННЫХ ТОВАРОВ*/
+            /*НА CHECK IN ФИЛЬТРОВАТЬ CURRENTpRODUCTfILTER, НА CHECK OUT PRODUCTS = BY GROUP */
+
         {
             /*Фильтры по цене*/
             products = products.stream().filter(product ->
@@ -338,6 +344,7 @@ public class ProductService {
                 }).collect(Collectors.toList());
             }
 
+            /*Фильтры по особенностям*/
             if (filterHasContent(filters, "features")) {
                 products = products.stream().filter(product ->
                 {

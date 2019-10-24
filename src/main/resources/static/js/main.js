@@ -1,21 +1,17 @@
-import Vue from 'vue'
-import VueResource from 'vue-resource'
-import router from "./router";
-import App from "pages/App.vue"
-import Vuetify from "vuetify";
+import Vue          from 'vue'
+import VueResource  from 'vue-resource'
+import router       from "./router";
+import App          from "pages/App.vue"
+import Vuetify      from "vuetify";
+import BootstrapVue from 'bootstrap-vue'
+import Vuesax       from 'vuesax'
 import 'vuetify/dist/vuetify.min.css'
 import 'vue-material-design-icons/styles.css';
-import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import Vuesax from 'vuesax'
 import 'vuesax/dist/vuesax.css'
 import 'material-icons/iconfont/material-icons.css';
-
-/*import fullCatalogJSON from /papaka/fullCatalogJSON.json */
-/*const fullCatalog = fullCatalogJSON.parseJSON
-* Vue.use(fullCatalog)*/
-
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
 Vue.use(VueResource);
 Vue.use(Vuetify);

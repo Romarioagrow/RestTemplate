@@ -133,7 +133,6 @@
 <script>
     import axios from 'axios'
     import ProductCard from "components/ProductCard.vue";
-
     export default {
         components: {ProductCard},
         data() {

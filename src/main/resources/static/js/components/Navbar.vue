@@ -6,7 +6,7 @@
                 <v-app-bar-nav-icon></v-app-bar-nav-icon>
             </router-link>
 
-            <v-toolbar-title>Expert</v-toolbar-title>
+            <v-toolbar-title style="color:#e52d00;">Expert</v-toolbar-title>
 
             <v-autocomplete
                     v-model="select"
@@ -29,7 +29,7 @@
                 </v-btn>
             </router-link>
 
-            <router-link to="/test" class="ml-5">
+            <router-link to="/login" class="ml-5">
                 <v-btn>
                     <span>Вход</span>
                     <v-icon>mdi-login-variant</v-icon>

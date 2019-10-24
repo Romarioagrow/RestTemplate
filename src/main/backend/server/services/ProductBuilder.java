@@ -1,4 +1,6 @@
 package server.services;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.opencsv.CSVReader;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
@@ -13,6 +15,7 @@ import server.config.AliasConfig;
 import server.domain.OriginalProduct;
 import server.domain.Product;
 import server.domain.UniqueBrand;
+import server.dto.ProductGroup;
 import server.repos.BrandsRepo;
 import server.repos.OriginalRepo;
 import server.repos.ProductRepo;
@@ -33,12 +36,61 @@ public class ProductBuilder {
     private final BrandsRepo brandsRepo;
 
     public void updateProductsDB(MultipartFile excelFile) throws FileNotFoundException {
-        log.info(excelFile.getOriginalFilename());
-        parseSupplierFile(excelFile);
-        matchProductDetails();
-        resolveDuplicates();
-        resolveAvailable();
-        log.info("Update Complete! Products available: " + productRepo.findAll().size());
+        try {
+
+
+            log.info(excelFile.getOriginalFilename());
+            parseSupplierFile(excelFile);
+            matchProductDetails();
+            resolveDuplicates();
+            resolveAvailable();
+            mapCatalogJSON();
+            log.info("Update Complete! Products available: " + productRepo.findAll().size());
+        }
+        catch (NullPointerException | IOException e) {
+            e.getStackTrace();
+        }
+    }
+
+    /*!!!СОЗДАВАТЬ В JSON И СОХРАНЯТЬ В ПАПКУ!!!*/
+    private void mapCatalogJSON() throws IOException {
+        LinkedHashMap<String, List<ArrayList<String>>> fullCatalog = new LinkedHashMap<>();
+        String[] categories = {
+                "Теле-видео-аудио","Кухонная техника","Техника для дома",
+                "Встраиваемая техника", "Климатическая техника", "Приборы персонального ухода",
+                "Цифровые устройства", "Компьютеры и оргтехника", "Инструменты для дома",
+                "Автотовары", "Строительные инструменты", "Подсобное хозяйство",
+                "Товары для дома", "Отопительное оборудование", "Спорт и отдых",
+                "Посуда и кухонные принадлежности", "Сопутствующие товары"
+        };
+
+        for (String category : categories)
+        {
+            List<ArrayList<String>> productGroups = new ArrayList<>();
+            Set<String> categoryGroups = new TreeSet<>();
+
+            productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> categoryGroups.add(product.getProductGroup()));
+            categoryGroups.forEach(productGroup ->
+            {
+                String pic = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic();
+                if (pic == null) pic = "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
+
+                ArrayList<String> group = new ArrayList<>();// = new ProductGroup();
+                group.add(productGroup);
+                group.add(pic);
+                //group.setGroupName(productGroup);
+                //group.setGroupPic(pic);
+                productGroups.add(group);
+            });
+            fullCatalog.put(category, productGroups);
+        }
+
+        fullCatalog.forEach((s, productGroups) -> log.info(s + " " + productGroups.toString()));
+
+        /*String json = new Gson().toJson(fullCatalog, TreeMap.class);
+        log.info(json);*/
+
+        new ObjectMapper().writeValue(new File("D:\\Projects\\Rest\\src\\main\\resources\\static\\js\\assets\\json\\catalog.json"), fullCatalog);
     }
 
     /*#0*/
