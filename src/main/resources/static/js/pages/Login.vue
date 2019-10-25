@@ -105,9 +105,43 @@
                 })
             },
             loginUser() {
-                axios.post('http://localhost:9000/user/login', { username: this.username, password: this.password }).then(response => {
-                    console.log(response)
+
+
+                let auth = new FormData();
+                //auth['username'] = this.username
+                //auth['password'] = this.password
+
+                auth.set('username', this.username);
+                auth.set('password', this.password);
+                /*let auth: {
+                    'username': this.username,
+                    'password': this.password
+                }*/
+
+                console.log(auth)
+                //const password = this.password
+
+
+                axios({
+                    method: 'post',
+                    url: 'http://localhost:9000/login',
+                    data: auth,
+                    config: { headers: {'Content-Type': 'application/x-www-form-urlencoded' }}
                 })
+                    .then(function (response) {
+                        //handle success
+                        console.log(response);
+                    })
+                    .catch(function (response) {
+                        //handle error
+                        console.log(response);
+                    });
+
+                /*axios.post('perform_login', auth, {headers : {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }}).then(response => {
+                    console.log(response)
+                })*/
 
 
                 /*this.$http.post('http://localhost:9000/login', { username: this.username, password: this.password })

@@ -26,7 +26,7 @@ public class User implements UserDetails {
     //@Pattern(regexp = "\7(-\\d{3}){2}-\\d{4}")
     private String username;
 
-    @JsonIgnore
+    //@JsonIgnore
     @NotBlank(message = "Введите пароль!")
     private String password;
 
