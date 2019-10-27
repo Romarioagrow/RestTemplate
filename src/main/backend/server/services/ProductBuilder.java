@@ -63,10 +63,9 @@ public class ProductBuilder {
         String[] categories = {
                 "Теле-видео-аудио","Кухонная техника","Техника для дома",
                 "Встраиваемая техника", "Климатическая техника", "Приборы персонального ухода",
-                "Цифровые устройства", "Компьютеры и оргтехника", "Инструменты для дома",
-                "Автотовары", "Строительные инструменты", "Подсобное хозяйство",
-                "Товары для дома", "Отопительное оборудование", "Спорт и отдых",
-                "Посуда и кухонные принадлежности", "Сопутствующие товары"
+                "Цифровые устройства", "Компьютеры и оргтехника", "Автотовары",
+                "Строительные инструменты", "Подсобное хозяйство", "Товары для дома",
+                "Отопительное оборудование", "Спорт и отдых", "Посуда и кухонные принадлежности", "Сопутствующие товары"
         };
 
         for (String category : categories)
@@ -212,6 +211,9 @@ public class ProductBuilder {
         product.setPic(originalProduct.getOriginalPic());
         product.setBrand(originalBrand);
         product.setUpdateDate(LocalDate.now());
+
+        //if (originalProduct.get)
+
         return product;
     }
 
@@ -671,8 +673,8 @@ public class ProductBuilder {
                 exp.printStackTrace();
             }
         });
-
         //downloadPics();
+
         System.out.println();
         log.info("Всего товаров: "      + originalProducts.size());
         log.info("Успешно скачано: "    + countPic);

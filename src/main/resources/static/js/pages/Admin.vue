@@ -28,7 +28,6 @@
             <v-file-input id="file" name="file" label="Файл Excel" outlined dense></v-file-input>
             <v-btn color="success" value=Upload @click="uploadFiles">Загрузить</v-btn>
         </form>-->
-
         <v-row>
             <v-col>
                 <v-card>
@@ -53,7 +52,6 @@
                 </v-card>
             </v-col>
         </v-row>
-
         <v-row>
             <v-col>
                 <v-card class="mt-3">
@@ -72,17 +70,16 @@
                 </v-card>
             </v-col>
         </v-row>
-
-        <v-col>
-            <v-card class="mt-3">
-                <v-card-title>Test</v-card-title>
-                <v-card-actions class="ml-5">
-                    <v-btn color="red" v-on:click="test()">BANG</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-col>
-
-
+        <v-row>
+            <v-col>
+                <v-card class="mt-3">
+                    <v-card-title>Test</v-card-title>
+                    <v-card-actions class="ml-5">
+                        <v-btn color="red" v-on:click="test()">BANG</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 
