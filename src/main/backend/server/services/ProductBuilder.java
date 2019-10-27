@@ -8,6 +8,7 @@ import org.apache.poi.openxml4j.exceptions.OLE2NotOfficeXmlFileException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import server.config.AliasConfig;
@@ -18,11 +19,18 @@ import server.repos.BrandsRepo;
 import server.repos.OriginalRepo;
 import server.repos.ProductRepo;
 import java.io.*;
+import java.net.ConnectException;
+import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+
+import org.jsoup.HttpStatusException;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 @Log
 @Service
@@ -50,7 +58,7 @@ public class ProductBuilder {
     }
 
     /*Создать-обновить каталог в JSON и сохранить в папку*/
-    public void mapCatalogJSON() throws IOException/*, NullPointerException*/ {
+    public void mapCatalogJSON() throws IOException {
         LinkedHashMap<String, List<ArrayList<String>>> fullCatalog = new LinkedHashMap<>();
         String[] categories = {
                 "Теле-видео-аудио","Кухонная техника","Техника для дома",
@@ -140,7 +148,7 @@ public class ProductBuilder {
         for (OriginalProduct originalProduct : originalProducts)
         {
             String productID = originalProduct.getProductID();
-            Product product = productRepo.findProductByProductID(productID);
+            Product product = productRepo.findByProductID(productID);
             if (product == null) {
                 product = new Product();
                 product.setProductID(productID);
@@ -592,181 +600,86 @@ public class ProductBuilder {
         }
     }
 
-    /*private String resolveFullName(OriginalProduct originalProduct) {
-        String name = originalProduct.getOriginalName();
+    public void parsePicsRUSBT() {
+        //findInBigBase();
 
-        if (name.matches("^[а-яА-Я]*\\s[0-9]{1,2}([,][1-9]{1,2})\\s.*$")) {
-            log.info(name);
-            return StringUtils.substringBefore(name, ", ");
-        }
-        return StringUtils.substringBefore(name, ",");
-    }*/
+        AtomicInteger count404 = new AtomicInteger(), countPic = new AtomicInteger(), countAnno = new AtomicInteger(), countInfo = new AtomicInteger();
+        List<OriginalProduct> originalProducts = originalRepo.findByLinkToPicNotNull();
+
+        System.out.println();
+        log.info("Парсинг сайта картинок RUSBT");
+        log.info("Всего товаров без картинок для парсинга: " + originalProducts.size());
+
+        originalProducts.forEach(originalProduct ->
+        {
+            String link = originalProduct.getLinkToPic();
+            try
+            {
+                String pic;
+                Document page = Jsoup.connect(link).get();
+                Elements pics = page.select("img");
+                for (Element picElement : pics)
+                {
+                    String picSrc = picElement.attr("src");
+                    if (picSrc.startsWith("/upload"))
+                    {
+                        pic = "http://rusbt.ru".concat(picSrc);
+                        if (originalProduct.getOriginalPic() == null) originalProduct.setOriginalPic(pic);
+                        else if (originalProduct.getPicsFromRUSBT() == null) originalProduct.setPicsFromRUSBT(pic);
+                        originalRepo.save(originalProduct);
+
+                        log.info("Изображения для: " + originalProduct.getOriginalName() + ": " + pic);
+                        countPic.getAndIncrement();
+                    }
+                    else log.info("Нет изображения товара на сайте!");
+                }
+
+                Elements props = page.getElementsByClass("one_prop");
+                for (Element element : props) {
+                    String key = StringUtils.substringBetween(element.html(), "<span>", "</span>");
+                    String val = StringUtils.substringBetween(element.html(), "<div class=\"left_value\">", "</div>");
+                    String param = key.concat(":").concat(val).concat(";");
+
+                    if (originalProduct.getAnnotationFromRUSBT() == null) {
+                        originalProduct.setAnnotationFromRUSBT(param);
+                    }
+                    else originalProduct.setAnnotationFromRUSBT(originalProduct.getAnnotationFromRUSBT().concat(param));
+                }
+                originalRepo.save(originalProduct);
+
+                Product product = productRepo.findByProductID(originalProduct.getProductID());
+                product.setPic(originalProduct.getOriginalPic());
+                product.setPics(originalProduct.getPicsFromRUSBT());
+                product.setAnnotationFromRUSBT(originalProduct.getAnnotationFromRUSBT());
+                productRepo.save(product);
+
+                countInfo.getAndIncrement();
+                log.info(countInfo + " из " + originalProducts.size());
+            }
+            catch (HttpStatusException exp) {
+                log.info("404 Page is empty");
+                count404.getAndIncrement();
+            }
+            catch (ConnectException exp) {
+                log.info("Connection timed out");
+                exp.printStackTrace();
+            }
+            catch (MalformedURLException exp) {
+                log.info(exp.getClass().getName());
+            }
+            catch (IOException | NullPointerException exp) {
+                exp.printStackTrace();
+            }
+        });
+
+        //downloadPics();
+        System.out.println();
+        log.info("Всего товаров: "      + originalProducts.size());
+        log.info("Успешно скачано: "    + countPic);
+        log.info("404 на сайте: "       + count404);
+    }
 
     public void test() {
-        /*for (Product product : productRepo.findAll()) {
-            if (product.getProductCategory().contains("_")) {
-                product.setProductCategory(StringUtils.substringAfter(product.getProductCategory(), "_"));
-                productRepo.save(product);
-            }
-        }*/
-
-        /*for (OriginalProduct product : originalRepo.findAll()) {
-            product.setUpdateDate(LocalDate.ofYearDay(2019, 63));
-            originalRepo.save(product);
-        }
-
-        for (Product product : productRepo.findAll()) {
-            product.setUpdateDate(LocalDate.ofYearDay(2019, 63));
-            productRepo.save(product);
-        }*/
-
-        String[] notParams = {": нет", ": 0",  ": -", "количество шт в"};
-
-        for (OriginalProduct product : originalRepo.findAll().stream().filter(originalProduct -> !originalProduct.getOriginalAnnotation().isEmpty()).collect(Collectors.toList())) {
-            String splitter  = product.getSupplier().equals("RBT") ? "; " : ", ";
-            //List<String> filters = Arrays.asList(product.getOriginalAnnotation().split(splitter));
-
-            List<String> filters = new LinkedList<>(Arrays.asList(product.getOriginalAnnotation().split(splitter)));
-
-
-            System.out.println();
-            log.info(filters.toString());
-
-            filters.removeIf(filter -> Arrays.stream(notParams).parallel().anyMatch(filter::contains));
-
-
-            /*filters.forEach(filter -> {
-                boolean stop = Arrays.stream(notParams).parallel().anyMatch(filter::contains);
-
-
-                *//*if (stop) {
-                    log.info(filter);
-                    filters.remove(filter);
-                    //ArrayUtils.remove(filters, filter);
-
-                }*//*
-            });*/
-
-            /*for (String filter : filters) {
-                boolean stop = Arrays.stream(notParams).parallel().anyMatch(filter::contains);
-                if (stop) {
-                    log.info(filter);
-                    filters.remove(filter);
-                    //ArrayUtils.remove(filters, filter);
-
-                }
-            }*/
-            log.info(filters.toString());
-        }
-
-
-
-        /*Set<String> categories = new TreeSet<>();
-        productRepo.findAll().forEach(product -> categories.add(product.getProductCategory()));
-        categories.forEach(log::info);
-
-        Set<String> groups = new TreeSet<>();
-        productRepo.findByProductCategoryIgnoreCase("Отдых и Развлечения").forEach(product -> groups.add(product.getProductGroup()));
-        System.out.println();
-        groups.forEach(log::info);*/
-
-
-
-        /*og.info("test");
-
-        for (OriginalProduct originalProduct : originalRepo.findAll())
-        {
-            String originalBrand = originalProduct.getOriginalBrand().toLowerCase();
-            String originalName = originalProduct.getOriginalName().toLowerCase();
-
-
-            *//*if (originalProduct.getSupplier().equals("RBT") && !originalBrand.isEmpty()) {
-                String case1 = StringUtils.substringAfter(originalProduct.getOriginalName().toLowerCase(), originalBrand.toUpperCase().replaceAll(" ", "").replaceAll("&", "")).trim();
-                log.info("case1 " + case1);
-            }
-            else if (originalName.contains(", ") && originalName.contains(originalBrand) && StringUtils.substringAfter(originalName, originalBrand).contains(","))
-            {
-                String case1 = StringUtils.substringBetween(originalName, originalBrand, ",").trim();
-                log.info("case1 " + case1);
-            }*//*
-            String modelName;
-
-            if (originalProduct.getSupplier().equals("RBT") && !originalBrand.isEmpty()) {
-                modelName = StringUtils.substringAfter(originalProduct.getOriginalName().toLowerCase(), originalBrand.toUpperCase().replaceAll(" ", "").replaceAll("&", "")).trim();
-                *//*if ()
-                System.out.println();
-                log.info("case1, RBT");
-                log.info(originalProduct.getOriginalName());
-                log.info("modelName: " + modelName);*//*
-
-            }
-            else if (originalName.contains(", ") && originalName.contains(originalBrand) && StringUtils.substringAfter(originalName, originalBrand).contains(",")) {
-                modelName = StringUtils.substringBetween(originalName, originalBrand, ",").trim();
-                *//*System.out.println();
-                log.info("case2, else if, substringAfter contains(,)");
-                log.info(originalProduct.getOriginalName());
-                log.info("case2 " + modelName);*//*
-            }
-            else {
-                modelName = StringUtils.substringAfter(originalName, originalBrand).trim();
-                *//*System.out.println();
-                log.info("case3, else");
-                log.info(originalProduct.getOriginalName());
-                log.info("modelName: " + modelName);*//*
-            }
-
-            if (modelName.isEmpty()) {
-                if (originalName.contains(originalBrand)) {
-                    modelName = StringUtils.substringAfter(originalName, originalBrand);
-                }
-                else {
-                    System.out.println();
-                    log.info("OrigBrand: " + originalBrand);
-                    log.info("OrigName: " + originalName);
-                }
-            }
-        }*/
-
-        /*// ^[\w\W\s?]+ [0-9]{1,2}([,][0-9]{1,2}) [\w\W\s?]+$
-        // ^[0-9]{1,2}([,][0-9]{1,2})$
-        // ^ [0-9]{1,2}([,][1-9]{1,2}) $
-        // ^[^.]* [0-9]{1,2}([,][1-9]{1,2}) [^.]*$
-        // ^[а-яА-Я]* [0-9]{1,2}([,][1-9]{1,2}) .*$
-
-        log.info("lol");
-        for (OriginalProduct originalProduct : originalRepo.findAll())
-        {
-            String name = originalProduct.getOriginalName();
-
-            if (name.matches("^[а-яА-Я]*\\s[0-9]{1,2}([,][1-9]{1,2})\\s.*$")) {
-                log.info(name);
-            }
-
-            *//*boolean find = Pattern.compile("^[0-9]{1,2}([,][0-9]{1,2})$").matcher(name).find();
-            if (find) log.info(originalProduct.getOriginalName());*//*
-
-
-         *//*Pattern pattern = Pattern.compile("[0-9]{1,2}([,][0-9]{1,2})");
-            Matcher matcher = pattern.matcher(originalProduct.getOriginalName());
-
-            if (matcher.matches()) {
-                log.info(originalProduct.getOriginalName());
-            }*//*
-        }
-        log.info("end");*/
+        log.info("test");
     }
 }
-
-
-/*!!! ЧЕРЕЗ SPRING CONTEXT*/
-/*
- * BEAN Matcher
- * COLLECTION Map<String, String[]> aliases
- * ЗНАЧЕНИЯ ДЛЯ КАЖДОЙ ENTRY В PROPERTIES
- * 1элемент - Синоним, 2.group, 3.coeff, 4.singleName, 5.category
- * В итерации для каждого originalProduct из таблицы Поставщиков
- * for entry : aliases {
- *   if(entry.key.startWith(originalProduct.getType)) {
- *           match new Product()
- *       }
- * }*/

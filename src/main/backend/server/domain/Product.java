@@ -21,7 +21,7 @@ public class Product {
     private String modelName, fullName, singleTypeName, searchName, groupBrandName, shortModelName, originalName;
 
     @Column(length = 20000)
-    private String pic, linkToPic, pics, annotation, shortAnnotation, formattedAnnotation;
+    private String pic, linkToPic, pics, annotation, shortAnnotation, formattedAnnotation, annotationFromRUSBT;
 
     private Boolean isAvailable, uniquePrice, coefficientModified, priceModified, isDuplicate, hasDuplicates, mappedJSON = false;
 

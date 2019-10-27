@@ -4,9 +4,7 @@ import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import server.domain.Product;
@@ -118,6 +116,10 @@ public class ApiController {
         catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
+    }
+    @PostMapping("/admin/parsePicsRUSBT")
+    private void parsePicsRUSBT() {
+        productBuilder.parsePicsRUSBT();
     }
 
 }

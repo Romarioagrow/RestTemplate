@@ -1,6 +1,4 @@
 package server.services;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.data.domain.*;
@@ -11,8 +9,6 @@ import server.dto.FiltersList;
 import server.dto.ProductGroup;
 import server.repos.ProductRepo;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
@@ -245,7 +241,7 @@ public class ProductService {
     }
 
     public Product getProductByID(String productID) {
-        return productRepo.findProductByProductID(productID);
+        return productRepo.findByProductID(productID);
     }
 
 

@@ -65,13 +65,22 @@
             </v-col>
             <v-col>
                 <v-card class="mt-3">
-                    <v-card-title>Test</v-card-title>
+                    <v-card-title>Спарсить ссылки фото RUSBT</v-card-title>
                     <v-card-actions class="ml-5">
-                        <v-btn color="red" v-on:click="test()">BANG</v-btn>
+                        <v-btn color="yellow" v-on:click="parsRUSBTPics()">Запустить парсер</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-col>
         </v-row>
+
+        <v-col>
+            <v-card class="mt-3">
+                <v-card-title>Test</v-card-title>
+                <v-card-actions class="ml-5">
+                    <v-btn color="red" v-on:click="test()">BANG</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-col>
 
 
     </v-container>
@@ -102,6 +111,9 @@
             },
             updateCatalog() {
                 axios.post('api/admin/updateCatalog').then(console.log('catalog updated'));
+            },
+            parsRUSBTPics() {
+                axios.post('api/admin/parsePicsRUSBT').then(console.log('pics parsed'));
             },
             test() {
                 axios.post('api/admin/test').then(console.log('OK'));

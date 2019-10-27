@@ -11,5 +11,8 @@ public interface OriginalRepo extends JpaRepository<OriginalProduct, String> {
     OriginalProduct findByProductID(String productID);
 
     List<OriginalProduct> findByUpdateDate(LocalDate today);
+
+    List<OriginalProduct> findByLinkToPicNotNull();
+
     //List<OriginalProduct> findByOriginalTypeAndOriginalAnnotationIsNo(String type);
 }
