@@ -30,6 +30,11 @@ public class ApiController {
     private final ProductBuilder productBuilder;
     private final UserService userService;
 
+    /*Orders*/
+    @PostMapping("/order/orderedProducts")
+    private List<Product> listOrderedProducts() {
+        return productService.listOrderedProducts();
+    }
 
     /*Users*/
     @PostMapping("/user/registration")
@@ -37,25 +42,6 @@ public class ApiController {
         log.info(userDetails.toString());
         return userService.registerUser(userDetails);
     }
-
-    /*@PostMapping("/user/login")
-    private void login(@AuthenticationPrincipal User user, Authentication auth) {//@RequestBody Map<String, String> userDetails) {
-        *//*log.info(userDetails.toString());
-        UserDetails userDetails1 = userService.loadUserByUsername(userDetails.get("username"));
-        log.info(userDetails1.getUsername());*//*
-        log.info(auth.toString());
-        *//*try {
-            log.info(auth.toString());
-            log.info(auth.getPrincipal().toString());
-            log.info(user.toString());
-        }
-        catch (NullPointerException e) {
-            e.getStackTrace();
-        }*//*
-
-        //log.info(userDetails1.getPassword());
-        //log.info(userDetails1.toString());
-    }*/
 
     /*Filters*/
     @PostMapping("/filters/filterProducts/{group}")
@@ -72,16 +58,11 @@ public class ApiController {
     private Product listProductByID(@PathVariable String productID) {
         return productService.getProductByID(productID);
     }
-
-    /*Catalog*/
-    /*@PostMapping("/all/catalog")
-    private LinkedHashMap<String, List<ProductGroup>> listFullCatalog(@RequestBody String[] categories) {
-        return productService.mapCatalogJSON(categories);
-    }*/
     @PostMapping("/all/catalog")
     private LinkedHashMap<String, List<ProductGroup>> listFullCatalog(@RequestBody String[] categories) {
         return productService.getAllCategories(categories);
     }
+
     /*Page*/
     @GetMapping("/page/filters/{group}")
     private FiltersList createFiltersLists(@PathVariable String group) {
@@ -121,5 +102,7 @@ public class ApiController {
     private void parsePicsRUSBT() {
         productBuilder.parsePicsRUSBT();
     }
+
+
 
 }

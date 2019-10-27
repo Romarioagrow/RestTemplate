@@ -370,6 +370,14 @@ public class ProductService {
         return new PageImpl<>(products.subList(start, end), pageable, products.size());
     }
 
+    public List<Product> listOrderedProducts() {
+        List<Product> orderedProducts = new ArrayList<>();
+        orderedProducts.add(productRepo.findByProductID("02.02.04.01.000777"));
+        orderedProducts.add(productRepo.findByProductID("01.01.01.000000011"));
+        orderedProducts.add(productRepo.findByProductID("03.01.01.01.000427"));
+        return orderedProducts;
+    }
+
 
     /*public List<Product> filterProducts(Map<String, Object/*String[]> filters, String group) {
         System.out.println();

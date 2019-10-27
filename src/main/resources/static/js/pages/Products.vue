@@ -96,7 +96,24 @@
             <!---->
             <v-item-group multiple>
                 <v-container fluid>
-                    <v-breadcrumbs :items="items" large></v-breadcrumbs>
+                    <!--<v-breadcrumbs :items="items" large></v-breadcrumbs>-->
+                    <v-row>
+                        <v-col cols="1">
+                            <router-link to="/"><v-btn text small color="#1976da">Каталог</v-btn></router-link>
+                        </v-col>
+                        <v-col cols="1" >
+                            <v-icon>mdi-chevron-right</v-icon>
+                        </v-col>
+                        <v-col cols="1">
+                            <router-link :to="categoryLink"><v-btn text small color="#1976da">Категория</v-btn></router-link>
+                        </v-col>
+                        <v-col cols="1">
+                            <v-icon>mdi-chevron-right</v-icon>
+                        </v-col>
+                        <v-col cols="1">
+                            <v-btn text small color="#1976da" disabled>{{group.charAt(0).toUpperCase() + group.substr(1)}}</v-btn>
+                        </v-col>
+                    </v-row>
                     <!---->
                     <strong class="ml-3" v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</strong>
                     <v-row class="mt-1 ml-1" v-if="totalPages !== 1">
@@ -183,7 +200,8 @@
                 productsRequest: '',
                 filtersRequest: '',
                 pageRequest: '',
-                totalProductsFound: 0
+                totalProductsFound: 0,
+                categoryLink:''
             }
         },
         created() {
@@ -191,6 +209,7 @@
             this.pageRequest     = '/api/products' + this.requestGroup
             this.productsRequest = '/api/products' + this.requestGroup + '/0'
             this.filtersRequest  = '/api/page/filters' + this.requestGroup
+            this.categoryLink    =  '/'//+ this.requestGroup
 
             /*loadFilters*/
             axios.get(this.filtersRequest).then(response => {
