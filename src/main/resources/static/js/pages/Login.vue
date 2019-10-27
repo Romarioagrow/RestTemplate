@@ -110,20 +110,19 @@
                 auth.set('password', this.password);
                 console.log(auth)
 
-                //auth = JSON.stringify(auth);
-
                 const config = {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 }
 
-                axios.post('http://localhost:9000/login', auth, config)
-                    .then((result) => {
-                        // Do somthing
+                const loginURL = 'http://localhost:9000/login'
+
+                axios.post(loginURL, auth, config).then((result) => {
+                        console.log(result)
                     })
                     .catch((err) => {
-                        // Do somthing
+                        console.log(err)
                     })
 
                 /*axios({

@@ -19,7 +19,7 @@ public class Item {
     private String supplier;
 
     @Column(length = 20000)
-    private String originalAnnotation, originalPicLink;
+    private String originalAnnotation, originalPic, linkToPic;
 
     private LocalDate updateDate;
 

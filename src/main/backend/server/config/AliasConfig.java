@@ -12,7 +12,7 @@ public class AliasConfig {
     @Bean
     public LinkedHashMap<String, String> aliasesMap() throws FileNotFoundException {
         Gson gson = new Gson();
-        JsonReader reader = new JsonReader(new FileReader("D:\\Projects\\Rest\\src\\main\\resources\\aliases.json"));
+        JsonReader reader = new JsonReader(new FileReader("D:\\Projects\\Rest\\src\\main\\resources\\static\\js\\assets\\json\\aliases.json"));
         return gson.fromJson(reader, LinkedHashMap.class);
     }
 }

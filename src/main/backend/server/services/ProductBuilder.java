@@ -1,6 +1,5 @@
 package server.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.opencsv.CSVReader;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
@@ -15,7 +14,6 @@ import server.config.AliasConfig;
 import server.domain.OriginalProduct;
 import server.domain.Product;
 import server.domain.UniqueBrand;
-import server.dto.ProductGroup;
 import server.repos.BrandsRepo;
 import server.repos.OriginalRepo;
 import server.repos.ProductRepo;
@@ -36,9 +34,8 @@ public class ProductBuilder {
     private final BrandsRepo brandsRepo;
 
     public void updateProductsDB(MultipartFile excelFile) throws FileNotFoundException {
-        try {
-
-
+        try
+        {
             log.info(excelFile.getOriginalFilename());
             parseSupplierFile(excelFile);
             matchProductDetails();
@@ -52,8 +49,8 @@ public class ProductBuilder {
         }
     }
 
-    /*!!!СОЗДАВАТЬ В JSON И СОХРАНЯТЬ В ПАПКУ!!!*/
-    private void mapCatalogJSON() throws IOException {
+    /*Создать-обновить каталог в JSON и сохранить в папку*/
+    public void mapCatalogJSON() throws IOException/*, NullPointerException*/ {
         LinkedHashMap<String, List<ArrayList<String>>> fullCatalog = new LinkedHashMap<>();
         String[] categories = {
                 "Теле-видео-аудио","Кухонная техника","Техника для дома",
@@ -72,24 +69,53 @@ public class ProductBuilder {
             productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> categoryGroups.add(product.getProductGroup()));
             categoryGroups.forEach(productGroup ->
             {
-                String pic = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic();
-                if (pic == null) pic = "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
-
                 ArrayList<String> group = new ArrayList<>();// = new ProductGroup();
-                group.add(productGroup);
-                group.add(pic);
-                //group.setGroupName(productGroup);
-                //group.setGroupPic(pic);
-                productGroups.add(group);
+                try
+                {
+                    /*String pic;
+                    //pic = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic();
+                    if (productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic() != null) {
+                        pic = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic();
+                        group.add(productGroup);
+                        group.add(pic);
+                        productGroups.add(group);
+                        //pic = "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
+                    }
+                    else{
+                        //group.add(productGroup);
+                        group.add("D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png");
+                        productGroups.add(group);
+                    }*/
+                    Product product = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup);
+
+                    //String pic = Objects.requireNonNull(productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic()) != null ? productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic() : "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
+
+                    /*if (product.getPic() != null) {
+
+                    }*/
+
+                    String pic = product != null ? product.getPic() : "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
+                    group.add(productGroup);
+                    group.add(pic);
+                    productGroups.add(group);
+                    //log.info("in try");
+                    //else pic = "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
+                }
+                catch (NullPointerException e) {
+                    //e.getClass().getName();
+                    log.info("Нет ссылки для группы: " + productGroup);
+                }
+                /*finally {
+                    group.add(productGroup);
+                    group.add("D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png");
+                    productGroups.add(group);
+                }*/
+
             });
             fullCatalog.put(category, productGroups);
         }
 
         fullCatalog.forEach((s, productGroups) -> log.info(s + " " + productGroups.toString()));
-
-        /*String json = new Gson().toJson(fullCatalog, TreeMap.class);
-        log.info(json);*/
-
         new ObjectMapper().writeValue(new File("D:\\Projects\\Rest\\src\\main\\resources\\static\\js\\assets\\json\\catalog.json"), fullCatalog);
     }
 
@@ -175,10 +201,11 @@ public class ProductBuilder {
     }
 
     private Product resolveProductsDetails(OriginalProduct originalProduct, Product product) throws NumberFormatException {
+        boolean supplierRBT   = originalProduct.getSupplier().equals("RBT");
+
         String singleTypeName = product.getSingleTypeName();
         String originalBrand  = originalProduct.getOriginalBrand();
         String originalName   = originalProduct.getOriginalName();
-        boolean supplierRBT   = originalProduct.getSupplier().equals("RBT");
 
         Integer finalPrice    = resolveFinalPrice(originalProduct, product.getDefaultCoefficient());
         String modelName      = resolveModelName(originalProduct).toUpperCase().trim();
@@ -205,7 +232,7 @@ public class ProductBuilder {
         product.setFormattedAnnotation(formattedAnnotation);
 
         product.setSupplier(originalProduct.getSupplier());
-        product.setPic(originalProduct.getOriginalPicLink());
+        product.setPic(originalProduct.getOriginalPic());
         product.setBrand(originalBrand);
         product.setUpdateDate(LocalDate.now());
         return product;
@@ -247,14 +274,15 @@ public class ProductBuilder {
             String originalBrand        = row.getCell(4).toString();
             String supplier             = supplierRBT ? "RBT" : "RUSBT";
 
-            String originalPicLink;
+            String originalPic = null;
             if (supplierRBT) {
-                originalPicLink = StringUtils.substringBetween(row.getCell(3).toString(), "\"", "\""); /*при попытке row.getCell(3).getHyperlink().getAddress() вылетает NullPointer*/
+                originalPic = StringUtils.substringBetween(row.getCell(3).toString(), "\"", "\""); /*при попытке row.getCell(3).getHyperlink().getAddress() вылетает NullPointer*/
             }
             else if (!row.getCell(15).toString().isEmpty()) {
-                originalPicLink = row.getCell(15).getHyperlink().getAddress();
+                String linkToPic = row.getCell(15).getHyperlink().getAddress();
+                originalProduct.setLinkToPic(linkToPic);
             }
-            else originalPicLink = "Ссылки нет!";
+            //else originalPic = "Ссылки нет!";
 
             originalProduct.setOriginalCategory(originalCategory);
             originalProduct.setOriginalGroup(originalGroup);
@@ -265,7 +293,7 @@ public class ProductBuilder {
             originalProduct.setOriginalAmount(originalAmount);
             originalProduct.setOriginalBrand(originalBrand);
             originalProduct.setSupplier(supplier);
-            originalProduct.setOriginalPicLink(originalPicLink);
+            originalProduct.setOriginalPic(originalPic);
             originalProduct.setUpdateDate(LocalDate.now());
             originalProduct.setIsAvailable(true);
             originalRepo.save(originalProduct);
@@ -333,7 +361,7 @@ public class ProductBuilder {
         return product;
     }
     private Product defaultProductMatch(OriginalProduct originalProduct, Product product) {
-        Double defaultCoefficient = 1.2;
+        Double defaultCoefficient   = 1.2;
         String defaultCategory      = resolveDefaultCategory(originalProduct.getOriginalCategory());
         String defaultProductGroup  = resolveDefaultGroup(originalProduct.getOriginalType());//originalProduct.getOriginalType();
         String singleTypeName       = StringUtils.substringBefore(originalProduct.getOriginalName().toLowerCase(), originalProduct.getOriginalBrand().toLowerCase());

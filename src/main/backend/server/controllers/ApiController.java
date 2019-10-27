@@ -17,6 +17,7 @@ import server.services.ProductBuilder;
 import server.services.ProductService;
 import server.services.UserService;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +105,19 @@ public class ApiController {
         productBuilder.updateBrandsPrice(file);
     }
     @PostMapping("/admin/test")
-    private void uploadProductsDBFile() {
-        productBuilder.test();
+    private void uploadProductsDBFile(@AuthenticationPrincipal User user) {
+        log.info("TEST USER: " + user.getUsername());
+        //productBuilder.test();
     }
+    @PostMapping("/admin/updateCatalog")
+    private void updateProductsCatalog() {
+        try
+        {
+            productBuilder.mapCatalogJSON();
+        }
+        catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
