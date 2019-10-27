@@ -14,21 +14,17 @@
                             <v-list-item-avatar>
                                 №{{index+1}}
                             </v-list-item-avatar>
-
                             <v-list-item-avatar>
                                 <v-img :src="item.pic"></v-img>
                             </v-list-item-avatar>
-
                             <v-list-item-content class="ml-12">
                                 <v-list-item-title v-text="item.fullName"></v-list-item-title>
                             </v-list-item-content>
-
                             <v-list-item-content class="ml-12">
                                 <v-list-item-title>
                                     <span>цена <strong>{{item.finalPrice}}</strong> ₽</span>
                                 </v-list-item-title>
                             </v-list-item-content>
-
                             <v-list-item-action class="ml-12">
                                 <div class="my-2">
                                     <v-btn text small icon>
@@ -40,8 +36,6 @@
                                     </v-btn>
                                 </div>
                             </v-list-item-action>
-
-
                             <v-list-item-icon>
                                 <v-btn icon>
                                     <v-icon>mdi-close-circle</v-icon>
@@ -109,8 +103,6 @@
             </v-col>
         </v-row>
     </b-container>
-
-
 </template>
 
 <script>
@@ -135,5 +127,4 @@
         padding-top: 0 !important;
         margin-top: -1rem;
     }
-
 </style>

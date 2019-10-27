@@ -4,6 +4,10 @@
         <v-content>
             <router-view></router-view>
         </v-content>
+        <v-footer class="mt-5">
+            <v-spacer></v-spacer>
+            <div> {{ new Date().getFullYear() }}</div>
+        </v-footer>
     </v-app>
 </template>
 
