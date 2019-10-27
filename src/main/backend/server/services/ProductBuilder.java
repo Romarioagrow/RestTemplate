@@ -69,52 +69,21 @@ public class ProductBuilder {
             productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> categoryGroups.add(product.getProductGroup()));
             categoryGroups.forEach(productGroup ->
             {
-                ArrayList<String> group = new ArrayList<>();// = new ProductGroup();
+                ArrayList<String> group = new ArrayList<>();
                 try
                 {
-                    /*String pic;
-                    //pic = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic();
-                    if (productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic() != null) {
-                        pic = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic();
-                        group.add(productGroup);
-                        group.add(pic);
-                        productGroups.add(group);
-                        //pic = "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
-                    }
-                    else{
-                        //group.add(productGroup);
-                        group.add("D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png");
-                        productGroups.add(group);
-                    }*/
                     Product product = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup);
-
-                    //String pic = Objects.requireNonNull(productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic()) != null ? productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic() : "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
-
-                    /*if (product.getPic() != null) {
-
-                    }*/
-
                     String pic = product != null ? product.getPic() : "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
                     group.add(productGroup);
                     group.add(pic);
                     productGroups.add(group);
-                    //log.info("in try");
-                    //else pic = "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
                 }
                 catch (NullPointerException e) {
-                    //e.getClass().getName();
                     log.info("Нет ссылки для группы: " + productGroup);
                 }
-                /*finally {
-                    group.add(productGroup);
-                    group.add("D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png");
-                    productGroups.add(group);
-                }*/
-
             });
             fullCatalog.put(category, productGroups);
         }
-
         fullCatalog.forEach((s, productGroups) -> log.info(s + " " + productGroups.toString()));
         new ObjectMapper().writeValue(new File("D:\\Projects\\Rest\\src\\main\\resources\\static\\js\\assets\\json\\catalog.json"), fullCatalog);
     }
