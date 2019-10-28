@@ -88,8 +88,6 @@
         methods: {
             submitRegistration() {
                 this.dialog = false
-                //console.log('kok')
-
                 let registrationData = {}
                 registrationData['username'] = this.username
                 registrationData['password'] = this.password
@@ -97,9 +95,6 @@
                 registrationData['firstName'] = this.firstName
                 registrationData['patronymic'] = this.patronymic
                 registrationData['email'] = this.email
-
-                //console.log(registrationData)
-
                 axios.post('/api/user/registration', registrationData).then(response => {
                     console.log(response)
                 })
@@ -108,68 +103,18 @@
                 let auth = new FormData();
                 auth.set('username', this.username);
                 auth.set('password', this.password);
-                console.log(auth)
 
                 const config = {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 }
-
                 const loginURL = 'http://localhost:9000/user/login'
 
-                axios.post(loginURL, auth, config).then((result) => {
-                        console.log(result)
-                    })
-                    .catch((err) => {
-                        console.log(err)
-                    })
-
-                /*axios({
-                    method: 'post',
-                    url: 'http://localhost:9000/login',
-                    data: auth,
-                    config: { headers: {'Content-Type': 'multipart/form-data' }}
+                axios.post(loginURL, auth, config).then((response) => {
+                    console.log('post login ok')
+                    this.$store.dispatch('login')
                 })
-                    .then(function (response) {
-                        //handle success
-                        console.log(response);
-                    })
-                    .catch(function (response) {
-                        //handle error
-                        console.log(response);
-                    });
-                }*/
-
-
-                /*let auth: {
-                                    'username': this.username,
-                                    'password': this.password
-                                }*/
-
-                /*axios.post('perform_login', auth, {headers : {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }}).then(response => {
-                    console.log(response)
-                })*/
-
-
-                /*this.$http.post('http://localhost:9000/login', { username: this.username, password: this.password })
-                    .then(request => {
-                        //this.loginSuccessful(request)
-                        console.log(request)
-                    })*/
-                //.catch(() => this.loginFailed())
-
-                /*loginUser() {
-                let loginData = {}
-                loginData['username'] = this.username
-                loginData['password'] = this.password
-
-                axios.post('/api/user/login', loginData).then(response => {
-                    console.log(response)
-                })
-            }*/
             }
         }
     }

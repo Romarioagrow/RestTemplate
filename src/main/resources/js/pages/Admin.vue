@@ -80,6 +80,16 @@
                 </v-card>
             </v-col>
         </v-row>
+        <v-row>
+            <v-col>
+                <v-card class="mt-3">
+                    <v-card-title>Test User Auth</v-card-title>
+                    <v-card-actions class="ml-5">
+                        <v-btn color="red" v-on:click="testUserAuth()">test</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 
@@ -113,6 +123,9 @@
             },
             test() {
                 axios.post('api/admin/test').then(console.log('OK'));
+            },
+            testUserAuth() {
+                console.log(this.$store.state.currentUser)
             }
         }
     }

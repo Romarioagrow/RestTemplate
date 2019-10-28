@@ -6,6 +6,7 @@ import Vuetify      from "vuetify";
 import BootstrapVue from 'bootstrap-vue'
 import Vuesax       from 'vuesax'
 import VueMask      from 'v-mask'
+import store from   'store'
 import 'vuetify/dist/vuetify.min.css'
 import 'vue-material-design-icons/styles.css';
 import 'bootstrap/dist/css/bootstrap.css'
@@ -24,6 +25,7 @@ new Vue({
     el: '#app',
     vuetify: new Vuetify(),
     router,
+    store,
     render: a => a(App)
 });
 
