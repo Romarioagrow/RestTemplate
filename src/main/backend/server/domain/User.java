@@ -1,6 +1,7 @@
 package server.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import server.domain.categories.Role;
@@ -16,6 +17,8 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "usr")
+@EqualsAndHashCode(exclude = "roles")
+
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,7 +29,7 @@ public class User implements UserDetails {
     //@Pattern(regexp = "\7(-\\d{3}){2}-\\d{4}")
     private String username;
 
-    //@JsonIgnore
+    @JsonIgnore
     @NotBlank(message = "Введите пароль!")
     private String password;
 
@@ -49,8 +52,8 @@ public class User implements UserDetails {
 
     private Integer bonus = 0;
 
-    @OneToMany
-    private List<Order> orders;
+    /*@OneToMany
+    private List<Order> orders;*/
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
