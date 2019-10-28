@@ -116,7 +116,7 @@
                     }
                 }
 
-                const loginURL = 'http://localhost:9000/login'
+                const loginURL = 'http://localhost:9000/user/login'
 
                 axios.post(loginURL, auth, config).then((result) => {
                         console.log(result)
