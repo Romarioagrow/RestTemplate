@@ -85,7 +85,7 @@ public class ApiController {
     }
     @PostMapping("/admin/test")
     private void uploadProductsDBFile(@AuthenticationPrincipal User user) {
-        log.info("TEST USER: " + user.getUsername());
+        log.info("TEST USER: " + user.getFirstName());
         productBuilder.test();
     }
     @PostMapping("/admin/updateCatalog")
