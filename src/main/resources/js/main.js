@@ -20,6 +20,7 @@ Vue.use(Vuetify);
 Vue.use(BootstrapVue);
 Vue.use(Vuesax);
 Vue.use(VueMask);
+//Vue.config.devtools = false
 
 new Vue({
     el: '#app',

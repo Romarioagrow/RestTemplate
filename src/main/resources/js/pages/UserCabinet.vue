@@ -1,6 +1,12 @@
 <template>
     <v-container fluid>
         <v-row>
+            <v-col cols="10">
+                Здравствуйте, {{username}}
+            </v-col>
+            <v-col v-if="this.$store.state.currentUser.admin">
+                suka ya admin
+            </v-col>
             <v-col>
                 <v-btn @click="logout">
                     <span>Выход</span>
@@ -17,7 +23,7 @@
     export default {
         data() {
             return {
-
+                username: this.$store.state.currentUser.firstName
             }
         },
         methods: {
@@ -27,6 +33,18 @@
                     this.$router.push('/')
                 })
             }
+        },
+        beforeCreate() {
+            axios.post('/auth/noUser').then(noUser => {
+                if (noUser.data === true) {
+                    this.$router.push('/login')
+                }
+            })
+        },
+        computed: {
+            /*auth () {
+                return this.$store.state.currentUser
+            }*/
         }
     }
 </script>

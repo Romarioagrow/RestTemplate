@@ -83,9 +83,19 @@
         <v-row>
             <v-col>
                 <v-card class="mt-3">
-                    <v-card-title>Test User Auth</v-card-title>
+                    <v-card-title>logout</v-card-title>
                     <v-card-actions class="ml-5">
-                        <v-btn color="red" v-on:click="testUserAuth()">test</v-btn>
+                        <v-btn color="red" v-on:click="logout()">logout</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <v-card class="mt-3">
+                    <v-card-title>test auth</v-card-title>
+                    <v-card-actions class="ml-5">
+                        <v-btn color="red" v-on:click="testAuth()">test</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-col>
@@ -124,7 +134,14 @@
             test() {
                 axios.post('api/admin/test').then(console.log('OK'));
             },
-            testUserAuth() {
+            logout() {
+                axios.post('http://localhost:9000/user/logout').then((response) => {
+                    this.$store.dispatch('logout')
+                    this.$router.push('/')
+                })
+                console.log(this.$store.state.currentUser)
+            },
+            testAuth() {
                 console.log(this.$store.state.currentUser)
             }
         }

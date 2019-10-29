@@ -82,9 +82,16 @@
                 email: '',
             }
         },
+        beforeCreate() {
+            axios.post('/auth/hasUser').then(noUser => {
+                if (noUser.data === true) {
+                    this.$router.push('/user/cabinet')
+                }
+            })
+        },
         methods: {
             submitRegistration() {
-                this.dialog = false
+
                 let registrationData = {}
                 registrationData['username'] = this.username
                 registrationData['password'] = this.password
@@ -92,9 +99,11 @@
                 registrationData['firstName'] = this.firstName
                 registrationData['patronymic'] = this.patronymic
                 registrationData['email'] = this.email
-                axios.post('/api/user/registration', registrationData).then(response => {
+                console.log(registrationData)
+                axios.post('/user/registration', registrationData).then(response => {
                     console.log(response)
                 })
+                this.dialog = false
             },
             loginUser() {
                 let auth = new FormData();

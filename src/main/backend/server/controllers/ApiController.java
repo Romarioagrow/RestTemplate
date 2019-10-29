@@ -37,11 +37,12 @@ public class ApiController {
     }
 
     /*Users*/
-    @PostMapping("/user/registration")
+    /*@PostMapping("/user/registration")
     private boolean registration(@RequestBody Map<String, String> userDetails) {
+        log.info("user registration");
         log.info(userDetails.toString());
         return userService.registerUser(userDetails);
-    }
+    }*/
 
     /*Filters*/
     @PostMapping("/filters/filterProducts/{group}")
