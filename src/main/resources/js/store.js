@@ -1,10 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
-Vue.use(Vuex)
-
 import axios from 'axios'
 import createPersistedState from 'vuex-persistedstate'
+Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
         currentUser: null

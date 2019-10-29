@@ -14,14 +14,12 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'vuesax/dist/vuesax.css'
 import 'material-icons/iconfont/material-icons.css';
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
-
 Vue.use(VueResource);
 Vue.use(Vuetify);
 Vue.use(BootstrapVue);
 Vue.use(Vuesax);
 Vue.use(VueMask);
 //Vue.config.devtools = false
-
 new Vue({
     el: '#app',
     vuetify: new Vuetify(),

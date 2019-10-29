@@ -4,9 +4,6 @@
             <v-col cols="10">
                 Здравствуйте, {{username}}
             </v-col>
-            <v-col v-if="this.$store.state.currentUser.admin">
-                suka ya admin
-            </v-col>
             <v-col>
                 <v-btn @click="logout">
                     <span>Выход</span>
@@ -40,11 +37,6 @@
                     this.$router.push('/login')
                 }
             })
-        },
-        computed: {
-            /*auth () {
-                return this.$store.state.currentUser
-            }*/
         }
     }
 </script>
