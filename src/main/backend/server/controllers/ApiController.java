@@ -28,7 +28,39 @@ public class ApiController {
     /*!!!ВМЕСТО ОБРАБОТКИ ЗАПРОСВ КАЖДЫЙ РАЗ ЧЕРЕЗ API, СОЗДАНИЕ JSON C ДАННЫМИ ДЛЯ КАЖДОГО СЕРВИСА!!!*/
     private final ProductService productService;
     private final ProductBuilder productBuilder;
-    private final UserService userService;
+
+    /*Products*/
+    @GetMapping("/products/group/{group}/{page}")
+    private Page<Product> listProductsByGroupPage(@PathVariable String group, @PathVariable(required = false) int page) {
+        return productService.getProductsByGroup(group, PageRequest.of(page, 15, Sort.Direction.ASC, "pic"));
+    }
+
+    @GetMapping("/products/show/{productID}")
+    private Product listProductByID(@PathVariable String productID) {
+        return productService.getProductByID(productID);
+    }
+
+    @PostMapping("/products/filter/{group}")
+    private Page<Product> filterProducts(@RequestBody Map<String, String[]> filters, @PathVariable String group) {
+        return productService.filterProducts(filters, group);
+    }
+
+    @GetMapping("/products/page/filters/{group}")
+    private FiltersList createFiltersLists(@PathVariable String group) {
+        return productService.createProductsFilterLists(group);
+    }
+
+    /*@PostMapping("/all/catalog")
+    private LinkedHashMap<String, List<ProductGroup>> listFullCatalog(@RequestBody String[] categories) {
+        return productService.getAllCategories(categories);
+    }*/
+
+
+
+
+
+
+
 
     /*Orders*/
     @PostMapping("/order/orderedProducts")
@@ -36,39 +68,10 @@ public class ApiController {
         return productService.listOrderedProducts();
     }
 
-    /*Users*/
-    /*@PostMapping("/user/registration")
-    private boolean registration(@RequestBody Map<String, String> userDetails) {
-        log.info("user registration");
-        log.info(userDetails.toString());
-        return userService.registerUser(userDetails);
-    }*/
-
     /*Filters*/
-    @PostMapping("/filters/filterProducts/{group}")
-    private Page<Product> filterProducts(@RequestBody Map<String, String[]> filters, @PathVariable String group) {
-        return productService.filterProducts(filters, group);
-    }
 
-    /*Products*/
-    @GetMapping("/products/{group}/{page}")
-    private Page<Product> listProductsByGroupPage(@PathVariable String group, @PathVariable(required = false) int page) {
-        return productService.getProductsByGroup(group, PageRequest.of(page, 15, Sort.Direction.ASC, "pic"));
-    }
-    @GetMapping("/products/product/{productID}")
-    private Product listProductByID(@PathVariable String productID) {
-        return productService.getProductByID(productID);
-    }
-    @PostMapping("/all/catalog")
-    private LinkedHashMap<String, List<ProductGroup>> listFullCatalog(@RequestBody String[] categories) {
-        return productService.getAllCategories(categories);
-    }
 
-    /*Page*/
-    @GetMapping("/page/filters/{group}")
-    private FiltersList createFiltersLists(@PathVariable String group) {
-        return productService.createProductsFilterLists(group);
-    }
+
 
     /*Admin*/
     @PostMapping("/admin/uploadFileDB")
