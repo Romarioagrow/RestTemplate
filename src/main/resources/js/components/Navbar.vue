@@ -28,12 +28,20 @@
                     <v-icon>mdi-cart</v-icon>
                 </v-btn>
             </router-link>
-            <router-link to="/login" class="ml-5">
+
+            <router-link to="/user/cabinet" class="ml-5" v-if="auth">
+                <v-btn>
+                    <span>Личный кабинет</span>
+                    <v-icon>mdi-account</v-icon>
+                </v-btn>
+            </router-link>
+            <router-link to="/login" class="ml-5" v-else>
                 <v-btn>
                     <span>Вход</span>
                     <v-icon>mdi-login-variant</v-icon>
                 </v-btn>
             </router-link>
+
             <router-link to="/admin" class="ml-5">
                 <v-btn>
                     <span>Admin</span>
@@ -132,6 +140,11 @@
                 }, 500)
             },
         },
+        computed: {
+            auth () {
+                return this.$store.state.currentUser
+            }
+        }
     }
 </script>
 

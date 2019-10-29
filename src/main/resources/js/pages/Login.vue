@@ -73,7 +73,6 @@
         data() {
             return {
                 dialog: false,
-
                 username: '',
                 password: '',
                 registerPassConfirm: '',
@@ -81,8 +80,6 @@
                 firstName: '',
                 patronymic: '',
                 email: '',
-
-
             }
         },
         methods: {
@@ -112,8 +109,8 @@
                 const loginURL = 'http://localhost:9000/user/login'
 
                 axios.post(loginURL, auth, config).then((response) => {
-                    console.log('post login ok')
                     this.$store.dispatch('login')
+                    this.$router.push('/user/cabinet')
                 })
             }
         }
