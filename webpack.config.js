@@ -4,7 +4,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 module.exports = {
     mode: 'development',
     devtool: 'source-map',
-    entry: path.join(__dirname, 'src', 'main', 'resources', 'js', 'main.js'),
+    entry: path.join(__dirname, 'src', 'main', 'resources', 'static', 'js', 'main.js'),
     devServer: {
         contentBase: './dist',
         disableHostCheck: true,
@@ -56,7 +56,7 @@ module.exports = {
     ],
     resolve: {
         modules: [
-            path.join(__dirname, 'src', 'main', 'resources', 'js'),
+            path.join(__dirname, 'src', 'main', 'resources', 'static', 'js'),
             path.join(__dirname, 'node_modules'),
         ],
     }

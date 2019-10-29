@@ -19,24 +19,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .antMatcher("/**")
-                    .authorizeRequests()
-                    .antMatchers("/", "/login**", "/js/**", "/error**", "/user/registration").permitAll()
+                .authorizeRequests()
+                .antMatchers("/", "/login**", "/js/**", "/error**").permitAll()
+                .anyRequest().permitAll()
+                .and().logout().logoutSuccessUrl("/").permitAll()
                 .and()
-                    .authorizeRequests()
-                    .antMatchers("/api/admin/**").permitAll()//!!!hasAuthority("ADMIN")
-                    .mvcMatchers("/api/user/**").authenticated()
-                    .anyRequest().permitAll()
-                .and()
-                    .formLogin()
-                    .loginPage("/user/login")
-                    .loginProcessingUrl("/user/login")
-                    .defaultSuccessUrl("/", true)
-                    .permitAll()
-                .and()
-                    .logout().permitAll()
-                    .logoutUrl("/user/logout")
-                    .logoutSuccessUrl("/")
-                .and()
-                    .csrf().disable();
+                .csrf().disable();
     }
 }

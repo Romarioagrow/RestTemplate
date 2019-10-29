@@ -56,12 +56,6 @@ public class ApiController {
     }*/
 
 
-
-
-
-
-
-
     /*Orders*/
     @PostMapping("/order/orderedProducts")
     private List<Product> listOrderedProducts() {
@@ -69,9 +63,6 @@ public class ApiController {
     }
 
     /*Filters*/
-
-
-
 
     /*Admin*/
     @PostMapping("/admin/uploadFileDB")
