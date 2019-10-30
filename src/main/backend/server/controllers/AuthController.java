@@ -1,12 +1,10 @@
 package server.controllers;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import server.domain.User;
 import server.services.UserService;
-
 import java.util.Map;
 
 @Log

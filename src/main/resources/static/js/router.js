@@ -22,10 +22,10 @@ const routes = [
     {path: '/login', component: Login},
     {path: '/registration', component: Registration},
     {path: '/user/cabinet', component: UserCabinet},
-
 ];
 
 export default new VueRouter({
     mode: 'history',
-    routes
+    routes,
+    base: '/'
 })
