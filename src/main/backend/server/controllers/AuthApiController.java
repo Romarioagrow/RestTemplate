@@ -20,8 +20,8 @@ public class AuthApiController {
     }
 
     @PostMapping("/user/registration")
-    private boolean registration(@RequestBody Map<String, String> userDetails) {
-        return userService.registerUser(userDetails);
+    private boolean registration(@RequestBody Map<String, String> userCredentials) {
+        return userService.registerUser(userCredentials);
     }
 
     @PostMapping("/noUser")
@@ -29,7 +29,7 @@ public class AuthApiController {
         return user == null;
     }
 
-    @PostMapping("hasUser")
+    @PostMapping("/hasUser")
     private boolean hasUser(@AuthenticationPrincipal User user) {
         return user != null;
     }
