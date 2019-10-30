@@ -12,8 +12,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'vuesax/dist/vuesax.css'
 import 'material-icons/iconfont/material-icons.css';
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
-
-
+import store from 'store'
 
 Vue.use(VueResource);
 Vue.use(Vuetify);
@@ -24,6 +23,7 @@ new Vue({
     el: '#app',
     vuetify: new Vuetify(),
     router,
+    store,
     render: a => a(App)
 });
 

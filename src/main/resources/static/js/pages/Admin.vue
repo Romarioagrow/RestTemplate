@@ -3,7 +3,6 @@
         <!--<div class="centerx">
             <vs-upload action="/api/admin/uploadFileDB" @on-success="successUpload" />
         </div>
-
         <div>
             <v-file-input v-model="files" color="deep-purple accent-4" counter label="File input" multiple placeholder="Select your files" prepend-icon="mdi-paperclip" outlined :show-size="1000">
                 <template v-slot:selection="{ index, text }">
@@ -16,7 +15,6 @@
                 </template>
             </v-file-input>
         </div>
-
         <form id="uploadForm" name="uploadForm" enctype="multipart/form-data">
             <input type="file" id="files" name="files" multiple><br>
             <input type="text" id="name" name="name"><br>
@@ -28,7 +26,6 @@
             <v-file-input id="file" name="file" label="Файл Excel" outlined dense></v-file-input>
             <v-btn color="success" value=Upload @click="uploadFiles">Загрузить</v-btn>
         </form>-->
-
         <v-row>
             <v-col>
                 <v-card>
@@ -36,7 +33,7 @@
                     <v-card-actions class="ml-5">
                         <form enctype="multipart/form-data">
                             <v-row><input type="file" name="file" v-on:change="fileChange($event.target.files)" /></v-row>
-                            <v-row><v-btn color="success" v-on:click="upload()">Загрузить</v-btn></v-row>
+                            <v-row><v-btn color="success" v-on:click="uploadExcelFile()">Загрузить</v-btn></v-row>
                         </form>
                     </v-card-actions>
                 </v-card>
@@ -53,23 +50,59 @@
                 </v-card>
             </v-col>
         </v-row>
-
-
-
-
-        <v-card class="mt-3">
-            <v-card-title>Test</v-card-title>
-            <v-card-actions class="ml-5">
-                <v-btn color="red" v-on:click="test()">BANG</v-btn>
-            </v-card-actions>
-        </v-card>
-
+        <v-row>
+            <v-col>
+                <v-card class="mt-3">
+                    <v-card-title>Обновить каталог</v-card-title>
+                    <v-card-actions class="ml-5">
+                        <v-btn color="blue" v-on:click="updateCatalog()">Обновить</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+            <v-col>
+                <v-card class="mt-3">
+                    <v-card-title>Спарсить ссылки фото RUSBT</v-card-title>
+                    <v-card-actions class="ml-5">
+                        <v-btn color="yellow" v-on:click="parsRUSBTPics()">Запустить парсер</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <v-card class="mt-3">
+                    <v-card-title>Test</v-card-title>
+                    <v-card-actions class="ml-5">
+                        <v-btn color="red" v-on:click="test()">BANG</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <v-card class="mt-3">
+                    <v-card-title>logout</v-card-title>
+                    <v-card-actions class="ml-5">
+                        <v-btn color="red" v-on:click="logout()">logout</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <v-card class="mt-3">
+                    <v-card-title>test auth</v-card-title>
+                    <v-card-actions class="ml-5">
+                        <v-btn color="red" v-on:click="testAuth()">test</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 
 <script>
     import axios from "axios";
-
     export default {
         data() {
             return {
@@ -84,19 +117,30 @@
             brandsFileChange(fileList) {
                 this.fileBrands.append("fileBrands", fileList[0], fileList[0].name);
             },
-            upload() {
-                axios.post('api/admin/uploadFileDB', this.file).then(response =>{
-                    this.file = new FormData()
-                    console.log('ok')
-                });
+            uploadExcelFile() {
+                axios.post('api/admin/uploadFileDB', this.file).then(this.file = new FormData());
             },
             uploadBrandsPrice() {
-                axios.post('api/admin/uploadFileBrands', this.fileBrands).then(response =>{
-                    console.log('ok')
-                });
+                axios.post('api/admin/uploadFileBrands', this.fileBrands).then(console.log('brands uploaded'));
+            },
+            updateCatalog() {
+                axios.post('api/admin/updateCatalog').then(console.log('catalog updated'));
+            },
+            parsRUSBTPics() {
+                axios.post('api/admin/parsePicsRUSBT').then(console.log('pics parsed'));
             },
             test() {
-                axios.post('api/admin/test').then(response => console.log('OK'));
+                axios.post('api/admin/test').then(console.log('OK'));
+            },
+            logout() {
+                axios.post('http://localhost:9000/user/logout').then((response) => {
+                    this.$store.dispatch('logout')
+                    this.$router.push('/')
+                })
+                console.log(this.$store.state.currentUser)
+            },
+            testAuth() {
+                console.log(this.$store.state.currentUser)
             }
         }
     }
