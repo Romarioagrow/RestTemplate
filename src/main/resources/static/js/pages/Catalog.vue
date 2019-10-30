@@ -11,7 +11,7 @@
                         <v-tabs-slider color="#e52d00"></v-tabs-slider>
                         <v-tab v-for="(value, key, index) of allCategories" :key="index" :href="'#tab-' + index" @click="loadCatalog()">
                             {{key}}
-                            <v-icon>{{icons[index]}}</v-icon>
+                            <v-icon>mdi-phone</v-icon>
                         </v-tab>
                         <v-tab-item v-for="(value, key, index) of allCategories" :key="index" :value="'tab-' + index">
                             <v-card flat tile>
@@ -43,24 +43,6 @@
                 allCategories: new Map(),
                 categories: [],
                 loading: true,
-                icons:[
-                    'mdi-television',
-                    'mdi-fridge',
-                    'mdi-washing-machine',
-                    'mdi-dice-4',
-                    'mdi-air-conditioner',
-                    'mdi-content-cut',
-                    'mdi-camera',
-                    'mdi-desktop-classic',
-                    'mdi-radio-handheld',
-                    'mdi-circular-saw',
-                    'mdi-shovel',
-                    'mdi-lightbulb',
-                    'mdi-water-boiler',
-                    'mdi-bike',
-                    'mdi-coffee',
-                    'mdi-archive'
-                ]
             }
         },
         created() {

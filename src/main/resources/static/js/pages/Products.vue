@@ -17,6 +17,7 @@
                             </v-col>
                         </v-row>
                         <v-expansion-panels multiple>
+
                             <!--Автовывод фильтров-цен-->
                             <v-expansion-panel class="mt-2">
                                 <v-expansion-panel-header >Цены</v-expansion-panel-header>
@@ -54,6 +55,7 @@
                                     </div>
                                 </v-expansion-panel-content>
                             </v-expansion-panel>
+
                             <!--Автовывод фильтров-диапазонов-->
                             <v-expansion-panel class="mt-2" v-for="[key, val] of filtersDiapasons" :key="key" >
                                 <v-expansion-panel-header :class="{'red': val[1] === undefined}">{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
@@ -72,6 +74,7 @@
                                     </v-row>
                                 </v-expansion-panel-content>
                             </v-expansion-panel>
+
                             <!--Автовывод фильтров-параметров-->
                             <v-expansion-panel class="mt-2" v-for="[key, val] of filtersParams" :key="key">
                                 <v-expansion-panel-header>{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
@@ -89,27 +92,11 @@
                     </v-container>
                 </v-list-item>
             </v-navigation-drawer>
+
             <!---->
             <v-item-group multiple>
                 <v-container fluid>
-                    <!--<v-breadcrumbs :items="items" large></v-breadcrumbs>-->
-                    <v-row>
-                        <v-col cols="1">
-                            <router-link to="/"><v-btn text small color="#1976da">Каталог</v-btn></router-link>
-                        </v-col>
-                        <v-col cols="1" >
-                            <v-icon>mdi-chevron-right</v-icon>
-                        </v-col>
-                        <v-col cols="1">
-                            <router-link :to="categoryLink"><v-btn text small color="#1976da">Категория</v-btn></router-link>
-                        </v-col>
-                        <v-col cols="1">
-                            <v-icon>mdi-chevron-right</v-icon>
-                        </v-col>
-                        <v-col cols="1">
-                            <v-btn text small color="#1976da" disabled>{{group.charAt(0).toUpperCase() + group.substr(1)}}</v-btn>
-                        </v-col>
-                    </v-row>
+                    <v-breadcrumbs :items="items" large></v-breadcrumbs>
                     <!---->
                     <strong class="ml-3" v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</strong>
                     <v-row class="mt-1 ml-1" v-if="totalPages !== 1">
@@ -127,6 +114,7 @@
                             </v-slide-item>
                         </v-slide-group>
                     </v-sheet>
+
                     <!--<v-img src="D:\Projects\Rest\src\main\resources\static\pics\logo.png"></v-img>-->
                     <v-row>
                         <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
@@ -195,16 +183,14 @@
                 productsRequest: '',
                 filtersRequest: '',
                 pageRequest: '',
-                totalProductsFound: 0,
-                categoryLink:''
+                totalProductsFound: 0
             }
         },
         created() {
             this.requestGroup    = (decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/'))).replace('_', ' ')
-            this.pageRequest     = '/api/products/group' + this.requestGroup
-            this.productsRequest = '/api/products/group' + this.requestGroup + '/0'
-            this.filtersRequest  = '/api/products/page/filters' + this.requestGroup
-            this.categoryLink    =  '/' //+ this.requestGroup
+            this.pageRequest     = '/api/products' + this.requestGroup
+            this.productsRequest = '/api/products' + this.requestGroup + '/0'
+            this.filtersRequest  = '/api/page/filters' + this.requestGroup
 
             /*loadFilters*/
             axios.get(this.filtersRequest).then(response => {
@@ -258,14 +244,17 @@
 
                 if (param !== undefined)
                 {
+                    //console.log('input ' + param)
                     if (param.includes(':')) {
                         let key = param.substr(0, param.indexOf(':'));
 
                         let val = (param.substr(param.indexOf(':') + 1))
                         const valArray = val.split(',').map(Number);
 
-                        this.selectedDiapasons[key] = val       /*to filter API*/
-                        this.diapasonValues.set(key, valArray)  /*to input slider*/
+                        /*to filter API*/
+                        this.selectedDiapasons[key] = val
+                        /*to input slider*/
+                        this.diapasonValues.set(key, valArray)
                     }
                     else {
                         if (!this.selectedFeatures.includes(param)) this.selectedFeatures.push(param)
@@ -277,15 +266,21 @@
                 filters['brands']   = this.selectedBrands
                 filters['params']   = this.selectedParams
                 filters['features'] = this.selectedFeatures
+                //filters['selectedDiapasons'] = this.selectedDiapasons
+
 
                 let selectedDiapasons = []
-                for (const [key, value] of Object.entries(this.selectedDiapasons)) {
-                    selectedDiapasons.push(key+':'+value)
-                }
+                for (const [key, value] of Object.entries(this.selectedDiapasons)) selectedDiapasons.push(key+':'+value)
                 filters['selectedDiapasons'] = selectedDiapasons
-                const filterURL = '/api/products/filter' + this.requestGroup
 
-                axios.post(filterURL, filters).then(response => {
+
+                //console.log(selectedDiapasons)
+
+
+                //filters = JSON.stringify(filters);
+                //console.log('/api/filters/filterProducts'+this.requestGroup)
+
+                axios.post('/api/filters/filterProducts' + this.requestGroup, filters).then(response => {
                     this.products = response.data.content
                     this.totalPages = response.data.totalPages
                     this.totalProductsFound = response.data.totalElements

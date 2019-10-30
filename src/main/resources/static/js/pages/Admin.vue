@@ -28,6 +28,7 @@
             <v-file-input id="file" name="file" label="Файл Excel" outlined dense></v-file-input>
             <v-btn color="success" value=Upload @click="uploadFiles">Загрузить</v-btn>
         </form>-->
+
         <v-row>
             <v-col>
                 <v-card>
@@ -35,7 +36,7 @@
                     <v-card-actions class="ml-5">
                         <form enctype="multipart/form-data">
                             <v-row><input type="file" name="file" v-on:change="fileChange($event.target.files)" /></v-row>
-                            <v-row><v-btn color="success" v-on:click="uploadExcelFile()">Загрузить</v-btn></v-row>
+                            <v-row><v-btn color="success" v-on:click="upload()">Загрузить</v-btn></v-row>
                         </form>
                     </v-card-actions>
                 </v-card>
@@ -52,59 +53,23 @@
                 </v-card>
             </v-col>
         </v-row>
-        <v-row>
-            <v-col>
-                <v-card class="mt-3">
-                    <v-card-title>Обновить каталог</v-card-title>
-                    <v-card-actions class="ml-5">
-                        <v-btn color="blue" v-on:click="updateCatalog()">Обновить</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-col>
-            <v-col>
-                <v-card class="mt-3">
-                    <v-card-title>Спарсить ссылки фото RUSBT</v-card-title>
-                    <v-card-actions class="ml-5">
-                        <v-btn color="yellow" v-on:click="parsRUSBTPics()">Запустить парсер</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <v-card class="mt-3">
-                    <v-card-title>Test</v-card-title>
-                    <v-card-actions class="ml-5">
-                        <v-btn color="red" v-on:click="test()">BANG</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <v-card class="mt-3">
-                    <v-card-title>logout</v-card-title>
-                    <v-card-actions class="ml-5">
-                        <v-btn color="red" v-on:click="logout()">logout</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <v-card class="mt-3">
-                    <v-card-title>test auth</v-card-title>
-                    <v-card-actions class="ml-5">
-                        <v-btn color="red" v-on:click="testAuth()">test</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-col>
-        </v-row>
+
+
+
+
+        <v-card class="mt-3">
+            <v-card-title>Test</v-card-title>
+            <v-card-actions class="ml-5">
+                <v-btn color="red" v-on:click="test()">BANG</v-btn>
+            </v-card-actions>
+        </v-card>
+
     </v-container>
 </template>
 
 <script>
     import axios from "axios";
+
     export default {
         data() {
             return {
@@ -119,30 +84,19 @@
             brandsFileChange(fileList) {
                 this.fileBrands.append("fileBrands", fileList[0], fileList[0].name);
             },
-            uploadExcelFile() {
-                axios.post('api/admin/uploadFileDB', this.file).then(this.file = new FormData());
+            upload() {
+                axios.post('api/admin/uploadFileDB', this.file).then(response =>{
+                    this.file = new FormData()
+                    console.log('ok')
+                });
             },
             uploadBrandsPrice() {
-                axios.post('api/admin/uploadFileBrands', this.fileBrands).then(console.log('brands uploaded'));
-            },
-            updateCatalog() {
-                axios.post('api/admin/updateCatalog').then(console.log('catalog updated'));
-            },
-            parsRUSBTPics() {
-                axios.post('api/admin/parsePicsRUSBT').then(console.log('pics parsed'));
+                axios.post('api/admin/uploadFileBrands', this.fileBrands).then(response =>{
+                    console.log('ok')
+                });
             },
             test() {
-                axios.post('api/admin/test').then(console.log('OK'));
-            },
-            logout() {
-                axios.post('http://localhost:9000/user/logout').then((response) => {
-                    this.$store.dispatch('logout')
-                    this.$router.push('/')
-                })
-                console.log(this.$store.state.currentUser)
-            },
-            testAuth() {
-                console.log(this.$store.state.currentUser)
+                axios.post('api/admin/test').then(response => console.log('OK'));
             }
         }
     }

@@ -10,32 +10,27 @@ import java.util.Map;
 @Log
 @RestController
 @AllArgsConstructor
-//@RequestMapping("/auth")
-public class AuthController {
+@RequestMapping("/auth")
+public class AuthApiController {
     private final UserService userService;
 
-
-    @GetMapping("/auth")
+    @PostMapping
     public User authUser(@AuthenticationPrincipal User user) {
         return user;
     }
 
     @PostMapping("/user/registration")
     private boolean registration(@RequestBody Map<String, String> userDetails) {
-        log.info("user registration");
-        log.info(userDetails.toString());
         return userService.registerUser(userDetails);
     }
 
-    @PostMapping("/auth/noUser")
+    @PostMapping("/noUser")
     private boolean noUser(@AuthenticationPrincipal User user) {
-        //log.info("Has user: " + (user == null));
         return user == null;
     }
 
-    @PostMapping("/auth/hasUser")
+    @PostMapping("hasUser")
     private boolean hasUser(@AuthenticationPrincipal User user) {
-        //log.info("Has user: " + (user == null));
         return user != null;
     }
 }

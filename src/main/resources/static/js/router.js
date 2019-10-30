@@ -8,7 +8,6 @@ import Admin        from "pages/Admin.vue";
 import Login        from "pages/Login.vue";
 import Registration from "pages/Registration.vue";
 import UserCabinet  from "pages/UserCabinet.vue";
-import Order        from "pages/Order.vue";
 
 Vue.use(VueRouter);
 
@@ -17,7 +16,6 @@ const routes = [
     {path: '/products/:group', component: Products},
     {path: '/test', component: TestPage},
     {path: '/products/product/:productID', component: ProductInfo},
-    {path: '/order', component: Order},
     {path: '/admin', component: Admin},
     {path: '/login', component: Login},
     {path: '/registration', component: Registration},
@@ -26,6 +24,5 @@ const routes = [
 
 export default new VueRouter({
     mode: 'history',
-    routes,
-    base: '/'
+    routes
 })

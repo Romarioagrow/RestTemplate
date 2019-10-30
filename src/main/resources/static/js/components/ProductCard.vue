@@ -4,7 +4,7 @@
         <v-img class="white--text" contain height="200px" :src="product.pic" alt="Bad Link"></v-img>
         <v-card-text>
             <router-link :to=productID>
-                <v-card-title class="align-end fill-height">{{product.fullName.charAt(0).toUpperCase() + product.fullName.substr(1)}}</v-card-title>
+                <v-card-title class="align-end fill-height">{{product.fullName}}</v-card-title>
             </router-link>
             <ul>
                 <li v-for="anno in annotations" v-if="anno">{{anno}}</li>
