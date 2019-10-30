@@ -10,7 +10,6 @@ import Registration from "pages/Registration.vue";
 import UserCabinet  from "pages/UserCabinet.vue";
 
 Vue.use(VueRouter);
-
 const routes = [
     {path: '/', component: Home},
     {path: '/products/:group', component: Products},
