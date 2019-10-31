@@ -15,11 +15,11 @@ import java.io.IOException;
 @Log
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/products")
+@RequestMapping("/api/admin")
 public class AdminApiController {
     private final ProductBuilder productBuilder;
 
-    @PostMapping("/admin/uploadFileDB")
+    @PostMapping("/uploadFileDB")
     private void uploadProductsDBFile(@RequestParam("file") MultipartFile file) {
         try {
             productBuilder.updateProductsDB(file);
@@ -29,7 +29,7 @@ public class AdminApiController {
         }
     }
 
-    @PostMapping("/admin/updateCatalog")
+    @PostMapping("/updateCatalog")
     private void updateProductsCatalog() {
         try {
             productBuilder.mapCatalogJSON();
@@ -39,18 +39,18 @@ public class AdminApiController {
         }
     }
 
-    @PostMapping("/admin/uploadFileBrands")
+    @PostMapping("/uploadFileBrands")
     private void uploadBrandsPrice(@RequestParam("fileBrands") MultipartFile file) {
         productBuilder.updateBrandsPrice(file);
     }
 
-    @PostMapping("/admin/test")
+    @PostMapping("/test")
     private void uploadProductsDBFile(@AuthenticationPrincipal User user) {
         log.info("TEST USER: " + user.getFirstName());
         productBuilder.test();
     }
 
-    @PostMapping("/admin/parsePicsRUSBT")
+    @PostMapping("/parsePicsRUSBT")
     private void parsePicsRUSBT() {
         productBuilder.parsePicsRUSBT();
     }

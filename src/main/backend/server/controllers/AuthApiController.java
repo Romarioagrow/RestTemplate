@@ -14,7 +14,7 @@ import java.util.Map;
 public class AuthApiController {
     private final UserService userService;
 
-    @PostMapping
+    @GetMapping
     public User authUser(@AuthenticationPrincipal User user) {
         return user;
     }

@@ -22,14 +22,20 @@
                     solo-inverted
             ></v-autocomplete>
 
-            <router-link to="/test" class="ml-5">
+            <router-link to="/order" class="ml-5">
                 <v-btn>
                     <span>Корзина</span>
                     <v-icon>mdi-cart</v-icon>
                 </v-btn>
             </router-link>
 
-            <router-link to="/login" class="ml-5">
+            <router-link to="/user/cabinet" class="ml-5" v-if="auth">
+                <v-btn>
+                    <span>Личный кабинет</span>
+                    <v-icon>mdi-account</v-icon>
+                </v-btn>
+            </router-link>
+            <router-link to="/login" class="ml-5" v-else>
                 <v-btn>
                     <span>Вход</span>
                     <v-icon>mdi-login-variant</v-icon>
@@ -42,7 +48,6 @@
                     <v-icon>mdi-account-badge-horizontal</v-icon>
                 </v-btn>
             </router-link>
-
         </v-app-bar>
     </div>
 </template>
@@ -124,7 +129,7 @@
             },
         },
         methods: {
-            querySelections (v) {
+            querySelections(v) {
                 this.loading = true
                 // Simulated ajax query
                 setTimeout(() => {
@@ -135,6 +140,11 @@
                 }, 500)
             },
         },
+        computed: {
+            auth () {
+                return this.$store.state.currentUser
+            }
+        }
     }
 </script>
 
