@@ -2,10 +2,7 @@ package server.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import server.domain.User;
 import server.services.OrderService;
 import java.util.LinkedList;
@@ -24,6 +21,11 @@ public class OrderApiController {
 
     @PostMapping("/orderedProducts")
     private LinkedList<Object> getOrderedProducts(@AuthenticationPrincipal User user) {
-        return orderService.getOrderedProducts(user);
+        return orderService.getOrderData(user);
+    }
+
+    @PostMapping("/deleteProduct")
+    private LinkedList<Object> deleteProductFromOrder(@RequestBody String productID, @AuthenticationPrincipal User user) {
+        return orderService.deleteProductFromOrder(productID, user);
     }
 }

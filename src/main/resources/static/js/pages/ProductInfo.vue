@@ -30,7 +30,7 @@
                 <v-card >
                     <v-row>
                         <v-col cols="4">
-                            <v-card-title>{{ product.finalPrice }} ₽</v-card-title>
+                            <v-card-title>{{ product.finalPrice.toLocaleString('ru-RU') }} ₽</v-card-title>
                         </v-col>
                         <v-col class="mr-5">
                             <v-card-text>За покупку будет зачисленно <strong>{{ product.bonus }} </strong> баллов!</v-card-text>
@@ -58,7 +58,7 @@
         },
         beforeCreate() {
             const productID = (decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/')+1));
-            let url = '/api/products/product/' + productID;
+            let url = '/api/products/show/' + productID;
             axios.get(url).then(response =>
             {
                 this.product = response.data

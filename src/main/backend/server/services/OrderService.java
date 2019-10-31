@@ -31,10 +31,25 @@ public class OrderService {
         return true;
     }
 
-    public LinkedList<Object> getOrderedProducts(User user) {
-        Map<String, Integer> orderedProducts = new LinkedHashMap<>();
+    public LinkedList<Object> deleteProductFromOrder(String productID, User user) {
+        Product product = getProduct(productID);
         Order order = getActiveOrder(user);
 
+        order.getOrderedProducts().remove(productID);
+        order.setTotalPrice(order.getTotalPrice() - product.getFinalPrice());
+        order.setTotalBonus(order.getTotalBonus() - product.getBonus());
+        orderRepo.save(order);
+        return payloadOrderData(order);
+    }
+
+    public LinkedList<Object> getOrderData(User user) {
+        Order order = getActiveOrder(user);
+        return payloadOrderData(order);
+    }
+
+    private LinkedList<Object> payloadOrderData(Order order) {
+        LinkedList<Object> payload = new LinkedList<>();
+        Map<String, Integer> orderedProducts = new LinkedHashMap<>();
         order.getOrderedProducts().forEach((productID, amount) -> {
             try {
                 String productJson = new ObjectMapper().writeValueAsString(getProduct(productID));
@@ -44,8 +59,6 @@ public class OrderService {
                 e.printStackTrace();
             }
         });
-
-        LinkedList<Object> payload = new LinkedList<>();
         payload.add(order);
         payload.add(orderedProducts);
         return payload;

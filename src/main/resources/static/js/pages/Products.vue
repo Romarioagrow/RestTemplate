@@ -17,7 +17,6 @@
                             </v-col>
                         </v-row>
                         <v-expansion-panels multiple>
-
                             <!--Автовывод фильтров-цен-->
                             <v-expansion-panel class="mt-2">
                                 <v-expansion-panel-header >Цены</v-expansion-panel-header>
@@ -38,7 +37,6 @@
                                     </v-card-text>
                                 </v-expansion-panel-content>
                             </v-expansion-panel>
-
                             <!--Автовывод фильтров-брендов-->
                             <v-expansion-panel class="mt-2" >
                                 <v-expansion-panel-header>Бренды</v-expansion-panel-header>
@@ -55,7 +53,6 @@
                                     </div>
                                 </v-expansion-panel-content>
                             </v-expansion-panel>
-
                             <!--Автовывод фильтров-диапазонов-->
                             <v-expansion-panel class="mt-2" v-for="[key, val] of filtersDiapasons" :key="key" >
                                 <v-expansion-panel-header :class="{'red': val[1] === undefined}">{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
@@ -74,7 +71,6 @@
                                     </v-row>
                                 </v-expansion-panel-content>
                             </v-expansion-panel>
-
                             <!--Автовывод фильтров-параметров-->
                             <v-expansion-panel class="mt-2" v-for="[key, val] of filtersParams" :key="key">
                                 <v-expansion-panel-header>{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
@@ -92,7 +88,6 @@
                     </v-container>
                 </v-list-item>
             </v-navigation-drawer>
-
             <!---->
             <v-item-group multiple>
                 <v-container fluid>
@@ -114,8 +109,6 @@
                             </v-slide-item>
                         </v-slide-group>
                     </v-sheet>
-
-                    <!--<v-img src="D:\Projects\Rest\src\main\resources\static\pics\logo.png"></v-img>-->
                     <v-row>
                         <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
                     </v-row>
@@ -139,20 +132,16 @@
             return {
                 loading: true,
                 products: [],
-
                 selectedBrands: [],
                 selectedParams: [],
                 selectedDiapasons: {},
                 selectedFeatures: [],
-
                 filtersPrice: [],
                 filtersBrands: [],
                 filtersFeats: [],
-
                 filtersDiapasons: new Map(),
                 diapasonValues: new Map(),
                 filtersParams: new Map(),
-
                 drawer: true,
                 mini: false,
                 group: decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/') + 1),
@@ -192,11 +181,7 @@
             this.productsRequest = '/api/products/group' + this.requestGroup + '/0'
             this.filtersRequest  = '/api/products/build_filters' + this.requestGroup
 
-            //console.log(this.filtersRequest)
-            //console.log(this.productsRequest)
-            //console.log(this.pageRequest)
-
-            /*loadFilters*/
+            /*Load Filters*/
             axios.get(this.filtersRequest).then(response => {
                 let prices = response.data.prices
                 this.min = prices[0]
@@ -217,7 +202,7 @@
                 for (const [key, value] of Object.entries(params)) this.filtersParams.set(key, value)
             });
 
-            /*loadProducts*/
+            /*Load Products*/
             axios.get(this.productsRequest).then(response => {
                 this.products = response.data.content
                 this.totalPages = response.data.totalPages
@@ -241,7 +226,6 @@
         methods: {
             loadPage(page) {
                 let pageRequest = this.pageRequest + '/' + page
-                //console.log(pageRequest)
                 axios.get(pageRequest).then(response => this.products = response.data.content)
             },
             filterProducts(param) {
@@ -251,14 +235,10 @@
                 {
                     if (param.includes(':')) {
                         let key = param.substr(0, param.indexOf(':'));
-
                         let val = (param.substr(param.indexOf(':') + 1))
                         const valArray = val.split(',').map(Number);
-
-                        /*to filter API*/
-                        this.selectedDiapasons[key] = val
-                        /*to input slider*/
-                        this.diapasonValues.set(key, valArray)
+                        this.selectedDiapasons[key] = val       /// to filter API
+                        this.diapasonValues.set(key, valArray)  /// to input slider
                     }
                     else {
                         if (!this.selectedFeatures.includes(param)) this.selectedFeatures.push(param)

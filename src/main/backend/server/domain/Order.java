@@ -15,6 +15,14 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order implements Serializable {
+    public Order(String sessionID) {
+        this.setSessionID(sessionID);
+    }
+
+    public Order(User user) {
+        this.setUser(user);
+    }
+
     @Id
     @Column(name = "order_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -35,12 +43,4 @@ public class Order implements Serializable {
     private Boolean accepted = false;
 
     private Integer totalPrice = 0, totalBonus = 0;
-
-    public Order(String sessionID) {
-        this.setSessionID(sessionID);
-    }
-
-    public Order(User user) {
-        this.setUser(user);
-    }
 }
