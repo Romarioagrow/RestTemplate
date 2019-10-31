@@ -7,7 +7,7 @@ import java.util.List;
 public interface OrderRepo extends JpaRepository<Order, Long> {
     Order findByOrderID(Long orderID);
 
-    Order findByUserIDAndAcceptedFalse(Long userID);
+    Order findByUserAndAcceptedFalse(User user);
 
     Order findBySessionIDAndAcceptedFalse(String sessionID);
 

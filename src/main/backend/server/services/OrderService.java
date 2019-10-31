@@ -11,6 +11,7 @@ import server.domain.User;
 import server.repos.OrderRepo;
 import server.repos.ProductRepo;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 @Log
@@ -21,28 +22,21 @@ public class OrderService {
     private final ProductRepo productRepo;
 
     public boolean addProductToOrder(String productID, User user) {
-        log.info("id: " + productID);
-        log.info("user: " + user);
-
         Product product = getProduct(productID);
         Order order = getActiveOrder(user);
         order.getOrderedProducts().put(productID, 1);
         order.setTotalPrice(order.getTotalPrice() + product.getFinalPrice());
         order.setTotalBonus(order.getTotalBonus() + product.getBonus());
         orderRepo.save(order);
-
-        log.info("order: " + order.toString());
         return true;
     }
 
-    public Map<String, Integer> getOrderedProducts(User user) {
+    public LinkedList<Object> getOrderedProducts(User user) {
         Map<String, Integer> orderedProducts = new LinkedHashMap<>();
         Order order = getActiveOrder(user);
 
-        log.info(order + "");
         order.getOrderedProducts().forEach((productID, amount) -> {
-            try
-            {
+            try {
                 String productJson = new ObjectMapper().writeValueAsString(getProduct(productID));
                 orderedProducts.put(productJson, amount);
             }
@@ -50,15 +44,17 @@ public class OrderService {
                 e.printStackTrace();
             }
         });
-        log.info("oP:" + orderedProducts);
-        return orderedProducts;
+
+        LinkedList<Object> payload = new LinkedList<>();
+        payload.add(order);
+        payload.add(orderedProducts);
+        return payload;
     }
 
-    public Order getActiveOrder(User user) {
+    private Order getActiveOrder(User user) {
         if (user != null) {
-            Long userID = user.getUserID();
-            Order userOrder = orderRepo.findByUserIDAndAcceptedFalse(userID);
-            return userOrder != null ? userOrder : new Order();
+            Order userOrder = orderRepo.findByUserAndAcceptedFalse(user);
+            return userOrder != null ? userOrder : new Order(user);
         }
         else {
             String sessionID = RequestContextHolder.currentRequestAttributes().getSessionId();

@@ -39,4 +39,8 @@ public class Order implements Serializable {
     public Order(String sessionID) {
         this.setSessionID(sessionID);
     }
+
+    public Order(User user) {
+        this.setUser(user);
+    }
 }

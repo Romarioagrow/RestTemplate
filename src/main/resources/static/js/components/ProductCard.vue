@@ -9,7 +9,7 @@
             <ul>
                 <li v-for="anno in annotations" v-if="anno">{{anno}}</li>
             </ul>
-            <h3>{{product.finalPrice}} ₽</h3>
+            <h3>{{product.finalPrice.toLocaleString('ru-RU')}} ₽</h3>
             <span>{{product.supplier}}</span>
         </v-card-text>
         <v-card-actions>

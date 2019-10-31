@@ -2,11 +2,13 @@ package server.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-import server.domain.Order;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import server.domain.User;
 import server.services.OrderService;
-import java.util.Map;
+import java.util.LinkedList;
 
 @Log
 @RestController
@@ -21,12 +23,7 @@ public class OrderApiController {
     }
 
     @PostMapping("/orderedProducts")
-    private Map<String, Integer> getOrderedProducts(@AuthenticationPrincipal User user) {
+    private LinkedList<Object> getOrderedProducts(@AuthenticationPrincipal User user) {
         return orderService.getOrderedProducts(user);
-    }
-
-    @GetMapping("/orderDetails")
-    private Order getOrderDetails(@AuthenticationPrincipal User user) {
-        return orderService.getActiveOrder(user);
     }
 }

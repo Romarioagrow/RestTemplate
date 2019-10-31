@@ -30,7 +30,7 @@
                             </v-list-item-content>
                             <v-list-item-content class="ml-12">
                                 <v-list-item-title>
-                                    <span>цена <strong>{{product.finalPrice}}</strong> ₽</span>
+                                    <span><strong>{{product.finalPrice}}</strong> ₽</span>
                                 </v-list-item-title>
                             </v-list-item-content>
                             <v-list-item-action class="ml-12">
@@ -67,9 +67,13 @@
                         </div>
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn class="cp" tile outlined color="success">
+                        <v-btn class="cp" tile outlined color="success" v-if="!auth">
                             <v-icon left>mdi-login-variant</v-icon>
                             Войдите, что бы получить скидку!
+                        </v-btn>
+                        <v-btn class="cp" tile outlined color="primary" v-else>
+                            <v-icon left>mdi-sale</v-icon>
+                            Применить скидку
                         </v-btn>
                     </v-card-actions>
                     <v-divider></v-divider>
@@ -125,10 +129,14 @@
         }),
         created() {
             axios.post('/api/order/orderedProducts').then(response => {
+                //console.log(response.data)
+                const order = response.data[0]
+                const productList = response.data[1]
+
                 let orderedProducts = new Map()
                 let itemAmount = 0
 
-                for (const [product, amount] of Object.entries(response.data)) {
+                for (const [product, amount] of Object.entries(productList)) {
                     const obj = JSON.parse(product);
                     orderedProducts.set(obj, amount)
                     itemAmount += amount
@@ -137,12 +145,15 @@
                 this.itemAmount = itemAmount
                 this.productAmount = orderedProducts.size
                 this.orderedProducts = orderedProducts
+                this.totalPrice = order.totalPrice
+                this.totalBonus = order.totalBonus
+
             })
-            axios.get('/api/order/orderDetails').then(response => {
-                console.log(response.data)
-                this.totalPrice = response.data.totalPrice
-                this.totalBonus = response.data.totalBonus
-            })
+        },
+        computed: {
+            auth () {
+                return this.$store.state.currentUser
+            }
         }
     }
 </script>
