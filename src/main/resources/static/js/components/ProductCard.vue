@@ -3,7 +3,7 @@
     <v-card class="mx-auto mt-3" max-width="350">
         <v-img class="white--text" contain height="200px" :src="product.pic" alt="Bad Link"></v-img>
         <v-card-text>
-            <router-link :to=productID>
+            <router-link :to=showProductInfo>
                 <v-card-title class="align-end fill-height">{{product.fullName}}</v-card-title>
             </router-link>
             <ul>
@@ -13,7 +13,7 @@
             <span>{{product.supplier}}</span>
         </v-card-text>
         <v-card-actions>
-            <v-btn text color="orange">
+            <v-btn text color="orange" @click="addToOrder(product.productID)">
                 В корзину
             </v-btn>
                 <v-dialog v-model="dialog" max-width="500">
@@ -30,22 +30,30 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
-            <!--<v-btn text color="orange">
-                Купить в 1 клик
-            </v-btn>-->
         </v-card-actions>
     </v-card>
     </v-item>
 </template>
 
 <script>
+    import axios from 'axios'
     export default {
         props: ['product'],
         data() {
             return {
-                productID: '/products/product/' + this.product.productID,
+                showProductInfo: '/products/product/' + this.product.productID,
                 dialog: false,
                 annotations: this.product.shortAnnotation.split(';').map(String),
+            }
+        },
+        methods: {
+            addToOrder(productID) {
+                console.log(productID)
+                const url = '/api/order/addProduct'
+
+                axios.post(url, productID).then(response => {
+                    console.log(response.data)
+                })
             }
         }
     }

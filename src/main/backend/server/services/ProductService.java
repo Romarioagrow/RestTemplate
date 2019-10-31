@@ -33,34 +33,6 @@ public class ProductService {
         return productRepo.findByProductGroupIgnoreCase(group, pageable);
     }
 
-    /*public List<ProductGroup> getProductGroups(String category) {
-        Set<String> groups = new HashSet<>();
-        List<ProductGroup> productGroups = new ArrayList<>();
-
-        *//*Находятся все products в категории и просеиваются группы*//*
-        productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> groups.add(product.getProductGroup()));
-        try
-        {
-            *//*System.out.println();
-            log.info(category.toUpperCase());*//*
-            groups.forEach(productGroup ->
-            {
-                String pic = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic();
-                if (pic == null) pic = "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
-
-                ProductGroup group = new ProductGroup();
-                group.setGroupName(productGroup);
-                group.setGroupPic(pic);
-                productGroups.add(group);
-            });
-        }
-        catch (NullPointerException e) {
-            e.getSuppressed();
-        }
-        productGroups.sort(Comparator.comparing(ProductGroup::getGroupName));
-        return productGroups;
-    }*/
-
     /*Создать фильтры для группы products*/
     public FiltersList createProductsFilterLists(String group) {
         FiltersList filtersList = new FiltersList();
@@ -81,7 +53,7 @@ public class ProductService {
             filtersList.prices.add(allPrices.get(allPrices.size()-1));
 
             /*Сформировать обрабатываемые фильтры*/
-            System.out.println();
+            //System.out.println();
             products.forEach(product ->
             {
                 String supplier   = product.getSupplier();
@@ -91,7 +63,7 @@ public class ProductService {
                 String splitter  = supplier.contains("RBT") ? "; " : ", ";
                 String[] filters = annotation.split(splitter);
 
-                log.info(product.getSupplier() + ": " + Arrays.toString(filters));
+                //log.info(product.getSupplier() + ": " + Arrays.toString(filters));
                 /*Итерация и отсев неподходящих под фильтры-особенности*/
                 for (String filter : filters)
                 {
@@ -163,7 +135,7 @@ public class ProductService {
                 val.add(last);
             });
             //filtersList.showDiapasons();
-            filtersList.showInfo();
+            //filtersList.showInfo();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -245,7 +217,7 @@ public class ProductService {
     }
 
 
-    public LinkedHashMap<String, List<ProductGroup>> getAllCategories(String[] categories) {
+    /*public LinkedHashMap<String, List<ProductGroup>> getAllCategories(String[] categories) {
         LinkedHashMap<String, List<ProductGroup>> fullCatalog = new LinkedHashMap<>();
         for (String category : categories)
         {
@@ -266,12 +238,12 @@ public class ProductService {
             fullCatalog.put(category, productGroups);
         }
         return fullCatalog;
-    }
+    }*/
 
     public Page<Product> filterProducts(Map<String, String[]> filters, String group) {
-        System.out.println();
-        log.info(group);
-        filters.forEach((filterKey, values) -> log.info(filterKey + " " + Arrays.toString(values)));
+        //System.out.println();
+        //log.info(group);
+        //filters.forEach((filterKey, values) -> log.info(filterKey + " " + Arrays.toString(values)));
 
         List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
 
@@ -281,6 +253,8 @@ public class ProductService {
             /*НУЖНО ЧТО БЫ ПРОДОЛЖАЛ ФИЛЬТРОВАТЬ УЖЕ ОТФИЛЬТРОВАННЫЕ ОДИН РАЗ ТОВАРЫ*/
             /*ДЛЯ КАЖДОЙ ФИЛЬТРАЦИИ ОТПРАВЛЯТЬ СПИСОК УЖЕ ОТФИЛЬТРОВАННЫХ ТОВАРОВ*/
             /*НА CHECK IN ФИЛЬТРОВАТЬ CURRENTpRODUCTfILTER, НА CHECK OUT PRODUCTS = BY GROUP */
+
+                /*ФИЛЬТРОВАТЬ УЖЕ НАПОЛНЕНУЮ КОЛЛЕКЦИЮ PRODUCTS И ПЕРЕРИСОВЫВАТЬ ДОСТУПНЫЕ ФИЛЬТРЫ ИЗ НЕЕ*/
 
         {
             /*Фильтры по цене*/
@@ -364,19 +338,13 @@ public class ProductService {
     }
 
     private Page<Product> productsPage(List<Product> products) {
-        Pageable pageable = PageRequest.of(0, 30, Sort.Direction.DESC, "supplier");
+        Pageable pageable = PageRequest.of(0, 100, Sort.Direction.DESC, "supplier"); /// добавить пагинацию при фильтрации
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), products.size());
         return new PageImpl<>(products.subList(start, end), pageable, products.size());
     }
 
-    public List<Product> listOrderedProducts() {
-        List<Product> orderedProducts = new ArrayList<>();
-        orderedProducts.add(productRepo.findByProductID("02.02.04.01.000777"));
-        orderedProducts.add(productRepo.findByProductID("01.01.01.000000011"));
-        orderedProducts.add(productRepo.findByProductID("03.01.01.01.000427"));
-        return orderedProducts;
-    }
+
 
 
     /*public List<Product> filterProducts(Map<String, Object/*String[]> filters, String group) {

@@ -1,15 +1,18 @@
 package server.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Log
 @Data
 @Entity
 @Table(name = "ordr")
+@NoArgsConstructor
 @AllArgsConstructor
 public class Order implements Serializable {
     @Id
@@ -17,15 +20,19 @@ public class Order implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long orderID;
 
-    @Column(name = "session_uuid")
-    private String sessionUUID;
+    @Column(name = "session_id")
+    private String sessionID;
 
     @Column(name = "user_id")
     private Long userID;
 
-    @ElementCollection
-    private List<String> orderedProducts;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<String, Integer> orderedProducts = new LinkedHashMap<>();
 
     @ManyToOne
     private User user;
+
+    private Boolean accepted = false;
+
+    private Integer totalPrice = 0, totalBonus = 0;
 }

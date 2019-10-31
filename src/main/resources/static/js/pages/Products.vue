@@ -192,9 +192,9 @@
             this.productsRequest = '/api/products/group' + this.requestGroup + '/0'
             this.filtersRequest  = '/api/products/build_filters' + this.requestGroup
 
-            console.log(this.filtersRequest)
-            console.log(this.productsRequest)
-            console.log(this.pageRequest)
+            //console.log(this.filtersRequest)
+            //console.log(this.productsRequest)
+            //console.log(this.pageRequest)
 
             /*loadFilters*/
             axios.get(this.filtersRequest).then(response => {
@@ -241,7 +241,7 @@
         methods: {
             loadPage(page) {
                 let pageRequest = this.pageRequest + '/' + page
-                console.log(pageRequest)
+                //console.log(pageRequest)
                 axios.get(pageRequest).then(response => this.products = response.data.content)
             },
             filterProducts(param) {
