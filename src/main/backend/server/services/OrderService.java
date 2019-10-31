@@ -20,31 +20,12 @@ public class OrderService {
     private final OrderRepo orderRepo;
     private final ProductRepo productRepo;
 
-    public Map<String, Integer> listOrderedProducts(User user) {
-        Map<String, Integer> orderedProducts = new LinkedHashMap<>();
-
-        Order order = (user != null) ? getActiveUserOrder(user) : getActiveSessionOrder();  ///getActiveOrder(user)
-        order.getOrderedProducts().forEach((productID, amount) -> {
-            try
-            {
-                Product product = productRepo.findByProductID(productID);
-                String json = new ObjectMapper().writeValueAsString(product);
-                orderedProducts.put(json, amount);
-            }
-            catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        });
-        return orderedProducts;
-    }
-
     public boolean addProductToOrder(String productID, User user) {
         log.info("id: " + productID);
         log.info("user: " + user);
-        productID = productID.replaceAll("=", "");
 
-        Product product = productRepo.findByProductID(productID.replaceAll("=", "")); /// getProduct(productID)
-        Order order = (user != null) ? getActiveUserOrder(user) : getActiveSessionOrder(); ///getActiveOrder(user)
+        Product product = getProduct(productID);
+        Order order = getActiveOrder(user);
         order.getOrderedProducts().put(productID, 1);
         order.setTotalPrice(order.getTotalPrice() + product.getFinalPrice());
         order.setTotalBonus(order.getTotalBonus() + product.getBonus());
@@ -54,21 +35,39 @@ public class OrderService {
         return true;
     }
 
-    private Order getActiveUserOrder(User user) {
-        Long userID = user.getUserID();
-        Order userOrder = orderRepo.findByUserIDAndAcceptedFalse(userID);
-        return userOrder != null ? userOrder : new Order();
+    public Map<String, Integer> getOrderedProducts(User user) {
+        Map<String, Integer> orderedProducts = new LinkedHashMap<>();
+        Order order = getActiveOrder(user);
+
+        log.info(order + "");
+        order.getOrderedProducts().forEach((productID, amount) -> {
+            try
+            {
+                String productJson = new ObjectMapper().writeValueAsString(getProduct(productID));
+                orderedProducts.put(productJson, amount);
+            }
+            catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        });
+        log.info("oP:" + orderedProducts);
+        return orderedProducts;
     }
 
-    private Order getActiveSessionOrder() {
-        String sessionID = RequestContextHolder.currentRequestAttributes().getSessionId();
-        Order sessionOrder = orderRepo.findBySessionIDAndAcceptedFalse(sessionID);
-        if (sessionOrder != null) {
-            log.info(sessionOrder + "");
-            return sessionOrder;
+    public Order getActiveOrder(User user) {
+        if (user != null) {
+            Long userID = user.getUserID();
+            Order userOrder = orderRepo.findByUserIDAndAcceptedFalse(userID);
+            return userOrder != null ? userOrder : new Order();
         }
-        sessionOrder = new Order();
-        sessionOrder.setSessionID(sessionID);
-        return sessionOrder;
+        else {
+            String sessionID = RequestContextHolder.currentRequestAttributes().getSessionId();
+            Order sessionOrder = orderRepo.findBySessionIDAndAcceptedFalse(sessionID);
+            return sessionOrder != null ? sessionOrder : new Order(sessionID);
+        }
+    }
+
+    private Product getProduct(String productID) {
+        return productRepo.findByProductID(productID.replaceAll("=", ""));
     }
 }

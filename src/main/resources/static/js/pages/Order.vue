@@ -56,7 +56,7 @@
             <v-col>
                 <v-card outlined>
                     <v-card-text class="pb-0">
-                        <p class="display-1">Сумма заказа <span class="text--primary">{{orderTotalPrice}} ₽</span></p>
+                        <p class="display-1">Сумма заказа <span class="text--primary">{{totalPrice.toLocaleString('ru-RU')}} ₽</span></p>
                     </v-card-text>
                     <v-card-text class="pt-0">
                         Без скидки
@@ -118,21 +118,30 @@
     export default {
         data: () => ({
             orderedProducts: {},
-            orderTotalPrice: 0,
+            totalPrice: 0,
             totalBonus: 0,
             productAmount : 0,
-            itemAmount: 0,
-            data:{}
+            itemAmount: 0
         }),
         created() {
             axios.post('/api/order/orderedProducts').then(response => {
                 let orderedProducts = new Map()
-                for (const [key, value] of Object.entries(response.data)) {
-                    const obj = JSON.parse(key);
-                    orderedProducts.set(obj, value)
+                let itemAmount = 0
+
+                for (const [product, amount] of Object.entries(response.data)) {
+                    const obj = JSON.parse(product);
+                    orderedProducts.set(obj, amount)
+                    itemAmount += amount
                 }
-                console.log(orderedProducts)
+
+                this.itemAmount = itemAmount
+                this.productAmount = orderedProducts.size
                 this.orderedProducts = orderedProducts
+            })
+            axios.get('/api/order/orderDetails').then(response => {
+                console.log(response.data)
+                this.totalPrice = response.data.totalPrice
+                this.totalBonus = response.data.totalBonus
             })
         }
     }
