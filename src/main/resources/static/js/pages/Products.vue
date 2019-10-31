@@ -188,9 +188,13 @@
         },
         created() {
             this.requestGroup    = (decodeURI(window.location.href).substr(decodeURI(window.location.href).lastIndexOf('/'))).replace('_', ' ')
-            this.pageRequest     = '/api/products' + this.requestGroup
-            this.productsRequest = '/api/products' + this.requestGroup + '/0'
-            this.filtersRequest  = '/api/page/filters' + this.requestGroup
+            this.pageRequest     = '/api/products/group' + this.requestGroup
+            this.productsRequest = '/api/products/group' + this.requestGroup + '/0'
+            this.filtersRequest  = '/api/products/build_filters' + this.requestGroup
+
+            console.log(this.filtersRequest)
+            console.log(this.productsRequest)
+            console.log(this.pageRequest)
 
             /*loadFilters*/
             axios.get(this.filtersRequest).then(response => {
@@ -237,6 +241,7 @@
         methods: {
             loadPage(page) {
                 let pageRequest = this.pageRequest + '/' + page
+                console.log(pageRequest)
                 axios.get(pageRequest).then(response => this.products = response.data.content)
             },
             filterProducts(param) {
@@ -244,7 +249,6 @@
 
                 if (param !== undefined)
                 {
-                    //console.log('input ' + param)
                     if (param.includes(':')) {
                         let key = param.substr(0, param.indexOf(':'));
 
@@ -266,21 +270,12 @@
                 filters['brands']   = this.selectedBrands
                 filters['params']   = this.selectedParams
                 filters['features'] = this.selectedFeatures
-                //filters['selectedDiapasons'] = this.selectedDiapasons
-
 
                 let selectedDiapasons = []
                 for (const [key, value] of Object.entries(this.selectedDiapasons)) selectedDiapasons.push(key+':'+value)
                 filters['selectedDiapasons'] = selectedDiapasons
 
-
-                //console.log(selectedDiapasons)
-
-
-                //filters = JSON.stringify(filters);
-                //console.log('/api/filters/filterProducts'+this.requestGroup)
-
-                axios.post('/api/filters/filterProducts' + this.requestGroup, filters).then(response => {
+                axios.post('/api/products/filter' + this.requestGroup, filters).then(response => {
                     this.products = response.data.content
                     this.totalPages = response.data.totalPages
                     this.totalProductsFound = response.data.totalElements

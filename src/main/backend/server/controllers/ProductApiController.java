@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import server.domain.Product;
 import server.dto.FiltersList;
 import server.services.ProductService;
-
 import java.util.Map;
 
 @Log
@@ -18,7 +17,12 @@ import java.util.Map;
 public class ProductApiController {
     private final ProductService productService;
 
-    @GetMapping("/{group}/{page}")
+    @GetMapping("/build_filters/{group}")
+    private FiltersList createFiltersLists(@PathVariable String group) {
+        return productService.createProductsFilterLists(group);
+    }
+
+    @GetMapping("/group/{group}/{page}")
     private Page<Product> listProductsByGroupPage(@PathVariable String group, @PathVariable(required = false) int page) {
         return productService.getProductsByGroup(group, PageRequest.of(page, 15, Sort.Direction.ASC, "pic"));
     }
@@ -33,8 +37,5 @@ public class ProductApiController {
         return productService.filterProducts(filters, group);
     }
 
-    @GetMapping("/page/filters/{group}")
-    private FiltersList createFiltersLists(@PathVariable String group) {
-        return productService.createProductsFilterLists(group);
-    }
+
 }
