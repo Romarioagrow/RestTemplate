@@ -1,4 +1,6 @@
 package server.services;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
@@ -8,8 +10,8 @@ import server.domain.Product;
 import server.domain.User;
 import server.repos.OrderRepo;
 import server.repos.ProductRepo;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Log
 @Service
@@ -18,12 +20,21 @@ public class OrderService {
     private final OrderRepo orderRepo;
     private final ProductRepo productRepo;
 
+    public Map<String, Integer> listOrderedProducts(User user) {
+        Map<String, Integer> orderedProducts = new LinkedHashMap<>();
 
-    public List<Product> listOrderedProducts() {
-        List<Product> orderedProducts = new ArrayList<>();
-        orderedProducts.add(productRepo.findByProductID("02.02.04.01.000777"));
-        orderedProducts.add(productRepo.findByProductID("01.01.01.000000011"));
-        orderedProducts.add(productRepo.findByProductID("03.01.01.01.000427"));
+        Order order = (user != null) ? getActiveUserOrder(user) : getActiveSessionOrder();  ///getActiveOrder(user)
+        order.getOrderedProducts().forEach((productID, amount) -> {
+            try
+            {
+                Product product = productRepo.findByProductID(productID);
+                String json = new ObjectMapper().writeValueAsString(product);
+                orderedProducts.put(json, amount);
+            }
+            catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        });
         return orderedProducts;
     }
 
@@ -32,9 +43,8 @@ public class OrderService {
         log.info("user: " + user);
         productID = productID.replaceAll("=", "");
 
-        Product product = productRepo.findByProductID(productID.replaceAll("=", ""));
-
-        Order order = (user != null) ? getActiveUserOrder(user) : getActiveSessionOrder();
+        Product product = productRepo.findByProductID(productID.replaceAll("=", "")); /// getProduct(productID)
+        Order order = (user != null) ? getActiveUserOrder(user) : getActiveSessionOrder(); ///getActiveOrder(user)
         order.getOrderedProducts().put(productID, 1);
         order.setTotalPrice(order.getTotalPrice() + product.getFinalPrice());
         order.setTotalBonus(order.getTotalBonus() + product.getBonus());
@@ -42,16 +52,6 @@ public class OrderService {
 
         log.info("order: " + order.toString());
         return true;
-        //Order order = new Order();
-        /*if (user == null) {
-            order = getActiveSessionOrder();
-            order.getOrderedProducts().put(productID, 1);
-        }
-        else
-        {
-            order = getActiveUserOrder(user);
-            order.getOrderedProducts().put(productID, 1);
-        }*/
     }
 
     private Order getActiveUserOrder(User user) {
@@ -70,6 +70,5 @@ public class OrderService {
         sessionOrder = new Order();
         sessionOrder.setSessionID(sessionID);
         return sessionOrder;
-        //return sessionOrder != null ? sessionOrder : new Order();
     }
 }

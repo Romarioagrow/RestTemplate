@@ -1,12 +1,14 @@
 package server.domain;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
 @Entity
 @Table(name = "products")
-public class Product {
+public class Product implements Serializable {
     @Id
     @Column(name = "product_id")
     private String productID;
@@ -15,6 +17,11 @@ public class Product {
 
     private Integer finalPrice, bonus;
 
+    private String brand, supplier;
+
+    private LocalDate updateDate;
+
+    @JsonIgnore
     private Double defaultCoefficient, customCoefficient;
 
     @Column(length = 1000)
@@ -23,9 +30,6 @@ public class Product {
     @Column(length = 20000)
     private String pic, linkToPic, pics, annotation, shortAnnotation, formattedAnnotation, annotationFromRUSBT;
 
+    @JsonIgnore
     private Boolean isAvailable, uniquePrice, coefficientModified, priceModified, isDuplicate, hasDuplicates, mappedJSON = false;
-
-    private String brand, supplier;
-
-    private LocalDate updateDate;
 }

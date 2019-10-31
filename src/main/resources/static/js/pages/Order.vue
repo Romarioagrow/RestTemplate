@@ -2,27 +2,35 @@
     <b-container fluid style="width: 90%;">
         <v-row>
             <v-col cols="8">
+                <!--<div>
+                    <ul>
+                        <li v-for="[key, val] of orderedProducts">{{key.productID}} - {{val}}</li>
+                    </ul>
+                </div>
+                <div>
+                    {{orderedProducts}}
+                </div>-->
+
                 <v-card outlined><!--max-width="500" class="mx-auto"-->
                     <!--<v-toolbar>
                         <v-toolbar-title>Товары в корзине</v-toolbar-title>
                         <v-spacer></v-spacer>
                     </v-toolbar>-->
-
                     <v-list subheader>
                         <v-subheader>Товары в корзине</v-subheader>
-                        <v-list-item v-for="(item, index) in orderedProducts" :key="item.productID" @click="" style="min-height: 5rem;">
+                        <v-list-item v-for="[product, amount] of orderedProducts" :key="product.productID" @click="" style="min-height: 5rem;">
                             <v-list-item-avatar>
-                                №{{index+1}}
+
                             </v-list-item-avatar>
                             <v-list-item-avatar>
-                                <v-img :src="item.pic"></v-img>
+                                <v-img :src="product.pic"></v-img>
                             </v-list-item-avatar>
                             <v-list-item-content class="ml-12">
-                                <v-list-item-title v-text="item.fullName"></v-list-item-title>
+                                <v-list-item-title v-text="product.fullName"></v-list-item-title>
                             </v-list-item-content>
                             <v-list-item-content class="ml-12">
                                 <v-list-item-title>
-                                    <span>цена <strong>{{item.finalPrice}}</strong> ₽</span>
+                                    <span>цена <strong>{{product.finalPrice}}</strong> ₽</span>
                                 </v-list-item-title>
                             </v-list-item-content>
                             <v-list-item-action class="ml-12">
@@ -30,7 +38,7 @@
                                     <v-btn text small icon>
                                         <v-icon>mdi-minus</v-icon>
                                     </v-btn>
-                                    <span>1</span>
+                                    <span>{{amount}}</span>
                                     <v-btn text small icon>
                                         <v-icon>mdi-plus</v-icon>
                                     </v-btn>
@@ -75,7 +83,7 @@
                             <v-col>
                                 <v-badge left>
                                     <template v-slot:badge>
-                                        <span>3</span>
+                                        <span>{{productAmount}}</span>
                                     </template>
                                 </v-badge>
                             </v-col>
@@ -89,7 +97,7 @@
                             <v-col>
                                 <v-badge left>
                                     <template v-slot:badge>
-                                        <span>7</span>
+                                        <span>{{itemAmount}}</span>
                                     </template>
                                 </v-badge>
                             </v-col>
@@ -109,14 +117,22 @@
     import axios from 'axios'
     export default {
         data: () => ({
-            orderedProducts: [],
-            orderTotalPrice: 5590,
-            totalBonus: 200
+            orderedProducts: {},
+            orderTotalPrice: 0,
+            totalBonus: 0,
+            productAmount : 0,
+            itemAmount: 0,
+            data:{}
         }),
         created() {
             axios.post('/api/order/orderedProducts').then(response => {
-                console.log(response.data)
-                this.orderedProducts = response.data
+                let orderedProducts = new Map()
+                for (const [key, value] of Object.entries(response.data)) {
+                    const obj = JSON.parse(key);
+                    orderedProducts.set(obj, value)
+                }
+                console.log(orderedProducts)
+                this.orderedProducts = orderedProducts
             })
         }
     }

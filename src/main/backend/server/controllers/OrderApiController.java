@@ -10,6 +10,7 @@ import server.domain.Product;
 import server.domain.User;
 import server.services.OrderService;
 import java.util.List;
+import java.util.Map;
 
 @Log
 @RestController
@@ -19,8 +20,8 @@ public class OrderApiController {
     private final OrderService orderService;
 
     @PostMapping("/orderedProducts")
-    private List<Product> listOrderedProducts() {
-        return orderService.listOrderedProducts();
+    private Map<String, Integer> listOrderedProducts(@AuthenticationPrincipal User user) {
+        return orderService.listOrderedProducts(user);
     }
 
     @PostMapping("/addProduct")
