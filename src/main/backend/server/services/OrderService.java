@@ -34,8 +34,33 @@ public class OrderService {
     public LinkedList<Object> deleteProductFromOrder(String productID, User user) {
         Product product = getProduct(productID);
         Order order = getActiveOrder(user);
+        int amount = order.getOrderedProducts().get(productID);
 
         order.getOrderedProducts().remove(productID);
+        order.setTotalPrice(order.getTotalPrice() - product.getFinalPrice() * amount);
+        order.setTotalBonus(order.getTotalBonus() - product.getBonus() * amount);
+        orderRepo.save(order);
+        return payloadOrderData(order);
+    }
+
+    public LinkedList<Object> increaseAmount(String productID, User user) {
+        Product product = getProduct(productID);
+        Order order = getActiveOrder(user);
+        int amount = order.getOrderedProducts().get(productID);
+
+        order.getOrderedProducts().put(productID, amount + 1);
+        order.setTotalPrice(order.getTotalPrice() + product.getFinalPrice());
+        order.setTotalBonus(order.getTotalBonus() + product.getBonus());
+        orderRepo.save(order);
+        return payloadOrderData(order);
+    }
+
+    public LinkedList<Object> decreaseAmount(String productID, User user) {
+        Product product = getProduct(productID);
+        Order order = getActiveOrder(user);
+        int amount = order.getOrderedProducts().get(productID);
+
+        order.getOrderedProducts().put(productID, amount - 1);
         order.setTotalPrice(order.getTotalPrice() - product.getFinalPrice());
         order.setTotalBonus(order.getTotalBonus() - product.getBonus());
         orderRepo.save(order);

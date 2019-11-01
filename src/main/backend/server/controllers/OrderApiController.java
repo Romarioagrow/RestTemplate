@@ -28,4 +28,14 @@ public class OrderApiController {
     private LinkedList<Object> deleteProductFromOrder(@RequestBody String productID, @AuthenticationPrincipal User user) {
         return orderService.deleteProductFromOrder(productID, user);
     }
+
+    @PostMapping("/increaseAmount")
+    private LinkedList<Object> increaseAmount(@RequestBody String productID, @AuthenticationPrincipal User user ) {
+        return orderService.increaseAmount(productID, user);
+    }
+
+    @PostMapping("/decreaseAmount")
+    private LinkedList<Object> decreaseAmount(@RequestBody String productID, @AuthenticationPrincipal User user ) {
+        return orderService.decreaseAmount(productID, user);
+    }
 }

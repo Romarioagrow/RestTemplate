@@ -21,11 +21,11 @@
                                 </v-list-item-content>
                                 <v-list-item-action class="ml-12">
                                     <div class="my-2">
-                                        <v-btn text small icon>
+                                        <v-btn text small icon @click="decreaseAmount(product.productID)" :disabled="amount === 1">
                                             <v-icon>mdi-minus</v-icon>
                                         </v-btn>
                                         <span>{{amount}}</span>
-                                        <v-btn text small icon>
+                                        <v-btn text small icon @click="increaseAmount(product.productID)">
                                             <v-icon>mdi-plus</v-icon>
                                         </v-btn>
                                     </div>
@@ -137,7 +137,17 @@
                 axios.post('/api/order/deleteProduct', productID).then(response => {
                     this.loadData(response)
                 })
-            }
+            },
+            increaseAmount(productID) {
+                axios.post('/api/order/increaseAmount', productID).then(response => {
+                    this.loadData(response)
+                })
+            },
+            decreaseAmount(productID) {
+                axios.post('/api/order/decreaseAmount', productID).then(response => {
+                    this.loadData(response)
+                })
+            },
         },
         created() {
             axios.post('/api/order/orderedProducts').then(response => {
@@ -158,3 +168,9 @@
         margin-top: -1rem;
     }
 </style>
+
+<!--"decreaseAmount(product.productID)">
+                                            <v-icon>mdi-minus</v-icon>
+                                        </v-btn>
+                                        <span>{{amount}}</span>
+                                        <v-btn text small icon @click="increaseAmount(product.productID)">-->
