@@ -23,12 +23,6 @@ import static org.apache.commons.lang3.StringUtils.*;
 public class ProductService {
     private final ProductRepo productRepo;
 
-    ///!!!
-    /*
-     * НАПОЛНЯТЬ MAP С ГРУППАМИ ПРИ ЗАПУСКЕ СЕРВЕРА И СОХРАНЯТЬ ЕГО В JSON В ПАПКЕ
-     * НА КЛИЕНТЕ В MAIN.JS ИМПОРТИРОВАТЬ ФАЙЛ В ОБЪЕКТ И ОТПРАВИТЬ В CATALOG.DATA
-     * РЕНЕДЕР СТРУКТРУЫ СРАЗУ ИЗ ОБЪЕКТА DATA*/
-
     public Page<Product> getProductsByGroup(String group, Pageable pageable) {
         return productRepo.findByProductGroupIgnoreCase(group, pageable);
     }
@@ -53,7 +47,6 @@ public class ProductService {
             filtersList.prices.add(allPrices.get(allPrices.size()-1));
 
             /*Сформировать обрабатываемые фильтры*/
-            //System.out.println();
             products.forEach(product ->
             {
                 String supplier   = product.getSupplier();
@@ -63,7 +56,6 @@ public class ProductService {
                 String splitter  = supplier.contains("RBT") ? "; " : ", ";
                 String[] filters = annotation.split(splitter);
 
-                //log.info(product.getSupplier() + ": " + Arrays.toString(filters));
                 /*Итерация и отсев неподходящих под фильтры-особенности*/
                 for (String filter : filters)
                 {
@@ -134,8 +126,6 @@ public class ProductService {
                 val.add(first);
                 val.add(last);
             });
-            //filtersList.showDiapasons();
-            //filtersList.showInfo();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -216,46 +206,9 @@ public class ProductService {
         return productRepo.findByProductID(productID);
     }
 
-
-    /*public LinkedHashMap<String, List<ProductGroup>> getAllCategories(String[] categories) {
-        LinkedHashMap<String, List<ProductGroup>> fullCatalog = new LinkedHashMap<>();
-        for (String category : categories)
-        {
-            List<ProductGroup> productGroups = new ArrayList<>();
-            Set<String> categoryGroups = new TreeSet<>();
-
-            productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> categoryGroups.add(product.getProductGroup()));
-            categoryGroups.forEach(productGroup ->
-            {
-                String pic = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup).getPic();
-                if (pic == null) pic = "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
-
-                ProductGroup group = new ProductGroup();
-                group.setGroupName(productGroup);
-                group.setGroupPic(pic);
-                productGroups.add(group);
-            });
-            fullCatalog.put(category, productGroups);
-        }
-        return fullCatalog;
-    }*/
-
     public Page<Product> filterProducts(Map<String, String[]> filters, String group) {
-        //System.out.println();
-        //log.info(group);
-        //filters.forEach((filterKey, values) -> log.info(filterKey + " " + Arrays.toString(values)));
-
         List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
-
         try
-            /*КАК ВАРИАНТ СОЗДАТЬ ШАБЛОНЫ ДЛЯ ДОБАЛВЕНИЯ KEY/VALUE ДЛЯ RUSBT SHORTANNO*/
-            /*ДОБАВЛЯТЬ СИНОНИМЫ ЧЕРЕЗ ИЛИ*/
-            /*НУЖНО ЧТО БЫ ПРОДОЛЖАЛ ФИЛЬТРОВАТЬ УЖЕ ОТФИЛЬТРОВАННЫЕ ОДИН РАЗ ТОВАРЫ*/
-            /*ДЛЯ КАЖДОЙ ФИЛЬТРАЦИИ ОТПРАВЛЯТЬ СПИСОК УЖЕ ОТФИЛЬТРОВАННЫХ ТОВАРОВ*/
-            /*НА CHECK IN ФИЛЬТРОВАТЬ CURRENTpRODUCTfILTER, НА CHECK OUT PRODUCTS = BY GROUP */
-
-                /*ФИЛЬТРОВАТЬ УЖЕ НАПОЛНЕНУЮ КОЛЛЕКЦИЮ PRODUCTS И ПЕРЕРИСОВЫВАТЬ ДОСТУПНЫЕ ФИЛЬТРЫ ИЗ НЕЕ*/
-
         {
             /*Фильтры по цене*/
             products = products.stream().filter(product ->
@@ -343,39 +296,15 @@ public class ProductService {
         int end = Math.min((start + pageable.getPageSize()), products.size());
         return new PageImpl<>(products.subList(start, end), pageable, products.size());
     }
-
-
-
-
-    /*public List<Product> filterProducts(Map<String, Object/*String[]> filters, String group) {
-        System.out.println();
-        log.info(group);
-        filters.forEach((filterKey, values) -> log.info(filterKey + " " + values));
-
-        List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
-
-        return products.stream().filter(product ->
-        {
-            String[] priceFilters = (filters.get("prices").toString().replaceAll("\\[|\\]","")).split(",");
-            int minPrice = Integer.parseInt(priceFilters[0].trim());
-            int maxPrice = Integer.parseInt(priceFilters[1].trim());
-
-            log.info("minPrice: "+minPrice);
-            log.info("maxPrice: "+maxPrice);
-
-            /*String[] strings = Arrays.stream(filters.get("prices")).map(Object::toString).
-                    toArray(String[]::new);
-
-            //String[] strings = Arrays.stream(filters.get("prices")).toArray(String[]::new);
-
-            //List<Object> priceFilters = Collections.singletonList(filters.get("prices"));
-            //log.info(priceFilters.toString());
-            return true;
-        }).collect(Collectors.toList());
-        //filters
-
-    }*/
 }
+
+/*КАК ВАРИАНТ СОЗДАТЬ ШАБЛОНЫ ДЛЯ ДОБАЛВЕНИЯ KEY/VALUE ДЛЯ RUSBT SHORTANNO*/
+/*ДОБАВЛЯТЬ СИНОНИМЫ ЧЕРЕЗ ИЛИ*/
+/*НУЖНО ЧТО БЫ ПРОДОЛЖАЛ ФИЛЬТРОВАТЬ УЖЕ ОТФИЛЬТРОВАННЫЕ ОДИН РАЗ ТОВАРЫ*/
+/*ДЛЯ КАЖДОЙ ФИЛЬТРАЦИИ ОТПРАВЛЯТЬ СПИСОК УЖЕ ОТФИЛЬТРОВАННЫХ ТОВАРОВ*/
+/*НА CHECK IN ФИЛЬТРОВАТЬ CURRENT_PRODUCT_FILTER, НА CHECK OUT PRODUCTS = BY GROUP */
+
+/*ФИЛЬТРОВАТЬ УЖЕ НАПОЛНЕНУЮ КОЛЛЕКЦИЮ PRODUCTS И ПЕРЕРИСОВЫВАТЬ ДОСТУПНЫЕ ФИЛЬТРЫ ИЗ НЕЕ*/
 
 /*!!FORMATTED ANNOTATION: УДАЛИТЬ ИЗ АННОТАЦИИ ВСЕ "НЕТ", "-" И ТД, B ВСТАВИТЬ ПЕРЕНОС СТРОКИ ДЛЯ КАЖДОГО*/
 
@@ -412,7 +341,6 @@ public class ProductService {
 
 /*
  * Сначала ишет уникальные фильтры через И, если их ноль, то тогда через или*/
-
 
 /*
  * если у двух поставщиков есть одинаковое свойство с одним и тем же словом в названии,

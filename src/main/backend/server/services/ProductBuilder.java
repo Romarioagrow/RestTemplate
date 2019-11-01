@@ -446,7 +446,7 @@ public class ProductBuilder {
         if (productWithUniquePrice(originalProduct)) {
             return Integer.parseInt(StringUtils.deleteWhitespace(brandsRepo.findByProductID(originalProduct.getProductID()).getFinalPrice()));
         }
-        /// else if (productPriceModified())
+        /*else if (productPriceModified())*/
         else return makeRoundFinalPrice(originalProduct.getOriginalPrice(), coefficient);
     }
 

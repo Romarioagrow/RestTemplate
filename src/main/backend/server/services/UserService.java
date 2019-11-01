@@ -40,7 +40,7 @@ public class UserService implements UserDetailsService {
         user.setRoles(Collections.singleton(Role.USER));
         userRepo.save(user);
 
-        log.info("Пользователь зарегестрирован:" + user.toString());
+        log.info("Пользователь зарегестрирован: " + user.toString());
         return true;
     }
 }

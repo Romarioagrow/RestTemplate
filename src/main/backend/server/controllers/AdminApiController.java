@@ -44,14 +44,14 @@ public class AdminApiController {
         productBuilder.updateBrandsPrice(file);
     }
 
+    @PostMapping("/parsePicsRUSBT")
+    private void parsePicsRUSBT() {
+        productBuilder.parsePicsRUSBT();
+    }
+
     @PostMapping("/test")
     private void uploadProductsDBFile(@AuthenticationPrincipal User user) {
         log.info("TEST USER: " + user.getFirstName());
         productBuilder.test();
-    }
-
-    @PostMapping("/parsePicsRUSBT")
-    private void parsePicsRUSBT() {
-        productBuilder.parsePicsRUSBT();
     }
 }

@@ -21,6 +21,14 @@ public class OrderService {
     private final OrderRepo orderRepo;
     private final ProductRepo productRepo;
 
+    public boolean acceptOrder(Map<String, String> orderDetails) {
+        log.info(orderDetails.toString());
+
+        ///...
+
+        return true;
+    }
+
     public boolean addProductToOrder(String productID, User user) {
         Product product = getProduct(productID);
         Order order = getActiveOrder(user);
@@ -103,12 +111,5 @@ public class OrderService {
 
     private Product getProduct(String productID) {
         return productRepo.findByProductID(productID.replaceAll("=", ""));
-    }
-
-    public boolean acceptOrder(Map<String, String> orderDetails) {
-        log.info(orderDetails.toString());
-
-
-        return true;
     }
 }

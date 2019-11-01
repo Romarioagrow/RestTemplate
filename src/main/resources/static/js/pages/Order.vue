@@ -105,7 +105,7 @@
                                     <v-btn block color="#e52d00" dark v-on="on">Оформить заказ</v-btn>
                                 </template>
                                 <v-card>
-                                    <v-card-title class="headline"><span v-if="auth">{{firstName}},</span><span v-else class="mr-1">Ваш </span> заказ на сумму <span style="color: #e52d00" class="ml-2">{{totalPrice.toLocaleString('ru-RU')}} ₽ </span></v-card-title>
+                                    <v-card-title class="headline"><span v-if="auth" class="mr-1">{{firstName}},</span><span v-else class="mr-1">Ваш </span> заказ на сумму <span style="color: #e52d00" class="ml-2">{{totalPrice.toLocaleString('ru-RU')}} ₽ </span></v-card-title>
                                     <v-card-text>
                                         <div class="mt-3" >
                                             <h5>Ваши контактные данные</h5>
@@ -269,11 +269,11 @@
             })
 
             if (this.auth) {
-                this.lastName = this.$store.state.currentUser.lastName
-                this.firstName = this.$store.state.currentUser.firstName
+                this.lastName   = this.$store.state.currentUser.lastName
+                this.firstName  = this.$store.state.currentUser.firstName
                 this.patronymic = this.$store.state.currentUser.patronymic
-                this.mobile = this.$store.state.currentUser.username
-                this.email = this.$store.state.currentUser.email
+                this.mobile     = this.$store.state.currentUser.username
+                this.email      = this.$store.state.currentUser.email
             }
         },
         computed: {
@@ -295,5 +295,4 @@
     .chartAreaWrapper {
         overflow-x: hidden;
     }
-
 </style>
