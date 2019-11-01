@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import server.domain.User;
 import server.services.OrderService;
 import java.util.LinkedList;
+import java.util.Map;
 
 @Log
 @RestController
@@ -37,5 +38,10 @@ public class OrderApiController {
     @PostMapping("/decreaseAmount")
     private LinkedList<Object> decreaseAmount(@RequestBody String productID, @AuthenticationPrincipal User user ) {
         return orderService.decreaseAmount(productID, user);
+    }
+
+    @PostMapping("/acceptOrder")
+    private boolean acceptOrder(@RequestBody Map<String, String> orderDetails) {
+        return orderService.acceptOrder(orderDetails);
     }
 }

@@ -122,7 +122,7 @@
                 const loginURL = 'http://localhost:9000/user/login'
                 axios.post(loginURL, auth, config).then((response) => {
                     this.$store.dispatch('login')
-                    this.$router.push('/user/cabinet')
+                    this.$router.push('/order')
                 })
             }
         }

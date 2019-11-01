@@ -43,4 +43,6 @@ public class Order implements Serializable {
     private Boolean accepted = false;
 
     private Integer totalPrice = 0, totalBonus = 0;
+
+    private String address;
 }

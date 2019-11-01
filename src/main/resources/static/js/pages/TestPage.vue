@@ -41,10 +41,12 @@
             <!---->
             <items-list />
             <!---->
-            <v-btn class="ma-2" color="red" dark>Удалить
+            <v-btn class="ma-2" color="red" dark>
+                Удалить
                 <v-icon dark right>mdi-cancel</v-icon>
             </v-btn>
-            <v-btn class="ma-2" color="primary" dark>Заказать
+            <v-btn class="ma-2" color="primary" dark>
+                Заказать
                 <v-icon dark right>mdi-checkbox-marked-circle</v-icon>
             </v-btn>
         </v-container>

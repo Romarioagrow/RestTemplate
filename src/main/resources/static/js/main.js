@@ -13,11 +13,14 @@ import 'vuesax/dist/vuesax.css'
 import 'material-icons/iconfont/material-icons.css';
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import store from 'store'
+import VueMask from 'v-mask'
+
 
 Vue.use(VueResource);
 Vue.use(Vuetify);
 Vue.use(BootstrapVue);
 Vue.use(Vuesax);
+Vue.use(VueMask);
 
 new Vue({
     el: '#app',

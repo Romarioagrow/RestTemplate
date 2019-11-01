@@ -53,10 +53,15 @@
                             </div>
                         </v-card-text>
                         <v-card-actions>
-                            <v-btn class="cp" tile outlined color="success" v-if="!auth">
-                                <v-icon left>mdi-login-variant</v-icon>
-                                Войдите, что бы получить скидку!
-                            </v-btn>
+
+                            <!--В DIALOG!!!-->
+                            <router-link to="/login"  v-if="!auth">
+                                <v-btn class="cp" tile outlined color="success">
+                                    <v-icon left>mdi-login-variant</v-icon>
+                                    Войдите, что бы получить скидку!
+                                </v-btn>
+                            </router-link>
+
                             <v-btn class="cp" tile outlined color="primary" v-else>
                                 <v-icon left>mdi-sale</v-icon>
                                 Применить скидку
@@ -95,7 +100,80 @@
                         </div>
                         <v-divider></v-divider>
                         <v-card-actions>
-                            <v-btn block color="#e52d00" dark>Оформить заказ</v-btn>
+                            <v-dialog v-model="orderDialog" persistent max-width="1000">
+                                <template v-slot:activator="{ on }">
+                                    <v-btn block color="#e52d00" dark v-on="on">Оформить заказ</v-btn>
+                                </template>
+                                <v-card>
+                                    <v-card-title class="headline"><span v-if="auth">{{firstName}},</span><span v-else class="mr-1">Ваш </span> заказ на сумму <span style="color: #e52d00" class="ml-2">{{totalPrice.toLocaleString('ru-RU')}} ₽ </span></v-card-title>
+                                    <v-card-text>
+                                        <div class="mt-3" >
+                                            <h5>Ваши контактные данные</h5>
+                                            <v-row>
+                                                <v-col>
+                                                    <v-text-field prepend-icon="mdi-account" type="text" v-model="lastName" label="Фамилия"></v-text-field>
+                                                </v-col>
+                                                <v-col>
+                                                    <v-text-field type="text" v-model="firstName" label="Имя"></v-text-field>
+                                                </v-col>
+                                                <v-col>
+                                                    <v-text-field type="text" v-model="patronymic" label="Отчество"></v-text-field>
+                                                </v-col>
+                                            </v-row>
+                                            <v-row>
+                                                <v-col>
+                                                    <v-text-field type="text" prepend-icon="mdi-phone" v-mask="'7-###-###-##-##'" v-model="mobile" label="Номер телефона"></v-text-field>
+                                                </v-col>
+                                                <v-col>
+                                                    <v-text-field type="email" prepend-icon="mdi-email" v-model="email" label="E-mail"></v-text-field>
+                                                </v-col>
+                                            </v-row>
+                                        </div>
+                                        <div class="mt-3">
+                                            <h5>Способ получения товара</h5>
+                                            <v-tabs>
+                                                <v-tab @click="noDelivery = true">Самовывоз</v-tab>
+                                                <v-tab @click="noDelivery = false">Доставка</v-tab>
+                                            </v-tabs>
+                                            <div class="mt-3" v-if="noDelivery">
+                                                <span>Заберите ваш заказ с магазина по адресу: <strong>город Чебаркуль, Карпенко 7</strong></span>
+                                            </div>
+                                            <div class="mt-3" v-else>
+                                                <v-row>
+                                                    <v-col>
+                                                        <v-text-field type="text" v-model="city" label="Населенный пункт"></v-text-field>
+                                                    </v-col>
+                                                    <v-col>
+                                                        <v-text-field type="text" v-model="street" label="Улица"></v-text-field>
+                                                    </v-col>
+                                                    <v-col>
+                                                        <v-text-field type="text" v-model="house" label="Дом"></v-text-field>
+                                                    </v-col>
+                                                    <v-col>
+                                                        <v-text-field type="text" v-model="flat" label="Квартира"></v-text-field>
+                                                    </v-col>
+                                                </v-row>
+                                            </div>
+                                        </div>
+                                    </v-card-text>
+                                    <v-card-actions class="chartAreaWrapper">
+                                        <v-row>
+                                            <v-col>
+                                                <v-btn color="green" block dark @click="acceptOrder()">
+                                                    Оформить
+                                                    <v-icon dark right>mdi-checkbox-marked-circle</v-icon>
+                                                </v-btn>
+                                            </v-col>
+                                            <v-col>
+                                                <v-btn color="#e10c0c" block dark @click="orderDialog = false">
+                                                    Отмена
+                                                    <v-icon dark right>mdi-cancel</v-icon>
+                                                </v-btn>
+                                            </v-col>
+                                        </v-row>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
                         </v-card-actions>
                     </v-card>
                 </v-col>
@@ -108,17 +186,30 @@
     import axios from 'axios'
     export default {
         data: () => ({
-            orderedProducts: {},
-            totalPrice: 0,
-            totalBonus: 0,
-            productAmount : 0,
-            itemAmount: 0,
-            loading: true
+            orderedProducts : {},
+            totalPrice      : 0,
+            totalBonus      : 0,
+            productAmount   : 0,
+            itemAmount      : 0,
+            loading         : true,
+            orderDialog     : false,
+            noDelivery      : true,
+            lastName        : '',
+            firstName       : '',
+            patronymic      : '',
+            mobile          : '',
+            email           : '',
+            city            :'',
+            street          :'',
+            house           :'',
+            flat            :'',
         }),
         methods: {
             loadData(response) {
                 const order = response.data[0]
                 const productList = response.data[1]
+                this.$store.dispatch('updateOrder', order)
+
                 let orderedProducts = new Map()
                 let itemAmount = 0
                 for (const [product, amount] of Object.entries(productList)) {
@@ -148,15 +239,49 @@
                     this.loadData(response)
                 })
             },
+            acceptOrder() {
+                this.orderDialog = false
+
+                let address = ''
+                if (this.city) {
+                    address = this.city + ',' + this.street  + ',' + this.house  + ',' + this.flat
+                }
+
+                let orderConfirmDetails = {
+                    'orderID'   :this.order.orderID,
+                    'firstName' :this.firstName,
+                    'lastName'  :this.lastName,
+                    'patronymic':this.patronymic,
+                    'mobile'    :this.mobile,
+                    'email'     :this.email,
+                    'address'   :address
+                }
+                console.log(orderConfirmDetails)
+
+                axios.post('/api/order/acceptOrder', orderConfirmDetails).then(response => {
+                    console.log(response)
+                })
+            }
         },
         created() {
             axios.post('/api/order/orderedProducts').then(response => {
                 this.loadData(response)
             })
+
+            if (this.auth) {
+                this.lastName = this.$store.state.currentUser.lastName
+                this.firstName = this.$store.state.currentUser.firstName
+                this.patronymic = this.$store.state.currentUser.patronymic
+                this.mobile = this.$store.state.currentUser.username
+                this.email = this.$store.state.currentUser.email
+            }
         },
         computed: {
-            auth () {
+            auth() {
                 return this.$store.state.currentUser
+            },
+            order() {
+                return this.$store.state.currentOrder
             }
         }
     }
@@ -167,10 +292,8 @@
         padding-top: 0 !important;
         margin-top: -1rem;
     }
-</style>
+    .chartAreaWrapper {
+        overflow-x: hidden;
+    }
 
-<!--"decreaseAmount(product.productID)">
-                                            <v-icon>mdi-minus</v-icon>
-                                        </v-btn>
-                                        <span>{{amount}}</span>
-                                        <v-btn text small icon @click="increaseAmount(product.productID)">-->
+</style>

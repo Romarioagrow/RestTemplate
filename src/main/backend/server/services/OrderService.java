@@ -104,4 +104,11 @@ public class OrderService {
     private Product getProduct(String productID) {
         return productRepo.findByProductID(productID.replaceAll("=", ""));
     }
+
+    public boolean acceptOrder(Map<String, String> orderDetails) {
+        log.info(orderDetails.toString());
+
+
+        return true;
+    }
 }

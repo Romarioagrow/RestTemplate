@@ -6,14 +6,18 @@ import createPersistedState from 'vuex-persistedstate'
 Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
-        currentUser: null
+        currentUser: null,
+        currentOrder: null
     },
     mutations: {
         setCurrentUser(currentState, user) {
-            currentState.currentUser = user;
+            currentState.currentUser = user
         },
         logoutUser(currentState) {
-            currentState.currentUser = null;
+            currentState.currentUser = null
+        },
+        setOrderDB(currentState, order) {
+            currentState.currentOrder = order
         }
     },
     actions: {
@@ -24,6 +28,9 @@ export default new Vuex.Store({
         },
         logout(context) {
             context.commit('logoutUser')
+        },
+        updateOrder(context, order) {
+            context.commit('setOrderDB', order)
         }
     },
     plugins: [createPersistedState()]

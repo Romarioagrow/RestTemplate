@@ -18,6 +18,7 @@ const routes = [
     {path: '/admin', component: Admin},
     {path: '/login', component: Login},
     {path: '/user/cabinet', component: UserCabinet},
+    {path: '/test', component: TestPage},
 ];
 
 export default new VueRouter({
