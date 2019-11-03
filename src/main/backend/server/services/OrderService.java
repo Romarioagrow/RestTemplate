@@ -10,6 +10,8 @@ import server.domain.Product;
 import server.domain.User;
 import server.repos.OrderRepo;
 import server.repos.ProductRepo;
+import server.repos.UserRepo;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -19,14 +21,39 @@ import java.util.Map;
 @AllArgsConstructor
 public class OrderService {
     private final OrderRepo orderRepo;
+    private final UserRepo userRepo;
     private final ProductRepo productRepo;
 
     public boolean acceptOrder(Map<String, String> orderDetails) {
         log.info(orderDetails.toString());
 
-        ///...
+        Long orderID = Long.parseLong(orderDetails.get("orderID"));
+        Order order = orderRepo.findByOrderID(orderID);
 
+        order.setClientName(concatClientName(orderDetails));
+
+        if (orderDetails.get("discountAmount") != null) {
+            int discountPrice  = Integer.parseInt(orderDetails.get("discountPrice"));
+            int discountAmount = Integer.parseInt(orderDetails.get("discountAmount"));
+            order.setDiscountPrice(discountPrice);
+            order.setDiscount(discountAmount);
+            User user = order.getUser();
+            user.setBonus(user.getBonus() - discountAmount);
+            userRepo.save(user);
+            //order.getUser().setBonus(order.getUser().getBonus() - discountAmount);
+        }
+
+        order.setAccepted(true);
+        orderRepo.save(order);
+        log.info(order.toString());
         return true;
+    }
+
+    private String concatClientName(Map<String, String> orderDetails) {
+        if (orderDetails.get("patronymic") == null) {
+            return orderDetails.get("firstName").concat("_").concat(orderDetails.get("lastName"));
+        }
+        return orderDetails.get("firstName").concat("_").concat(orderDetails.get("lastName")).concat(orderDetails.get("patronymic"));
     }
 
     public boolean addProductToOrder(String productID, User user) {

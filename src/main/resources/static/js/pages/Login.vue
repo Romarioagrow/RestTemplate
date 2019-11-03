@@ -51,7 +51,7 @@
                                                         <v-text-field id="patronymic" name="patronymic" type="text" v-model="patronymic" label="Отчество"></v-text-field>
                                                     </v-col>
                                                 </v-row>
-                                                <v-text-field id="email" name="email" prepend-icon="mdi-email" type="password" v-model="email" label="E-mail"></v-text-field>
+                                                <v-text-field id="email" name="email" prepend-icon="mdi-email" type="email" v-model="email" label="E-mail"></v-text-field>
                                             </v-form>
                                         </v-card-text>
                                         <v-card-actions>
@@ -105,7 +105,7 @@
                 registrationData['lastName']   = this.lastName
                 registrationData['firstName']  = this.firstName
                 registrationData['patronymic'] = this.patronymic
-                axios.post('/user/registration', registrationData).then(response => {
+                axios.post('/auth/user/registration', registrationData).then(response => {
                     console.log(response)
                 })
                 this.dialog = false

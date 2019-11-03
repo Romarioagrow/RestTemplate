@@ -133,18 +133,25 @@
                                                 <v-col cols="3">
                                                     Ваши бонусные рубли: <span><strong>{{bonusAvailable}}</strong></span>
                                                 </v-col>
-                                                <v-col>
+                                                <v-col cols="3">
                                                     Ваша скидка: <span><strong>{{discountPercent}}%</strong></span>
                                                 </v-col>
+                                                <v-col cols="3" v-if="!discountApplied && bonusAvailable !== 0">
+                                                    <v-btn class="cp" tile outlined color="primary" @click="applyDiscount()">
+                                                        <v-icon left>mdi-sale</v-icon>
+                                                        Применить скидку
+                                                    </v-btn>
+                                                </v-col>
+
                                             </v-row>
-                                            <v-row v-if="!discountApplied">
+                                            <!--<v-row v-if="!discountApplied || bonusAvailable !== 0">
                                                 <v-col cols="4">
                                                     <v-btn class="cp" tile outlined color="primary" @click="applyDiscount()">
                                                         <v-icon left>mdi-sale</v-icon>
                                                         Применить скидку
                                                     </v-btn>
                                                 </v-col>
-                                            </v-row>
+                                            </v-row>-->
                                         </v-card-text>
                                         <v-divider></v-divider>
                                     </div>
@@ -299,10 +306,11 @@
                 })
             },
             applyDiscount() {
-                const discountAmount = this.discountAmount
-                const price = this.$store.state.currentOrder.totalPrice
+                const discountAmount = Math.round(this.discountAmount)
+                const price = Math.round(this.$store.state.currentOrder.totalPrice)
 
                 this.$store.state.currentUser.bonus -= discountAmount
+                this.$store.state.currentOrder.user.bonus -= discountAmount
                 this.$store.state.currentOrder.discountPrice = price - discountAmount
                 this.discountApplied = true
             },
@@ -314,7 +322,7 @@
                     address = this.city + ',' + this.street  + ',' + this.house  + ',' + this.flat
                 }
 
-                let orderConfirmDetails = {
+                let orderDetails = {
                     'orderID'   :this.order.orderID,
                     'firstName' :this.firstName,
                     'lastName'  :this.lastName,
@@ -323,15 +331,25 @@
                     'email'     :this.email,
                     'address'   :address
                 }
-                console.log(orderConfirmDetails)
 
-                axios.post('/api/order/acceptOrder', orderConfirmDetails).then(response => {
+                if (this.discountApplied) {
+                    orderDetails.discountAmount = Math.round(this.discountAmount)
+                    orderDetails.discountPrice = Math.round(this.$store.state.currentOrder.discountPrice)
+                    orderDetails.userID = Math.round(this.$store.state.currentUser.userID)
+                }
+
+                console.log(orderDetails)
+
+                axios.post('/api/order/acceptOrder', orderDetails).then(response => {
                     console.log(response)
+                    this.$store.dispatch('acceptOrder')
+                    this.$router.push('/user/cabinet')
                 })
             },
             cancelOrder() {
                 if (this.discountApplied) {
-                    this.$store.state.currentUser.bonus += this.discountAmount
+                    this.$store.state.currentUser.bonus += Math.round(this.discountAmount)
+                    this.$store.state.currentOrder.user.bonus += Math.round(this.discountAmount)
                     this.$store.state.currentOrder.discountPrice = null
                     this.discountApplied = false
                 }

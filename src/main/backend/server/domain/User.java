@@ -52,7 +52,7 @@ public class User implements UserDetails {
 
     private Integer bonus = 0;
 
-    /*@OneToMany
+    /*@OneToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL}, mappedBy="user")
     private List<Order> orders;*/
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)

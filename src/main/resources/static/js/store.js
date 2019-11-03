@@ -18,6 +18,9 @@ export default new Vuex.Store({
         },
         setOrderDB(currentState, order) {
             currentState.currentOrder = order
+        },
+        noCurrentOrder(currentState) {
+            currentState.currentOrder = null
         }
     },
     actions: {
@@ -31,6 +34,9 @@ export default new Vuex.Store({
         },
         updateOrder(context, order) {
             context.commit('setOrderDB', order)
+        },
+        acceptOrder(context) {
+            context.commit('noCurrentOrder')
         }
     },
     plugins: [createPersistedState()]

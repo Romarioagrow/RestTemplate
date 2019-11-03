@@ -44,5 +44,5 @@ public class Order implements Serializable {
 
     private Integer totalPrice = 0, totalBonus = 0, discount, discountPrice;
 
-    private String address;
+    private String address, clientName;
 }
