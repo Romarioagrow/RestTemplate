@@ -42,7 +42,16 @@
                 <v-col>
                     <v-card outlined>
                         <v-card-text class="pb-0">
-                            <p class="display-1">Сумма заказа <span class="text--primary">{{totalPrice.toLocaleString('ru-RU')}} ₽</span></p>
+                            <v-row>
+                                <v-col>
+                                    <p class="display-1">Сумма заказа <span class="text--primary">{{totalPrice.toLocaleString('ru-RU')}} ₽</span></p>
+                                </v-col>
+                            </v-row>
+                            <!--<v-row v-if="discountApplied">
+                                <v-col>
+                                    <p>Со скидкой <span>{{discountPrice.toLocaleString('ru-RU')}} ₽</span></p>
+                                </v-col>
+                            </v-row>-->
                         </v-card-text>
                         <div v-if="!auth">
                             <v-card-actions>
@@ -67,11 +76,11 @@
                                         Ваши бонусные рубли: <span><strong>{{bonusAvailable}}</strong></span>
                                     </v-col>
                                 </v-row>
-                                <v-row>
+                                <!--<v-row>
                                     <v-col>
                                         Ваша скидка: <span><strong>{{discountPercent}}%</strong></span>
                                     </v-col>
-                                </v-row>
+                                </v-row>-->
                             </v-card-text>
                         </div>
                         <v-divider></v-divider>
@@ -112,7 +121,11 @@
                                     <v-btn block color="#e52d00" dark v-on="on">Оформить заказ</v-btn>
                                 </template>
                                 <v-card outlined>
-                                    <v-card-title class="headline"><span v-if="auth" class="mr-1">{{firstName}},</span><span v-else class="mr-1">Ваш </span> заказ на сумму <span style="color: #e52d00" class="ml-2">{{totalPrice.toLocaleString('ru-RU')}} ₽ </span></v-card-title>
+                                    <v-card-title class="headline">
+                                        <span v-if="auth" class="mr-1">{{firstName}},</span><span v-else class="mr-1">Ваш </span> заказ на сумму
+                                        <span style="color: #e52d00" class="ml-2" v-if="!discountApplied">{{totalPrice.toLocaleString('ru-RU')}} ₽</span>
+                                        <span v-else style="color: green" class="ml-2">{{discountPrice.toLocaleString('ru-RU')}} ₽ со скидкой</span>
+                                    </v-card-title>
                                     <v-divider></v-divider>
                                     <div v-if="auth">
                                         <v-card-text >
@@ -124,9 +137,9 @@
                                                     Ваша скидка: <span><strong>{{discountPercent}}%</strong></span>
                                                 </v-col>
                                             </v-row>
-                                            <v-row>
+                                            <v-row v-if="!discountApplied">
                                                 <v-col cols="4">
-                                                    <v-btn class="cp" tile outlined color="primary">
+                                                    <v-btn class="cp" tile outlined color="primary" @click="applyDiscount()">
                                                         <v-icon left>mdi-sale</v-icon>
                                                         Применить скидку
                                                     </v-btn>
@@ -259,6 +272,16 @@
                 this.totalBonus = order.totalBonus
                 this.loading = false
                 this.discountPercent = this.calculateDiscount
+
+                console.log(Object.keys(productList).length === 0)
+
+                /*На всякий случай*/
+                if (Object.keys(productList).length === 0) {
+                    this.$store.state.currentOrder.totalBonus = 0
+                    this.$store.state.currentOrder.totalPrice = 0
+                    this.totalPrice = 0
+                    this.totalBonus = 0
+                }
             },
             deleteProduct(productID) {
                 axios.post('/api/order/deleteProduct', productID).then(response => {
@@ -276,7 +299,12 @@
                 })
             },
             applyDiscount() {
+                const discountAmount = this.discountAmount
+                const price = this.$store.state.currentOrder.totalPrice
 
+                this.$store.state.currentUser.bonus -= discountAmount
+                this.$store.state.currentOrder.discountPrice = price - discountAmount
+                this.discountApplied = true
             },
             acceptOrder() {
                 this.orderDialog = false
@@ -302,21 +330,12 @@
                 })
             },
             cancelOrder() {
+                if (this.discountApplied) {
+                    this.$store.state.currentUser.bonus += this.discountAmount
+                    this.$store.state.currentOrder.discountPrice = null
+                    this.discountApplied = false
+                }
                 this.orderDialog = false
-
-            }
-        },
-        created() {
-            axios.post('/api/order/orderedProducts').then(response => {
-                this.loadData(response)
-            })
-
-            if (this.auth) {
-                this.lastName   = this.$store.state.currentUser.lastName
-                this.firstName  = this.$store.state.currentUser.firstName
-                this.patronymic = this.$store.state.currentUser.patronymic
-                this.mobile     = this.$store.state.currentUser.username
-                this.email      = this.$store.state.currentUser.email
             }
         },
         computed: {
@@ -345,6 +364,22 @@
             },
             bonusAvailable() {
                 return this.$store.state.currentUser.bonus
+            },
+            discountPrice() {
+                return this.$store.state.currentOrder.discountPrice
+            }
+        },
+        created() {
+            axios.post('/api/order/orderedProducts').then(response => {
+                this.loadData(response)
+            })
+
+            if (this.auth) {
+                this.lastName   = this.$store.state.currentUser.lastName
+                this.firstName  = this.$store.state.currentUser.firstName
+                this.patronymic = this.$store.state.currentUser.patronymic
+                this.mobile     = this.$store.state.currentUser.username
+                this.email      = this.$store.state.currentUser.email
             }
         }
     }
