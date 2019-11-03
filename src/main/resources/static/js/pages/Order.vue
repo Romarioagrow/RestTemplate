@@ -44,29 +44,36 @@
                         <v-card-text class="pb-0">
                             <p class="display-1">Сумма заказа <span class="text--primary">{{totalPrice.toLocaleString('ru-RU')}} ₽</span></p>
                         </v-card-text>
-                        <v-card-text class="pt-0">
-                            Без скидки
-                        </v-card-text>
-                        <v-card-text>
-                            <div class="cp text--primary">
-                                Бонусов за заказ: <span class="cp"><strong>{{totalBonus}}</strong></span>
-                            </div>
-                        </v-card-text>
-                        <v-card-actions>
-
-                            <!--В DIALOG!!!-->
-                            <router-link to="/login"  v-if="!auth">
-                                <v-btn class="cp" tile outlined color="success">
-                                    <v-icon left>mdi-login-variant</v-icon>
-                                    Войдите, что бы получить скидку!
-                                </v-btn>
-                            </router-link>
-
-                            <v-btn class="cp" tile outlined color="primary" v-else>
-                                <v-icon left>mdi-sale</v-icon>
-                                Применить скидку
-                            </v-btn>
-                        </v-card-actions>
+                        <div v-if="!auth">
+                            <v-card-actions>
+                                <!--В DIALOG!!!-->
+                                <router-link to="/login"  >
+                                    <v-btn class="cp" tile outlined color="success">
+                                        <v-icon left>mdi-login-variant</v-icon>
+                                        Войдите, что бы получить скидку!
+                                    </v-btn>
+                                </router-link>
+                            </v-card-actions>
+                        </div>
+                        <div v-else>
+                            <v-card-text>
+                                <v-row>
+                                    <v-col>
+                                        Бонусов за заказ: <span class="cp"><strong>{{totalBonus}}</strong></span>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-col>
+                                        Ваши бонусные рубли: <span><strong>{{bonusAvailable}}</strong></span>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-col>
+                                        Ваша скидка: <span><strong>{{discountPercent}}%</strong></span>
+                                    </v-col>
+                                </v-row>
+                            </v-card-text>
+                        </div>
                         <v-divider></v-divider>
                         <div>
                             <v-row>
@@ -104,8 +111,30 @@
                                 <template v-slot:activator="{ on }">
                                     <v-btn block color="#e52d00" dark v-on="on">Оформить заказ</v-btn>
                                 </template>
-                                <v-card>
+                                <v-card outlined>
                                     <v-card-title class="headline"><span v-if="auth" class="mr-1">{{firstName}},</span><span v-else class="mr-1">Ваш </span> заказ на сумму <span style="color: #e52d00" class="ml-2">{{totalPrice.toLocaleString('ru-RU')}} ₽ </span></v-card-title>
+                                    <v-divider></v-divider>
+                                    <div v-if="auth">
+                                        <v-card-text >
+                                            <v-row>
+                                                <v-col cols="3">
+                                                    Ваши бонусные рубли: <span><strong>{{bonusAvailable}}</strong></span>
+                                                </v-col>
+                                                <v-col>
+                                                    Ваша скидка: <span><strong>{{discountPercent}}%</strong></span>
+                                                </v-col>
+                                            </v-row>
+                                            <v-row>
+                                                <v-col cols="4">
+                                                    <v-btn class="cp" tile outlined color="primary">
+                                                        <v-icon left>mdi-sale</v-icon>
+                                                        Применить скидку
+                                                    </v-btn>
+                                                </v-col>
+                                            </v-row>
+                                        </v-card-text>
+                                        <v-divider></v-divider>
+                                    </div>
                                     <v-card-text>
                                         <div class="mt-3" >
                                             <h5>Ваши контактные данные</h5>
@@ -129,6 +158,9 @@
                                                 </v-col>
                                             </v-row>
                                         </div>
+                                    </v-card-text>
+                                    <v-divider></v-divider>
+                                    <v-card-text>
                                         <div class="mt-3">
                                             <h5>Способ получения товара</h5>
                                             <v-tabs>
@@ -165,7 +197,7 @@
                                                 </v-btn>
                                             </v-col>
                                             <v-col>
-                                                <v-btn color="#e10c0c" block dark @click="orderDialog = false">
+                                                <v-btn color="#e10c0c" block dark @click="cancelOrder()">
                                                     Отмена
                                                     <v-icon dark right>mdi-cancel</v-icon>
                                                 </v-btn>
@@ -203,6 +235,9 @@
             street          :'',
             house           :'',
             flat            :'',
+            discountPercent :0,
+            discountAmount  :0,
+            discountApplied :false
         }),
         methods: {
             loadData(response) {
@@ -223,6 +258,7 @@
                 this.totalPrice = order.totalPrice
                 this.totalBonus = order.totalBonus
                 this.loading = false
+                this.discountPercent = this.calculateDiscount
             },
             deleteProduct(productID) {
                 axios.post('/api/order/deleteProduct', productID).then(response => {
@@ -238,6 +274,9 @@
                 axios.post('/api/order/decreaseAmount', productID).then(response => {
                     this.loadData(response)
                 })
+            },
+            applyDiscount() {
+
             },
             acceptOrder() {
                 this.orderDialog = false
@@ -261,6 +300,10 @@
                 axios.post('/api/order/acceptOrder', orderConfirmDetails).then(response => {
                     console.log(response)
                 })
+            },
+            cancelOrder() {
+                this.orderDialog = false
+
             }
         },
         created() {
@@ -282,6 +325,26 @@
             },
             order() {
                 return this.$store.state.currentOrder
+            },
+            calculateDiscount() {
+                if (!this.auth || this.$store.state.currentUser.bonus === 0) return 0
+                const bonus = this.$store.state.currentUser.bonus
+                const price = this.$store.state.currentOrder.totalPrice
+
+                let discountPercent = 100 * bonus / price
+                this.discountAmount = bonus
+
+                if (discountPercent >= 20) {
+                    this.discountAmount = price / 100 * 20
+                    return 20
+                }
+                if (discountPercent === 0) {
+                    return 1
+                }
+                return Math.floor(discountPercent)
+            },
+            bonusAvailable() {
+                return this.$store.state.currentUser.bonus
             }
         }
     }

@@ -60,12 +60,12 @@ public class ProductService {
                 for (String filter : filters)
                 {
                     /*Сформировать фильтры-особенности*/
-                    if (filterIsFeature(filter, supplier))
-                    {
+                    if (filterIsFeature(filter, supplier)) {
                         /*Наполнение фильтров-особенностей*/
                         filtersList.features.add(substringBefore(filter, ":").toUpperCase());
 
                         /*Отсев дублей фильтров и синонимов фильтров*/ ///
+                        ///filtersList.features.removeIf(featureFilter -> Arrays.stream(notParams).parallel().anyMatch(filterIsDuplicate(checkDuplicate, featureFilter)));
                         List<String> remove = new ArrayList<>();
                         filtersList.features.forEach(featureFilter -> {
                             for (String checkDuplicate : filtersList.features) {
@@ -76,22 +76,18 @@ public class ProductService {
                         });
                         filtersList.features.removeAll(remove);
                     }
-                    else if (filterIsParam(filter))
-                    {
+                    else if (filterIsParam(filter)) {
                         String key = substringBefore(filter, ":");
                         String val = substringAfter(filter, ": ");
 
                         /*Digit diapasons*/
-                        if (filterIsDiapasonParam(val))
-                        {
-                            try
-                            {
+                        if (filterIsDiapasonParam(val)) {
+                            try {
                                 NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
                                 Number number = format.parse(val);
                                 Double parsedValue = number.doubleValue();
 
-                                if (filtersList.diapasonsFilters.get(key) != null)
-                                {
+                                if (filtersList.diapasonsFilters.get(key) != null) {
                                     TreeSet<Double> vals = filtersList.diapasonsFilters.get(key);
                                     vals.add(parsedValue);
                                     filtersList.diapasonsFilters.put(key, vals);
@@ -104,10 +100,8 @@ public class ProductService {
                         }
 
                         /*Сформировать фильтры-параметры*/
-                        else
-                        {
-                            if (filtersList.paramFilters.get(key) != null)
-                            {
+                        else {
+                            if (filtersList.paramFilters.get(key) != null) {
                                 TreeSet<String> vals = filtersList.paramFilters.get(key);
                                 vals.add(val);
                                 filtersList.paramFilters.put(key, vals);
