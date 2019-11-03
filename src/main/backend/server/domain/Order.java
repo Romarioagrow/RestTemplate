@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -45,4 +47,6 @@ public class Order implements Serializable {
     private Integer totalPrice = 0, totalBonus = 0, discount, discountPrice;
 
     private String address, clientName;
+
+    private LocalDateTime openDate = LocalDateTime.now().withNano(0);
 }

@@ -3,9 +3,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import server.domain.Order;
 import server.domain.User;
 import server.services.OrderService;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @Log
@@ -43,5 +45,10 @@ public class OrderApiController {
     @PostMapping("/acceptOrder")
     private boolean acceptOrder(@RequestBody Map<String, String> orderDetails) {
         return orderService.acceptOrder(orderDetails);
+    }
+
+    @GetMapping("/getAcceptedOrders")
+    private List<Order> getAcceptedOrders(@AuthenticationPrincipal User user) {
+        return orderService.getAcceptedOrders(user);
     }
 }

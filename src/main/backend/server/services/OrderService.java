@@ -14,6 +14,7 @@ import server.repos.UserRepo;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @Log
@@ -40,7 +41,6 @@ public class OrderService {
             User user = order.getUser();
             user.setBonus(user.getBonus() - discountAmount);
             userRepo.save(user);
-            //order.getUser().setBonus(order.getUser().getBonus() - discountAmount);
         }
 
         order.setAccepted(true);
@@ -138,5 +138,16 @@ public class OrderService {
 
     private Product getProduct(String productID) {
         return productRepo.findByProductID(productID.replaceAll("=", ""));
+    }
+
+    public List<Order> getAcceptedOrders(User user) {
+        //Long userID = user.getUserID();
+
+        List<Order> userAcceptedOrders = orderRepo.findAllByUserAndAcceptedTrue(user);
+        log.info(userAcceptedOrders.toString());
+
+
+        return orderRepo.findAllByUserAndAcceptedTrue(user);
+        //return null;
     }
 }

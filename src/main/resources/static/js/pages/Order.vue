@@ -40,18 +40,13 @@
                     </v-card>
                 </v-col>
                 <v-col>
-                    <v-card outlined>
+                    <v-card outlined v-if="productAmount !== 0">
                         <v-card-text class="pb-0">
                             <v-row>
                                 <v-col>
                                     <p class="display-1">Сумма заказа <span class="text--primary">{{totalPrice.toLocaleString('ru-RU')}} ₽</span></p>
                                 </v-col>
                             </v-row>
-                            <!--<v-row v-if="discountApplied">
-                                <v-col>
-                                    <p>Со скидкой <span>{{discountPrice.toLocaleString('ru-RU')}} ₽</span></p>
-                                </v-col>
-                            </v-row>-->
                         </v-card-text>
                         <div v-if="!auth">
                             <v-card-actions>
@@ -76,11 +71,6 @@
                                         Ваши бонусные рубли: <span><strong>{{bonusAvailable}}</strong></span>
                                     </v-col>
                                 </v-row>
-                                <!--<v-row>
-                                    <v-col>
-                                        Ваша скидка: <span><strong>{{discountPercent}}%</strong></span>
-                                    </v-col>
-                                </v-row>-->
                             </v-card-text>
                         </div>
                         <v-divider></v-divider>
@@ -115,7 +105,7 @@
                             </v-row>
                         </div>
                         <v-divider></v-divider>
-                        <v-card-actions>
+                        <v-card-actions v-if="productAmount !== 0">
                             <v-dialog v-model="orderDialog" persistent max-width="1000">
                                 <template v-slot:activator="{ on }">
                                     <v-btn block color="#e52d00" dark v-on="on">Оформить заказ</v-btn>
@@ -144,14 +134,6 @@
                                                 </v-col>
 
                                             </v-row>
-                                            <!--<v-row v-if="!discountApplied || bonusAvailable !== 0">
-                                                <v-col cols="4">
-                                                    <v-btn class="cp" tile outlined color="primary" @click="applyDiscount()">
-                                                        <v-icon left>mdi-sale</v-icon>
-                                                        Применить скидку
-                                                    </v-btn>
-                                                </v-col>
-                                            </v-row>-->
                                         </v-card-text>
                                         <v-divider></v-divider>
                                     </div>
@@ -226,6 +208,14 @@
                                     </v-card-actions>
                                 </v-card>
                             </v-dialog>
+                        </v-card-actions>
+                    </v-card>
+                    <v-card v-else>
+                        <v-card-actions class="chartAreaWrapper">
+                                <v-btn color="primary" block dark @click="toCatalog()">
+                                    <v-icon dark right>mdi-backburger</v-icon>
+                                    В каталог
+                                </v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-col>
@@ -338,8 +328,6 @@
                     orderDetails.userID = Math.round(this.$store.state.currentUser.userID)
                 }
 
-                console.log(orderDetails)
-
                 axios.post('/api/order/acceptOrder', orderDetails).then(response => {
                     console.log(response)
                     this.$store.dispatch('acceptOrder')
@@ -354,6 +342,9 @@
                     this.discountApplied = false
                 }
                 this.orderDialog = false
+            },
+            toCatalog() {
+                this.$router.push('/')
             }
         },
         computed: {
