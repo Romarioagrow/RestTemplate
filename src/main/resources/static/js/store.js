@@ -51,7 +51,12 @@ export default new Vuex.Store({
 
             for (const [key, value] of Object.entries(order.orderedProducts)) {
                 //console.log(key, value)
-                context.commit('pushOrderedProduct', key.replace('=',''))
+                let productID = key.replace('=','')
+
+                //console.log()
+
+                if (!this.state.orderedProducts.includes(productID))
+                    context.commit('pushOrderedProduct', key.replace('=',''))
             }
 
             /*order.orderedProducts.forEach((amount, productID) => {
