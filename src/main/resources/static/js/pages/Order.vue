@@ -283,6 +283,7 @@
             deleteProduct(productID) {
                 axios.post('/api/order/deleteProduct', productID).then(response => {
                     this.loadData(response)
+                    this.$store.dispatch('addOrderedProduct', productID)
                 })
             },
             increaseAmount(productID) {
@@ -331,6 +332,7 @@
                 axios.post('/api/order/acceptOrder', orderDetails).then(response => {
                     console.log(response)
                     this.$store.dispatch('acceptOrder')
+                    this.$store.dispatch('clearOrderedProducts')
                     this.$router.push('/user/cabinet')
                 })
             },

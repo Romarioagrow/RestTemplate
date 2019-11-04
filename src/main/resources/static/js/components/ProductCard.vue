@@ -12,7 +12,7 @@
             <h3>{{product.finalPrice.toLocaleString('ru-RU')}} ₽</h3>
             <span>{{product.supplier}}</span>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions v-if="!productInOrder(product.productID)">
             <v-btn text color="orange" @click="addToOrder(product.productID)">
                 В корзину
             </v-btn>
@@ -30,6 +30,11 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
+        </v-card-actions>
+        <v-card-actions v-else>
+            <v-btn text color="orange" @click="">
+                Перейти в корзину
+            </v-btn>
         </v-card-actions>
     </v-card>
     </v-item>
@@ -53,8 +58,19 @@
 
                 axios.post(url, productID).then(response => {
                     console.log(response.data)
+                    this.$store.dispatch('addOrderedProduct', productID)
                 })
+            },
+            productInOrder(productID) {
+                //const orderedProducts = this.$store.state.orderedProducts
+                return this.$store.state.orderedProducts.includes(productID)
             }
+        },
+        computed: {
+            /*productInOrder(productID) {
+                const orderedProducts = this.$store.state.orderedProducts
+                return orderedProducts.includes(productID)
+            }*/
         }
     }
 </script>

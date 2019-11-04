@@ -7,7 +7,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
         currentUser: null,
-        currentOrder: null
+        currentOrder: null,
+        orderedProducts: []
     },
     mutations: {
         setCurrentUser(currentState, user) {
@@ -21,7 +22,17 @@ export default new Vuex.Store({
         },
         noCurrentOrder(currentState) {
             currentState.currentOrder = null
+        },
+        pushOrderedProduct(currentState, productID) {
+            currentState.orderedProducts.push(productID)
+        },
+        removeProductFromOrdered(currentState, productID) {
+            currentState.orderedProducts.splice(currentState.orderedProducts.indexOf(productID), 1);
+        },
+        clearOrderedProducts(currentState) {
+            currentState.orderedProducts = []
         }
+
     },
     actions: {
         login(context) {
@@ -37,7 +48,17 @@ export default new Vuex.Store({
         },
         acceptOrder(context) {
             context.commit('noCurrentOrder')
+        },
+        addOrderedProduct(context, productID) {
+            context.commit('pushOrderedProduct', productID)
+        },
+        removeOrderedProduct(context, productID) {
+            context.commit('removeProductFromOrdered', productID)
+        },
+        clearOrderedProducts(context) {
+            context.commit('clearOrderedProducts')
         }
+
     },
     plugins: [createPersistedState()]
 });

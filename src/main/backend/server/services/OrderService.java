@@ -63,6 +63,7 @@ public class OrderService {
         order.setTotalPrice(order.getTotalPrice() + product.getFinalPrice());
         order.setTotalBonus(order.getTotalBonus() + product.getBonus());
         orderRepo.save(order);
+
         return true;
     }
 
