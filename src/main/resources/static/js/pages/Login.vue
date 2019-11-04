@@ -111,6 +111,15 @@
                 this.dialog = false
             },
             loginUser() {
+                /*let sessionProducts
+                if (this.$store.state.currentOrder != null) {
+                    sessionProducts = this.$store.state.currentOrder.orderedProducts
+                }*/
+
+                /*else {
+                    sessionProducts = this.$store.state
+                }*/
+
                 let auth = new FormData();
                 auth.set('username', this.username);
                 auth.set('password', this.password);
@@ -122,10 +131,15 @@
                 const loginURL = '/user/login'
                 axios.post(loginURL, auth, config).then((response) => {
                     this.$store.dispatch('login')
-                    this.$router.push('/order')
+                    //this.$router.push('/order')
+                    //this.$router.push('/order')
                 })
-                /*this.$store.state.currentOrder.orderedProducts.forEach((amount, productID) => {
-                    this.$store.dispatch('addOrderedProduct', productID)
+                /*axios.post('/api/order/addSessionProductToUserOrder', sessionProducts).then((response) => {
+
+                    console.log(response)
+                    //this.$store.dispatch('login')
+                    //this.$router.push('/order')
+                    this.$router.push('/order')
                 })*/
             }
         }

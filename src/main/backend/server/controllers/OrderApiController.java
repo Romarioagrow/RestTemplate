@@ -17,6 +17,14 @@ import java.util.Map;
 public class OrderApiController {
     private final OrderService orderService;
 
+
+    /*@PostMapping("/addSessionProductToUserOrder")
+    private Order addSessionProductToUserOrder(@RequestBody Map<String, Integer> sessionProducts, @AuthenticationPrincipal User user) {
+        //Order order =
+        return orderService.addSessionProductToUserOrder(sessionProducts, user);
+    }*/
+
+
     @PostMapping("/addProduct")
     private boolean addProductToOrder(@RequestBody String productID, @AuthenticationPrincipal User user) {
         return orderService.addProductToOrder(productID, user);

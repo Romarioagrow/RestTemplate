@@ -4,6 +4,7 @@ import axios from 'axios'
 import createPersistedState from 'vuex-persistedstate'
 
 Vue.use(Vuex)
+import router from './router'
 export default new Vuex.Store({
     state: {
         currentUser: null,
@@ -36,8 +37,16 @@ export default new Vuex.Store({
     },
     actions: {
         login(context) {
-            return axios.get('/auth').then((user) => {
-                context.commit('setCurrentUser', user.data)
+            let sessionProducts
+            if (this.state.currentOrder != null) {
+                sessionProducts = this.state.currentOrder.orderedProducts
+            }
+
+            return axios.post('/auth/addSessionProductToUserOrder', sessionProducts).then((user) => {
+
+                context.commit('setCurrentUser', user.data[0])
+                context.commit('setOrderDB', user.data[1])
+                router.push('/order')
 
             }).catch(reason => {
                 console.log(reason)
@@ -48,20 +57,11 @@ export default new Vuex.Store({
         },
         updateOrder(context, order) {
             context.commit('setOrderDB', order)
-
             for (const [key, value] of Object.entries(order.orderedProducts)) {
-                //console.log(key, value)
                 let productID = key.replace('=','')
-
-                //console.log()
-
                 if (!this.state.orderedProducts.includes(productID))
                     context.commit('pushOrderedProduct', key.replace('=',''))
             }
-
-            /*order.orderedProducts.forEach((amount, productID) => {
-                context.commit('addOrderedProduct', productID)
-            })*/
         },
         acceptOrder(context) {
             context.commit('noCurrentOrder')

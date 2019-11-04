@@ -151,4 +151,20 @@ public class OrderService {
         return orderRepo.findAllByUserAndAcceptedTrue(user);
         //return null;
     }
+
+    public LinkedList<Object> addSessionProductToUserOrder(Map<String, Integer> sessionProducts, User user) {
+        Order order = getActiveOrder(user);
+
+        if (sessionProducts != null) {
+            sessionProducts.forEach((productID, amount) -> {
+                order.getOrderedProducts().put(productID, amount);
+            });
+            orderRepo.save(order);
+        }
+
+        LinkedList<Object> payload = new LinkedList<>();
+        payload.add(user);
+        payload.add(order);
+        return payload;
+    }
 }

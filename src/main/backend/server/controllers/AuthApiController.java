@@ -3,8 +3,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import server.domain.Order;
 import server.domain.User;
+import server.services.OrderService;
 import server.services.UserService;
+
+import java.util.LinkedList;
 import java.util.Map;
 
 @Log
@@ -13,10 +17,16 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthApiController {
     private final UserService userService;
+    private final OrderService orderService;
 
-    @GetMapping
+    /*@GetMapping
     public User authUser(@AuthenticationPrincipal User user) {
         return user;
+    }*/
+
+    @PostMapping("/addSessionProductToUserOrder")
+    private LinkedList<Object> addSessionProductToUserOrder(@RequestBody(required = false) Map<String, Integer> sessionProducts, @AuthenticationPrincipal User user) {
+        return orderService.addSessionProductToUserOrder(sessionProducts, user);
     }
 
     @PostMapping("/user/registration")
