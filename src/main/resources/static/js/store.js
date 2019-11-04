@@ -41,9 +41,7 @@ export default new Vuex.Store({
             if (this.state.currentOrder != null) {
                 sessionProducts = this.state.currentOrder.orderedProducts
             }
-
             return axios.post('/auth/addSessionProductToUserOrder', sessionProducts).then((user) => {
-
                 context.commit('setCurrentUser', user.data[0])
                 context.commit('setOrderDB', user.data[1])
                 router.push('/order')

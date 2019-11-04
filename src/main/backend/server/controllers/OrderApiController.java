@@ -26,7 +26,7 @@ public class OrderApiController {
 
 
     @PostMapping("/addProduct")
-    private boolean addProductToOrder(@RequestBody String productID, @AuthenticationPrincipal User user) {
+    private Order addProductToOrder(@RequestBody String productID, @AuthenticationPrincipal User user) {
         return orderService.addProductToOrder(productID, user);
     }
 

@@ -56,7 +56,7 @@ public class OrderService {
         return orderDetails.get("firstName").concat("_").concat(orderDetails.get("lastName")).concat(orderDetails.get("patronymic"));
     }
 
-    public boolean addProductToOrder(String productID, User user) {
+    public Order addProductToOrder(String productID, User user) {
         Product product = getProduct(productID);
         Order order = getActiveOrder(user);
         order.getOrderedProducts().put(productID, 1);
@@ -64,7 +64,7 @@ public class OrderService {
         order.setTotalBonus(order.getTotalBonus() + product.getBonus());
         orderRepo.save(order);
 
-        return true;
+        return order;
     }
 
     public LinkedList<Object> deleteProductFromOrder(String productID, User user) {

@@ -32,7 +32,7 @@
                 </v-dialog>-->
         </v-card-actions>
         <v-card-actions v-else>
-            <v-btn text color="orange" @click="toOrder()">
+            <v-btn text outlined color="orange" @click="toOrder()">
                 Перейти в корзину
             </v-btn>
         </v-card-actions>
@@ -53,12 +53,10 @@
         },
         methods: {
             addToOrder(productID) {
-                console.log(productID)
                 const url = '/api/order/addProduct'
-
                 axios.post(url, productID).then(response => {
-                    console.log(response.data)
                     this.$store.dispatch('addOrderedProduct', productID)
+                    this.$store.dispatch('updateOrder', response.data)
                 })
             },
             productInOrder(productID) {
