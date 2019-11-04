@@ -11,7 +11,6 @@ import server.domain.User;
 import server.repos.OrderRepo;
 import server.repos.ProductRepo;
 import server.repos.UserRepo;
-
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,6 +56,8 @@ public class OrderService {
     }
 
     public Order addProductToOrder(String productID, User user) {
+        productID = productID.replaceAll("=","");
+
         Product product = getProduct(productID);
         Order order = getActiveOrder(user);
         order.getOrderedProducts().put(productID, 1);
@@ -68,6 +69,8 @@ public class OrderService {
     }
 
     public LinkedList<Object> deleteProductFromOrder(String productID, User user) {
+        productID = productID.replaceAll("=","");
+
         Product product = getProduct(productID);
         Order order = getActiveOrder(user);
         int amount = order.getOrderedProducts().get(productID);
@@ -80,6 +83,8 @@ public class OrderService {
     }
 
     public LinkedList<Object> increaseAmount(String productID, User user) {
+        productID = productID.replaceAll("=","");
+
         Product product = getProduct(productID);
         Order order = getActiveOrder(user);
         int amount = order.getOrderedProducts().get(productID);
@@ -92,6 +97,8 @@ public class OrderService {
     }
 
     public LinkedList<Object> decreaseAmount(String productID, User user) {
+        productID = productID.replaceAll("=","");
+
         Product product = getProduct(productID);
         Order order = getActiveOrder(user);
         int amount = order.getOrderedProducts().get(productID);
@@ -142,14 +149,7 @@ public class OrderService {
     }
 
     public List<Order> getAcceptedOrders(User user) {
-        //Long userID = user.getUserID();
-
-        List<Order> userAcceptedOrders = orderRepo.findAllByUserAndAcceptedTrue(user);
-        log.info(userAcceptedOrders.toString());
-
-
         return orderRepo.findAllByUserAndAcceptedTrue(user);
-        //return null;
     }
 
     public LinkedList<Object> addSessionProductToUserOrder(Map<String, Integer> sessionProducts, User user) {
@@ -157,7 +157,13 @@ public class OrderService {
 
         if (sessionProducts != null) {
             sessionProducts.forEach((productID, amount) -> {
+                productID = productID.replaceAll("=", "");
+
+                Product product = productRepo.findByProductID(productID);
+
                 order.getOrderedProducts().put(productID, amount);
+                order.setTotalPrice(order.getTotalPrice() + product.getFinalPrice() * amount);
+                order.setTotalBonus(order.getTotalBonus() + product.getBonus());
             });
             orderRepo.save(order);
         }
