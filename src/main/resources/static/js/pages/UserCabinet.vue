@@ -82,6 +82,8 @@
             logout() {
                 axios.post('http://localhost:9000/user/logout').then((response) => {
                     this.$store.dispatch('logout')
+                    this.$store.dispatch('removeOrder')
+                    this.$store.dispatch('clearOrderedProducts')
                     this.$router.push('/')
                 })
             },

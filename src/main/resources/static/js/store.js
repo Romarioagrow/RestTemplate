@@ -36,8 +36,11 @@ export default new Vuex.Store({
     },
     actions: {
         login(context) {
-            return axios.get('http://localhost:9000/auth').then((user) => {
+            return axios.get('/auth').then((user) => {
                 context.commit('setCurrentUser', user.data)
+
+            }).catch(reason => {
+                console.log(reason)
             })
         },
         logout(context) {
@@ -45,8 +48,20 @@ export default new Vuex.Store({
         },
         updateOrder(context, order) {
             context.commit('setOrderDB', order)
+
+            for (const [key, value] of Object.entries(order.orderedProducts)) {
+                //console.log(key, value)
+                context.commit('pushOrderedProduct', key.replace('=',''))
+            }
+
+            /*order.orderedProducts.forEach((amount, productID) => {
+                context.commit('addOrderedProduct', productID)
+            })*/
         },
         acceptOrder(context) {
+            context.commit('noCurrentOrder')
+        },
+        removeOrder(context) {
             context.commit('noCurrentOrder')
         },
         addOrderedProduct(context, productID) {

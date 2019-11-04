@@ -283,7 +283,7 @@
             deleteProduct(productID) {
                 axios.post('/api/order/deleteProduct', productID).then(response => {
                     this.loadData(response)
-                    this.$store.dispatch('addOrderedProduct', productID)
+                    this.$store.dispatch('removeOrderedProduct', productID)
                 })
             },
             increaseAmount(productID) {

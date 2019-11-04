@@ -13,10 +13,10 @@
             <span>{{product.supplier}}</span>
         </v-card-text>
         <v-card-actions v-if="!productInOrder(product.productID)">
-            <v-btn text color="orange" @click="addToOrder(product.productID)">
+            <v-btn text outlined color="#e52d00" @click="addToOrder(product.productID)">
                 В корзину
             </v-btn>
-                <v-dialog v-model="dialog" max-width="500">
+                <!--<v-dialog v-model="dialog" max-width="500">
                     <template v-slot:activator="{ on }">
                         <v-btn text color="orange" v-on="on">Купить в 1 клик</v-btn>
                     </template>
@@ -29,10 +29,10 @@
                             <v-btn color="green darken-1" text @click="dialog = false">Отмена</v-btn>
                         </v-card-actions>
                     </v-card>
-                </v-dialog>
+                </v-dialog>-->
         </v-card-actions>
         <v-card-actions v-else>
-            <v-btn text color="orange" @click="">
+            <v-btn text color="orange" @click="toOrder()">
                 Перейти в корзину
             </v-btn>
         </v-card-actions>
@@ -62,15 +62,11 @@
                 })
             },
             productInOrder(productID) {
-                //const orderedProducts = this.$store.state.orderedProducts
                 return this.$store.state.orderedProducts.includes(productID)
+            },
+            toOrder() {
+                this.$router.push('/order')
             }
-        },
-        computed: {
-            /*productInOrder(productID) {
-                const orderedProducts = this.$store.state.orderedProducts
-                return orderedProducts.includes(productID)
-            }*/
         }
     }
 </script>

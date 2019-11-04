@@ -119,11 +119,14 @@
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 }
-                const loginURL = 'http://localhost:9000/user/login'
+                const loginURL = '/user/login'
                 axios.post(loginURL, auth, config).then((response) => {
                     this.$store.dispatch('login')
                     this.$router.push('/order')
                 })
+                /*this.$store.state.currentOrder.orderedProducts.forEach((amount, productID) => {
+                    this.$store.dispatch('addOrderedProduct', productID)
+                })*/
             }
         }
     }
