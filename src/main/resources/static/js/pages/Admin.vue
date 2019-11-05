@@ -84,7 +84,7 @@
                     <v-layout justify-center align-center>
                         <v-list subheader width="100%">
                             <v-subheader><h3>Принятые заказы</h3></v-subheader>
-                            <v-list-item v-for="order of acceptedOrders" :key="order.orderID">
+                            <v-list-item v-for="order of acceptedOrders" :key="order.orderID" style="background-color: #fafafa;">
                                 <v-card outlined width="100%" class="mb-3">
                                     <v-card-title>
                                         <v-row>
@@ -92,18 +92,50 @@
                                                 Заказ №{{order.orderID}}
                                             </v-col>
                                             <v-col>
-                                                Покупатель: {{order.user.username}}
-                                            </v-col>
-                                            <v-col>
                                                 от {{order.openDate.replace('T',' ')}}
                                             </v-col>
                                         </v-row>
                                     </v-card-title>
                                     <v-card-text>
-                                        <div class="my-4 subtitle-1 black--text">
-                                            Сумма заказа: {{order.totalPrice.toLocaleString('ru-RU')}} ₽
-                                        </div>
+                                        <v-row>
+                                            <v-col class="subtitle-1 black--text">
+                                                ФИО: {{order.user.lastName}} {{order.user.firstName}} {{order.user.patronymic}}
+                                            </v-col>
+                                        </v-row>
+                                        <v-row>
+                                            <v-col class="subtitle-1 black--text">
+                                                Телефон: +{{order.user.username}}
+                                            </v-col>
+                                        </v-row>
+                                        <v-row>
+                                            <v-col class="subtitle-1 black--text">
+                                                Сумма заказа: {{order.totalPrice.toLocaleString('ru-RU')}} ₽
+                                            </v-col>
+                                        </v-row>
                                     </v-card-text>
+                                    <v-divider></v-divider>
+                                    <v-card-actions>
+                                        <v-row>
+                                            <v-col>
+                                                <v-btn class="ma-2" color="primary" dark @click="confirmOrder(order.orderID)">
+                                                    Подтвердить
+                                                    <v-icon dark right>mdi-checkbox-marked-circle</v-icon>
+                                                </v-btn>
+                                            </v-col>
+                                            <v-col>
+                                                <v-btn class="ma-2" color="green" dark @click="completeOrder(order.orderID)">
+                                                    Завершить
+                                                    <v-icon dark right>mdi-checkbox-marked-circle</v-icon>
+                                                </v-btn>
+                                            </v-col>
+                                            <v-col>
+                                                <v-btn class="ma-2" color="red" dark @click="deleteOrder(order.orderID)">
+                                                    Удалить
+                                                    <v-icon dark right>mdi-cancel</v-icon>
+                                                </v-btn>
+                                            </v-col>
+                                        </v-row>
+                                    </v-card-actions>
                                     <v-divider></v-divider>
                                     <v-list subheader>
                                         <v-subheader>Заказанные товары</v-subheader>
@@ -147,6 +179,7 @@
                 activeContainerDB: true,
                 activeContainerOrders: false,
                 acceptedOrders: [],
+                dialog: false
             }
         },
         beforeCreate() {
@@ -163,7 +196,7 @@
         },
         created() {
             axios.get('/admin/acceptedOrders').then(response => {
-                    this.acceptedOrders = response.data
+                this.acceptedOrders = response.data
             })
         },
         methods: {
@@ -186,11 +219,10 @@
                 axios.post('admin/parsePicsRUSBT').then(console.log('pics parsed'));
             },
             logout() {
-                axios.post('http://localhost:9000/user/logout').then((response) => {
+                axios.post('user/logout').then((response) => {
                     this.$store.dispatch('logout')
                     this.$router.push('/')
                 })
-                console.log(this.$store.state.currentUser)
             },
             openDB() {
                 this.activeContainerDB = true
@@ -199,6 +231,22 @@
             openOrders() {
                 this.activeContainerDB = false
                 this.activeContainerOrders = true
+            },
+            confirmOrder(orderID) {
+                axios.post('admin/confirmOrder', orderID).then((response) => {
+                    console.log(response)
+                })
+            },
+            completeOrder(orderID) {
+                axios.post('admin/completeOrder', orderID).then((response) => {
+                    console.log(response)
+                })
+            },
+            deleteOrder(orderID) {
+                axios.post('admin/deleteOrder', orderID).then((response) => {
+                    console.log(response)
+                    this.acceptedOrders = response.data
+                })
             }
         }
     }

@@ -51,7 +51,7 @@ public class Order implements Serializable {
     @ManyToOne
     private User user;
 
-    private Boolean accepted = false;
+    private Boolean accepted = false, confirmed = false, completed = false;
 
     private Integer totalPrice = 0, totalBonus = 0, discount, discountPrice;
 

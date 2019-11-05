@@ -182,4 +182,32 @@ public class OrderService {
     public List<Order> getAcceptedOrders() {
         return orderRepo.findAllByAcceptedTrue();
     }
+
+    public boolean confirmOrder(Long orderID) {
+        Order order = orderRepo.findByOrderID(orderID);
+        order.setConfirmed(true);
+        orderRepo.save(order);
+        /// sendNotificationToUser(order.getUser())
+        return true;
+    }
+
+    public boolean completeOrder(Long orderID) {
+        log.info(orderID.toString());
+        Order order = orderRepo.findByOrderID(orderID);
+        User user = order.getUser();
+        order.setCompleted(true);
+        user.setBonus(user.getBonus() + order.getTotalBonus());
+        orderRepo.save(order);
+        userRepo.save(user);
+        log.info(order.toString());
+        /// sendNotificationToUser(order.getUser())
+        return true;
+    }
+
+    public List<Order> deleteOrder(Long orderID) {
+        orderRepo.delete(orderRepo.findByOrderID(orderID));
+        List<Order> orders = orderRepo.findAllByAcceptedTrue();
+        orders.sort(Comparator.comparing(Order::getOpenDate).reversed());
+        return orders;
+    }
 }

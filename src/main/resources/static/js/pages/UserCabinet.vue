@@ -32,10 +32,10 @@
         <v-content>
             <v-container fluid fill-height>
                 <v-layout justify-center align-center>
-                    <v-list subheader width="100%">
+                    <v-list subheader width="100%" style="background-color: #fafafa;">
                         <v-subheader><h3>Принятые заказы</h3></v-subheader>
                         <v-list-item v-for="order of acceptedOrders" :key="order.orderID">
-                            <v-card outlined width="100%" class="mb-3">
+                            <v-card outlined width="100%" class="mb-6">
                                 <v-card-title>
                                     <v-row>
                                         <v-col cols="2">

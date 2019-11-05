@@ -22,6 +22,21 @@ public class AdminApiController {
     private final ProductBuilder productBuilder;
     private final OrderService orderService;
 
+    @PostMapping("/deleteOrder")
+    private List<Order> deleteOrder(@RequestBody String orderID) {
+        return orderService.deleteOrder(Long.parseLong(orderID.replaceAll("=","")));
+    }
+
+    @PostMapping("/completeOrder")
+    private boolean completeOrder(@RequestBody String orderID) {
+        return orderService.completeOrder(Long.parseLong(orderID.replaceAll("=","")));
+    }
+
+    @PostMapping("/confirmOrder")
+    private boolean acceptOrder(@RequestBody String orderID) {
+        return orderService.confirmOrder(Long.parseLong(orderID.replaceAll("=","")));
+    }
+
     @GetMapping("/acceptedOrders")
     private List<Order> getAcceptedOrders() {
         return orderService.getAcceptedOrders();
@@ -29,6 +44,7 @@ public class AdminApiController {
 
     @GetMapping
     private boolean isAdmin(@AuthenticationPrincipal User user) {
+        if (user == null) return false;
         return user.isAdmin();
     }
 
