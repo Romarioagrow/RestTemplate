@@ -12,10 +12,8 @@ import server.dto.OrderedProduct;
 import server.repos.OrderRepo;
 import server.repos.ProductRepo;
 import server.repos.UserRepo;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 @Log
 @Service
@@ -155,7 +153,9 @@ public class OrderService {
     }
 
     public List<Order> getAcceptedOrders(User user) {
-        return orderRepo.findAllByUserAndAcceptedTrue(user);
+        List<Order> orders = orderRepo.findAllByUserAndAcceptedTrue(user);
+        orders.sort(Comparator.comparing(Order::getOpenDate).reversed());
+        return orders;
     }
 
     public LinkedList<Object> addSessionProductToUserOrder(Map<String, Integer> sessionProducts, User user) {

@@ -70,7 +70,7 @@
                                         </v-list-item-content>
                                         <v-list-item-content>
                                             <v-list-item-title>
-                                                <span>за {{product.productAmount}}шт.</span>
+                                                <span>за {{product.productAmount}} шт.</span>
                                             </v-list-item-title>
                                         </v-list-item-content>
                                     </v-list-item>
