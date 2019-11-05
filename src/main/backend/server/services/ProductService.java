@@ -273,7 +273,7 @@ public class ProductService {
                 }).collect(Collectors.toList());
             }
         }
-        catch (NullPointerException e) {
+        catch (NullPointerException | NumberFormatException e) {
             e.printStackTrace();
         }
         products.sort(Comparator.comparing(Product::getSupplier));

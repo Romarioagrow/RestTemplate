@@ -11,5 +11,7 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
 
     Order findBySessionIDAndAcceptedFalse(String sessionID);
 
+    List<Order> findAllByAcceptedTrue();
+
     List<Order> findAllByUserAndAcceptedTrue(User user);
 }

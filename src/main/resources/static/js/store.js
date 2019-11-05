@@ -75,11 +75,7 @@ export default new Vuex.Store({
         },
         clearOrderedProducts(context) {
             context.commit('clearOrderedProducts')
-        },
-        redirectToRoot() {
-            router.push('/')
         }
-
     },
     plugins: [createPersistedState()]
 });

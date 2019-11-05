@@ -9,12 +9,20 @@
                 </v-list-item>
             </template>
             <v-list dense>
-                <v-list-item v-for="item in menu" :key="item.title" @click="">
+                <v-list-item @click="openDB()">
                     <v-list-item-icon>
-                        <v-icon>{{ item.icon }}</v-icon>
+                        <v-icon>mdi-file-excel</v-icon>
                     </v-list-item-icon>
                     <v-list-item-content>
-                        <v-list-item-title>{{ item.title }}</v-list-item-title>
+                        <v-list-item-title>База данных</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item @click="openOrders()">
+                    <v-list-item-icon>
+                        <v-icon>mdi-format-list-bulleted-square</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content >
+                        <v-list-item-title>Заказы</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
             </v-list>
@@ -28,7 +36,7 @@
         </v-navigation-drawer>
         <v-content>
             <v-container fluid fill-height>
-                <v-container>
+                <v-container v-if="activeContainerDB">
                     <v-row>
                         <v-col>
                             <v-card>
@@ -71,36 +79,57 @@
                             </v-card>
                         </v-col>
                     </v-row>
-                    <!--<v-row>
-                        <v-col>
-                            <v-card class="mt-3">
-                                <v-card-title>Test</v-card-title>
-                                <v-card-actions class="ml-5">
-                                    <v-btn color="red" v-on:click="test()">BANG</v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <v-card class="mt-3">
-                                <v-card-title>logout</v-card-title>
-                                <v-card-actions class="ml-5">
-                                    <v-btn color="red" v-on:click="logout()">logout</v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <v-card class="mt-3">
-                                <v-card-title>test auth</v-card-title>
-                                <v-card-actions class="ml-5">
-                                    <v-btn color="red" v-on:click="testAuth()">test</v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </v-col>
-                    </v-row>-->
+                </v-container>
+                <v-container v-if="activeContainerOrders">
+                    <v-layout justify-center align-center>
+                        <v-list subheader width="100%">
+                            <v-subheader><h3>Принятые заказы</h3></v-subheader>
+                            <v-list-item v-for="order of acceptedOrders" :key="order.orderID">
+                                <v-card outlined width="100%" class="mb-3">
+                                    <v-card-title>
+                                        <v-row>
+                                            <v-col cols="2">
+                                                Заказ №{{order.orderID}}
+                                            </v-col>
+                                            <v-col>
+                                                Покупатель: {{order.user.username}}
+                                            </v-col>
+                                            <v-col>
+                                                от {{order.openDate.replace('T',' ')}}
+                                            </v-col>
+                                        </v-row>
+                                    </v-card-title>
+                                    <v-card-text>
+                                        <div class="my-4 subtitle-1 black--text">
+                                            Сумма заказа: {{order.totalPrice.toLocaleString('ru-RU')}} ₽
+                                        </div>
+                                    </v-card-text>
+                                    <v-divider></v-divider>
+                                    <v-list subheader>
+                                        <v-subheader>Заказанные товары</v-subheader>
+                                        <v-list-item v-for="product in order.orderedList" :key="product.productID">
+                                            <v-list-item-avatar>
+                                                <v-img :src="product.pic"></v-img>
+                                            </v-list-item-avatar>
+                                            <v-list-item-content>
+                                                <v-list-item-title v-text="product.productName"></v-list-item-title>
+                                            </v-list-item-content>
+                                            <v-list-item-content>
+                                                <v-list-item-title>
+                                                    <span><strong>{{(product.productPrice * product.productAmount).toLocaleString('ru-RU')}}</strong> ₽</span>
+                                                </v-list-item-title>
+                                            </v-list-item-content>
+                                            <v-list-item-content>
+                                                <v-list-item-title>
+                                                    <span>за {{product.productAmount}} шт.</span>
+                                                </v-list-item-title>
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-card>
+                            </v-list-item>
+                        </v-list>
+                    </v-layout>
                 </v-container>
             </v-container>
         </v-content>
@@ -112,14 +141,12 @@
     export default {
         data() {
             return {
-                menu: [
-                    { title: 'База данных',     icon: 'mdi-file-excel' },
-                    { title: 'Заказы',  icon: 'mdi-format-list-bulleted-square' },
-                    /*{ title: 'Все заказы',          icon: 'mdi-script-text-outline' },*/
-                ],
                 file: new FormData(),
                 fileBrands: new FormData(),
-                created: false
+                created: false,
+                activeContainerDB: true,
+                activeContainerOrders: false,
+                acceptedOrders: [],
             }
         },
         beforeCreate() {
@@ -129,10 +156,14 @@
                 if (error.response) {
                     console.log(error.response.status);
                     if (error.response.status === 403) {
-                        this.$store.dispatch('redirectToRoot')
                         this.$router.push('/')
                     }
                 }
+            })
+        },
+        created() {
+            axios.get('/admin/acceptedOrders').then(response => {
+                    this.acceptedOrders = response.data
             })
         },
         methods: {
@@ -154,9 +185,6 @@
             parsRUSBTPics() {
                 axios.post('admin/parsePicsRUSBT').then(console.log('pics parsed'));
             },
-            test() {
-                axios.post('admin/test').then(console.log('OK'));
-            },
             logout() {
                 axios.post('http://localhost:9000/user/logout').then((response) => {
                     this.$store.dispatch('logout')
@@ -164,8 +192,13 @@
                 })
                 console.log(this.$store.state.currentUser)
             },
-            testAuth() {
-                console.log(this.$store.state.currentUser)
+            openDB() {
+                this.activeContainerDB = true
+                this.activeContainerOrders = false
+            },
+            openOrders() {
+                this.activeContainerDB = false
+                this.activeContainerOrders = true
             }
         }
     }

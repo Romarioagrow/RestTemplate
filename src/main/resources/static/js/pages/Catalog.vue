@@ -9,7 +9,7 @@
                 <v-card>
                     <v-tabs center-active dark show-arrows background-color="#635A4F" :centered="true" :icons-and-text="true">
                         <v-tabs-slider color="#e52d00"></v-tabs-slider>
-                        <v-tab v-for="(value, key, index) of allCategories" :key="index" :href="'#tab-' + index" @click="loadCatalog()">
+                        <v-tab v-for="(value, key, index) of allCategories" :key="index" :href="'#tab-' + index">
                             {{key}}
                             <v-icon>{{icons[index]}}</v-icon>
                         </v-tab>

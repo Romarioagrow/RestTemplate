@@ -178,4 +178,8 @@ public class OrderService {
         payload.add(order);
         return payload;
     }
+
+    public List<Order> getAcceptedOrders() {
+        return orderRepo.findAllByAcceptedTrue();
+    }
 }

@@ -48,7 +48,7 @@
                                 </v-card-title>
                                 <v-card-text>
                                     <div class="my-4 subtitle-1 black--text">
-                                        Сумма заказа: {{order.totalPrice}} ₽
+                                        Сумма заказа: {{order.totalPrice.toLocaleString('ru-RU')}} ₽
                                     </div>
                                 </v-card-text>
                                 <v-divider></v-divider>
@@ -87,11 +87,11 @@
     export default {
         data() {
             return {
+                mobile:     this.$store.state.currentUser.username,
                 username:   this.$store.state.currentUser.firstName,
                 lastName:   this.$store.state.currentUser.lastName,
                 patronymic: this.$store.state.currentUser.patronymic,
                 userBonus:  this.$store.state.currentUser.bonus,
-                mobile: this.$store.state.currentUser.username,
                 acceptedOrders: [],
                 menu: [
                     { title: 'Принятые заказы',     icon: 'mdi-clock-outline' },
@@ -99,6 +99,9 @@
                     { title: 'Все заказы',          icon: 'mdi-script-text-outline' },
                 ]
             }
+        },
+        created() {
+            this.showAcceptedOrders()
         },
         methods: {
             logout() {
@@ -111,13 +114,6 @@
             },
             showAcceptedOrders() {
                 axios.get('/api/order/getAcceptedOrders').then((response) => {
-
-
-                    const orders = response.data
-                    console.log(orders)
-
-
-
                     this.acceptedOrders = response.data
                 })
             }
@@ -128,9 +124,6 @@
                     this.$router.push('/login')
                 }
             })
-        },
-        created() {
-            this.showAcceptedOrders()
         }
     }
 </script>
