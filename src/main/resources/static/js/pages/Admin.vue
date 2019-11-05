@@ -114,29 +114,6 @@
                                         </v-row>
                                     </v-card-text>
                                     <v-divider></v-divider>
-                                    <v-card-actions>
-                                        <v-row>
-                                            <v-col>
-                                                <v-btn class="ma-2" color="primary" dark @click="confirmOrder(order.orderID)">
-                                                    Подтвердить
-                                                    <v-icon dark right>mdi-checkbox-marked-circle</v-icon>
-                                                </v-btn>
-                                            </v-col>
-                                            <v-col>
-                                                <v-btn class="ma-2" color="green" dark @click="completeOrder(order.orderID)">
-                                                    Завершить
-                                                    <v-icon dark right>mdi-checkbox-marked-circle</v-icon>
-                                                </v-btn>
-                                            </v-col>
-                                            <v-col>
-                                                <v-btn class="ma-2" color="red" dark @click="deleteOrder(order.orderID)">
-                                                    Удалить
-                                                    <v-icon dark right>mdi-cancel</v-icon>
-                                                </v-btn>
-                                            </v-col>
-                                        </v-row>
-                                    </v-card-actions>
-                                    <v-divider></v-divider>
                                     <v-list subheader>
                                         <v-subheader>Заказанные товары</v-subheader>
                                         <v-list-item v-for="product in order.orderedList" :key="product.productID">
@@ -158,6 +135,29 @@
                                             </v-list-item-content>
                                         </v-list-item>
                                     </v-list>
+                                    <v-divider></v-divider>
+                                    <v-card-actions>
+                                        <v-row>
+                                            <v-col>
+                                                <v-btn class="ma-2" outlined color="primary" dark @click="confirmOrder(order.orderID)">
+                                                    Подтвердить
+                                                    <v-icon dark right>mdi-checkbox-marked-circle</v-icon>
+                                                </v-btn>
+                                            </v-col>
+                                            <v-col>
+                                                <v-btn class="ma-2" outlined color="green" dark @click="completeOrder(order.orderID)">
+                                                    Завершить
+                                                    <v-icon dark right>mdi-checkbox-marked-circle</v-icon>
+                                                </v-btn>
+                                            </v-col>
+                                            <v-col>
+                                                <v-btn class="ma-2" color="red" dark @click="deleteOrder(order.orderID)">
+                                                    Удалить
+                                                    <v-icon dark right>mdi-cancel</v-icon>
+                                                </v-btn>
+                                            </v-col>
+                                        </v-row>
+                                    </v-card-actions>
                                 </v-card>
                             </v-list-item>
                         </v-list>
