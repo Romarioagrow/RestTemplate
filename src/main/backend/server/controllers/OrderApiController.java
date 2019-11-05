@@ -51,4 +51,9 @@ public class OrderApiController {
     private List<Order> getAcceptedOrders(@AuthenticationPrincipal User user) {
         return orderService.getAcceptedOrders(user);
     }
+
+    @GetMapping("/getCompletedOrders")
+    private List<Order> getCompletedOrders(@AuthenticationPrincipal User user) {
+        return orderService.getCompletedOrders(user);
+    }
 }

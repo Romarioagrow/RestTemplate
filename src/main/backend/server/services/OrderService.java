@@ -12,7 +12,6 @@ import server.dto.OrderedProduct;
 import server.repos.OrderRepo;
 import server.repos.ProductRepo;
 import server.repos.UserRepo;
-
 import java.util.*;
 
 @Log
@@ -153,9 +152,16 @@ public class OrderService {
     }
 
     public List<Order> getAcceptedOrders(User user) {
-        List<Order> orders = orderRepo.findAllByUserAndAcceptedTrue(user);
+        List<Order> orders = orderRepo.findAllByUserAndAcceptedTrueAndCompletedFalse(user);
         orders.sort(Comparator.comparing(Order::getOpenDate).reversed());
         return orders;
+    }
+
+    public List<Order> getCompletedOrders(User user) {
+        List<Order> orders = orderRepo.findAllByUserAndCompletedTrue(user);
+        orders.sort(Comparator.comparing(Order::getOpenDate).reversed());
+        return orders;
+
     }
 
     public LinkedList<Object> addSessionProductToUserOrder(Map<String, Integer> sessionProducts, User user) {
@@ -180,7 +186,9 @@ public class OrderService {
     }
 
     public List<Order> getAcceptedOrders() {
-        return orderRepo.findAllByAcceptedTrue();
+        List<Order> acceptedOrders = orderRepo.findAllByAcceptedTrue();
+        acceptedOrders.sort(Comparator.comparing(Order::getOpenDate).reversed());
+        return acceptedOrders;
     }
 
     public boolean confirmOrder(Long orderID) {
@@ -192,14 +200,12 @@ public class OrderService {
     }
 
     public boolean completeOrder(Long orderID) {
-        log.info(orderID.toString());
         Order order = orderRepo.findByOrderID(orderID);
         User user = order.getUser();
         order.setCompleted(true);
         user.setBonus(user.getBonus() + order.getTotalBonus());
         orderRepo.save(order);
         userRepo.save(user);
-        log.info(order.toString());
         /// sendNotificationToUser(order.getUser())
         return true;
     }
@@ -210,4 +216,6 @@ public class OrderService {
         orders.sort(Comparator.comparing(Order::getOpenDate).reversed());
         return orders;
     }
+
+
 }
