@@ -5,6 +5,7 @@
                 <v-list-item two-line>
                     <v-list-item-content>
                         <v-list-item-title>{{lastName}} {{username}} {{patronymic}}</v-list-item-title>
+                        <v-list-item-subtitle><strong>+{{mobile}}</strong></v-list-item-subtitle>
                         <v-list-item-subtitle>Бонусов: <strong>{{userBonus}}</strong></v-list-item-subtitle>
                     </v-list-item-content>
                 </v-list-item>
@@ -32,11 +33,19 @@
             <v-container fluid fill-height>
                 <v-layout justify-center align-center>
                     <v-list subheader width="100%">
-                        <v-subheader>Принятые заказы</v-subheader>
+                        <v-subheader><h3>Принятые заказы</h3></v-subheader>
                         <v-list-item v-for="order of acceptedOrders" :key="order.orderID">
-                            <v-card width="100%" class="mb-3">
+                            <v-card outlined width="100%" class="mb-3">
                                 <v-card-title>
-                                    Заказ №{{order.orderID}}
+                                    <v-row>
+                                        <v-col cols="2">
+                                            Заказ №{{order.orderID}}
+                                        </v-col>
+                                        <v-col>
+                                            от {{order.openDate.replace('T',' ')}}
+                                        </v-col>
+                                    </v-row>
+
                                 </v-card-title>
                                 <v-card-text>
                                     <div class="my-4 subtitle-1 black--text">
@@ -44,13 +53,35 @@
                                     </div>
                                 </v-card-text>
                                 <v-divider></v-divider>
-                                <v-card-actions>
-                                    <v-list v-for="[product, amount] in order.orderedProducts" :key="product">
+
+                                <v-list subheader>
+                                    <v-subheader>Заказанные товары</v-subheader>
+                                    <v-list-item v-for="product in order.orderedList" :key="product.productID">
+                                        <v-list-item-avatar>
+                                            <v-img :src="product.pic"></v-img>
+                                        </v-list-item-avatar>
                                         <v-list-item-content>
-                                            <v-list-item-title v-text="product"></v-list-item-title>
+                                            <v-list-item-title v-text="product.productName"></v-list-item-title>
                                         </v-list-item-content>
-                                    </v-list>
-                                </v-card-actions>
+                                        <v-list-item-content>
+                                            <v-list-item-title>
+                                                <span><strong>{{(product.productPrice * product.productAmount).toLocaleString('ru-RU')}}</strong> ₽</span>
+                                            </v-list-item-title>
+                                        </v-list-item-content>
+                                        <v-list-item-content>
+                                            <v-list-item-title>
+                                                <span>за {{product.productAmount}}шт.</span>
+                                            </v-list-item-title>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                </v-list>
+
+                                <!--<v-list v-for="product in order.orderedList" :key="product.productID">
+                                    <v-list-item-content>
+                                        <v-list-item-title v-text="product.productName"></v-list-item-title>
+                                    </v-list-item-content>
+                                </v-list>-->
+
                             </v-card>
 
                         </v-list-item>
@@ -70,6 +101,7 @@
                 lastName:   this.$store.state.currentUser.lastName,
                 patronymic: this.$store.state.currentUser.patronymic,
                 userBonus:  this.$store.state.currentUser.bonus,
+                mobile: this.$store.state.currentUser.username,
                 acceptedOrders: [],
                 menu: [
                     { title: 'Принятые заказы',     icon: 'mdi-clock-outline' },
@@ -89,7 +121,13 @@
             },
             showAcceptedOrders() {
                 axios.get('/api/order/getAcceptedOrders').then((response) => {
-                    console.log(response.data)
+
+
+                    const orders = response.data
+                    console.log(orders)
+
+
+
                     this.acceptedOrders = response.data
                 })
             }

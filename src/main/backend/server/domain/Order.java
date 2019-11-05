@@ -3,12 +3,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
+import server.domain.categories.Role;
+import server.dto.OrderedProduct;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Log
 @Data
@@ -39,6 +44,10 @@ public class Order implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private Map<String, Integer> orderedProducts = new LinkedHashMap<>();
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "ordered_list", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "order_id"))
+    private List<OrderedProduct> orderedList;
+
     @ManyToOne
     private User user;
 
@@ -48,5 +57,5 @@ public class Order implements Serializable {
 
     private String address, clientName;
 
-    private LocalDateTime openDate = LocalDateTime.now().withNano(0);
+    private LocalDateTime openDate = LocalDateTime.now().withSecond(0).withNano(0);
 }

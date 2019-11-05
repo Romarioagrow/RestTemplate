@@ -16,7 +16,7 @@
                                 </v-list-item-content>
                                 <v-list-item-content class="ml-12">
                                     <v-list-item-title>
-                                        <span><strong>{{product.finalPrice}}</strong> ₽</span>
+                                        <span><strong>{{(product.finalPrice * amount).toLocaleString('ru-RU')}}</strong> ₽</span>
                                     </v-list-item-title>
                                 </v-list-item-content>
                                 <v-list-item-action class="ml-12">

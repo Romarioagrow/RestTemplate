@@ -8,6 +8,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import server.domain.Order;
 import server.domain.Product;
 import server.domain.User;
+import server.dto.OrderedProduct;
 import server.repos.OrderRepo;
 import server.repos.ProductRepo;
 import server.repos.UserRepo;
@@ -41,6 +42,11 @@ public class OrderService {
             user.setBonus(user.getBonus() - discountAmount);
             userRepo.save(user);
         }
+
+        order.getOrderedProducts().forEach((productID, amount) -> {
+            Product product = productRepo.findByProductID(productID);
+            order.getOrderedList().add(new OrderedProduct(productID, amount, product.getFullName(), product.getPic(), product.getFinalPrice()));
+        });
 
         order.setAccepted(true);
         orderRepo.save(order);
@@ -158,7 +164,6 @@ public class OrderService {
         if (sessionProducts != null) {
             sessionProducts.forEach((productID, amount) -> {
                 productID = productID.replaceAll("=", "");
-
                 Product product = productRepo.findByProductID(productID);
 
                 order.getOrderedProducts().put(productID, amount);
