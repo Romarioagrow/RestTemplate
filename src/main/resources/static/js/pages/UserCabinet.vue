@@ -45,7 +45,6 @@
                                             от {{order.openDate.replace('T',' ')}}
                                         </v-col>
                                     </v-row>
-
                                 </v-card-title>
                                 <v-card-text>
                                     <div class="my-4 subtitle-1 black--text">
@@ -53,7 +52,6 @@
                                     </div>
                                 </v-card-text>
                                 <v-divider></v-divider>
-
                                 <v-list subheader>
                                     <v-subheader>Заказанные товары</v-subheader>
                                     <v-list-item v-for="product in order.orderedList" :key="product.productID">
@@ -75,15 +73,7 @@
                                         </v-list-item-content>
                                     </v-list-item>
                                 </v-list>
-
-                                <!--<v-list v-for="product in order.orderedList" :key="product.productID">
-                                    <v-list-item-content>
-                                        <v-list-item-title v-text="product.productName"></v-list-item-title>
-                                    </v-list-item-content>
-                                </v-list>-->
-
                             </v-card>
-
                         </v-list-item>
                     </v-list>
                 </v-layout>

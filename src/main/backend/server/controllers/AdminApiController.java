@@ -1,11 +1,9 @@
 package server.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import server.domain.User;
 import server.services.ProductBuilder;
@@ -15,9 +13,15 @@ import java.io.IOException;
 @Log
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/admin")
+@RequestMapping("/admin")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminApiController {
     private final ProductBuilder productBuilder;
+
+    @GetMapping
+    private boolean isAdmin(@AuthenticationPrincipal User user) {
+        return user.isAdmin();
+    }
 
     @PostMapping("/uploadFileDB")
     private void uploadProductsDBFile(@RequestParam("file") MultipartFile file) {

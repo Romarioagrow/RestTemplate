@@ -52,9 +52,6 @@ public class User implements UserDetails {
 
     private Integer bonus = 0;
 
-    /*@OneToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL}, mappedBy="user")
-    private List<Order> orders;*/
-
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
