@@ -12,7 +12,9 @@
                                     <v-img :src="product.pic"></v-img>
                                 </v-list-item-avatar>
                                 <v-list-item-content class="ml-12">
-                                    <v-list-item-title v-text="product.fullName"></v-list-item-title>
+                                    <router-link :to="'/products/product/' + product.productID">
+                                        <v-list-item-title v-text="product.fullName" style="color: black"></v-list-item-title>
+                                    </router-link>
                                 </v-list-item-content>
                                 <v-list-item-content class="ml-12">
                                     <v-list-item-title>
@@ -212,10 +214,10 @@
                     </v-card>
                     <v-card v-else>
                         <v-card-actions class="chartAreaWrapper">
-                                <v-btn color="primary" block dark @click="toCatalog()">
-                                    <v-icon dark right>mdi-backburger</v-icon>
-                                    В каталог
-                                </v-btn>
+                            <v-btn color="primary" block dark @click="toCatalog()">
+                                <v-icon dark right>mdi-backburger</v-icon>
+                                В каталог
+                            </v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-col>
@@ -247,7 +249,8 @@
             flat            :'',
             discountPercent :0,
             discountAmount  :0,
-            discountApplied :false
+            discountApplied :false,
+
         }),
         created() {
             axios.post('/api/order/orderedProducts').then(response => {

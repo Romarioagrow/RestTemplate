@@ -91,7 +91,21 @@
             <!---->
             <v-item-group multiple>
                 <v-container fluid>
-                    <v-breadcrumbs :items="items" large></v-breadcrumbs>
+                    <v-row>
+                        <v-col cols="3">
+                            <router-link to="/">
+                                <v-btn depressed text small>Каталог</v-btn>
+                            </router-link>
+                        </v-col>
+                        <v-col cols="3">
+                            <router-link to="/">
+                                <v-btn depressed text small>{{linkCategory}}</v-btn>
+                            </router-link>
+                        </v-col>
+                        <v-col cols="3">
+                            <v-btn depressed disabled text small>{{linkProductGroup}}</v-btn>
+                        </v-col>
+                    </v-row>
                     <!---->
                     <strong class="ml-3" v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</strong>
                     <v-row class="mt-1 ml-1" v-if="totalPages !== 1">
@@ -151,23 +165,8 @@
                 selected: [],
                 page: 1,
                 totalPages: 0,
-                items: [
-                    {
-                        text: 'Catalog',
-                        disabled: false,
-                        href: '/',
-                    },
-                    {
-                        text: 'Category',
-                        disabled: false,
-                        href: '#breadcrumbs_link_1',
-                    },
-                    {
-                        text: 'Group',
-                        disabled: true,
-                        href: '#breadcrumbs_link_2',
-                    },
-                ],
+                linkCategory: '',
+                linkProductGroup: '',
                 requestGroup:'',
                 productsRequest: '',
                 filtersRequest: '',
@@ -180,6 +179,10 @@
             this.pageRequest     = '/api/products/group' + this.requestGroup
             this.productsRequest = '/api/products/group' + this.requestGroup + '/0'
             this.filtersRequest  = '/api/products/build_filters' + this.requestGroup
+
+            let linkGroup = this.requestGroup.replace('/', '')
+            linkGroup = linkGroup.charAt(0).toUpperCase() + linkGroup.substr(1)
+            this.linkProductGroup = linkGroup
 
             /*Load Filters*/
             axios.get(this.filtersRequest).then(response => {
@@ -207,6 +210,7 @@
                 this.products = response.data.content
                 this.totalPages = response.data.totalPages
                 this.totalProductsFound = response.data.totalElements
+                this.linkCategory = this.products[0].productCategory
                 this.loading = false
             })
         },
