@@ -49,11 +49,11 @@ public class OrderApiController {
 
     @GetMapping("/getAcceptedOrders")
     private List<Order> getAcceptedOrders(@AuthenticationPrincipal User user) {
-        return orderService.getAcceptedOrders(user);
+        return orderService.getAllAcceptedOrders(user);
     }
 
     @GetMapping("/getCompletedOrders")
     private List<Order> getCompletedOrders(@AuthenticationPrincipal User user) {
-        return orderService.getCompletedOrders(user);
+        return orderService.getUserCompletedOrders(user);
     }
 }

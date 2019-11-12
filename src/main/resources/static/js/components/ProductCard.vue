@@ -1,21 +1,21 @@
 <template>
     <v-item v-slot:default="{ active, toggle }">
-    <v-card outlined class="mx-auto mt-3" max-width="350">
-        <v-img class="white--text" contain height="200px" :src="product.pic" alt="Bad Link"></v-img>
-        <v-card-text>
-            <router-link :to=showProductInfo>
-                <v-card-title class="align-end fill-height">{{product.fullName}}</v-card-title>
-            </router-link>
-            <ul>
-                <li v-for="anno in annotations" v-if="anno">{{anno}}</li>
-            </ul>
-            <h3>{{product.finalPrice.toLocaleString('ru-RU')}} ₽</h3>
-            <span>{{product.supplier}}</span>
-        </v-card-text>
-        <v-card-actions v-if="!productInOrder(product.productID)">
-            <v-btn text outlined color="#e52d00" @click="addToOrder(product.productID)">
-                В корзину
-            </v-btn>
+        <v-card outlined class="mx-auto mt-3" max-width="350">
+            <v-img class="white--text" contain height="200px" :src="product.pic" alt="Bad Link"></v-img>
+            <v-card-text>
+                <router-link :to=showProductInfo>
+                    <v-card-title class="align-end fill-height">{{product.fullName}}</v-card-title>
+                </router-link>
+                <ul>
+                    <li v-for="anno in annotations" v-if="anno">{{anno}}</li>
+                </ul>
+                <h3>{{product.finalPrice.toLocaleString('ru-RU')}} ₽</h3>
+                <span>{{product.supplier}}</span>
+            </v-card-text>
+            <v-card-actions v-if="!productInOrder(product.productID)">
+                <v-btn text outlined color="#e52d00" @click="addToOrder(product.productID)">
+                    В корзину
+                </v-btn>
                 <!--<v-dialog v-model="dialog" max-width="500">
                     <template v-slot:activator="{ on }">
                         <v-btn text color="orange" v-on="on">Купить в 1 клик</v-btn>
@@ -30,13 +30,13 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>-->
-        </v-card-actions>
-        <v-card-actions v-else>
-            <v-btn text outlined color="orange" @click="toOrder()">
-                Перейти в корзину
-            </v-btn>
-        </v-card-actions>
-    </v-card>
+            </v-card-actions>
+            <v-card-actions v-else>
+                <v-btn class="goToOrderButton" @click="toOrder()">
+                    Перейти в корзину
+                </v-btn>
+            </v-card-actions>
+        </v-card>
     </v-item>
 </template>
 
@@ -70,5 +70,8 @@
 </script>
 
 <style scoped>
-
+    .goToOrderButton {
+        background-color: #e52d00;
+        color: #fafafa;
+    }
 </style>

@@ -20,49 +20,51 @@
                             <v-btn color="success" block @click="loginUser()">Войти</v-btn>
                         </v-card-actions>
                         <v-card-text>
-                            <span>Зашли впервые?</span>
-                            <v-row justify="center" class="mt-3">
-                                <v-dialog v-model="dialog" persistent max-width="500">
-                                    <template v-slot:activator="{ on }">
-                                        <v-btn color="primary" dark v-on="on">Зарегистрируйтесь</v-btn>
-                                    </template>
-                                    <v-card>
-                                        <v-card-title class="headline">Регистрация</v-card-title>
-                                        <v-card-text>Введите ваши контактные данные</v-card-text>
-                                        <v-card-text>
-                                            <v-form>
-                                                <v-text-field id="username" label="Номер телефона" name="username" prepend-icon="mdi-phone" type="text" v-mask="'7-###-###-##-##'" v-model="username"></v-text-field>
-                                                <v-row>
-                                                    <v-col>
-                                                        <v-text-field id="password" name="password" prepend-icon="mdi-key" type="password" v-model="password" label="Пароль"></v-text-field>
-                                                    </v-col>
-                                                    <v-col>
-                                                        <v-text-field id="passwordConfirm"  name="passwordConfirm" type="password" v-model="registerPassConfirm" label="Подтвердите пароль"></v-text-field>
-                                                    </v-col>
-                                                </v-row>
-                                                <v-row>
-                                                    <v-col>
-                                                        <v-text-field id="lastName" name="lastName" prepend-icon="mdi-account" type="text" v-model="lastName" label="Фамилия"></v-text-field>
-                                                    </v-col>
-                                                    <v-col>
-                                                        <v-text-field id="firstName" name="firstName" type="text" v-model="firstName" label="Имя"></v-text-field>
-                                                    </v-col>
-                                                    <v-col>
-                                                        <v-text-field id="patronymic" name="patronymic" type="text" v-model="patronymic" label="Отчество"></v-text-field>
-                                                    </v-col>
-                                                </v-row>
-                                                <v-text-field id="email" name="email" prepend-icon="mdi-email" type="email" v-model="email" label="E-mail"></v-text-field>
-                                            </v-form>
-                                        </v-card-text>
-                                        <v-card-actions>
-                                            <div class="flex-grow-1"></div>
-                                            <v-btn color="green darken-1" text @click="submitRegistration()">Регистрация</v-btn>
-                                            <v-btn color="red darken-1" text @click="dialog = false">Отмена</v-btn>
-                                        </v-card-actions>
-                                    </v-card>
-                                </v-dialog>
+                            <v-row justify="center">
+                                Зашли впервые?
                             </v-row>
                         </v-card-text>
+                        <v-card-actions>
+                            <v-dialog v-model="dialog" persistent max-width="500">
+                                <template v-slot:activator="{ on }">
+                                    <v-btn color="primary" outlined block dark v-on="on">Зарегистрируйтесь</v-btn>
+                                </template>
+                                <v-card>
+                                    <v-card-title class="headline">Регистрация</v-card-title>
+                                    <v-card-text>Введите ваши контактные данные</v-card-text>
+                                    <v-card-text>
+                                        <v-form>
+                                            <v-text-field id="username" label="Номер телефона" name="username" prepend-icon="mdi-phone" type="text" v-mask="'7-###-###-##-##'" v-model="username"></v-text-field>
+                                            <v-row>
+                                                <v-col>
+                                                    <v-text-field id="password" name="password" prepend-icon="mdi-key" type="password" v-model="password" label="Пароль"></v-text-field>
+                                                </v-col>
+                                                <v-col>
+                                                    <v-text-field id="passwordConfirm"  name="passwordConfirm" type="password" v-model="registerPassConfirm" label="Подтвердите пароль"></v-text-field>
+                                                </v-col>
+                                            </v-row>
+                                            <v-row>
+                                                <v-col>
+                                                    <v-text-field id="lastName" name="lastName" prepend-icon="mdi-account" type="text" v-model="lastName" label="Фамилия"></v-text-field>
+                                                </v-col>
+                                                <v-col>
+                                                    <v-text-field id="firstName" name="firstName" type="text" v-model="firstName" label="Имя"></v-text-field>
+                                                </v-col>
+                                                <v-col>
+                                                    <v-text-field id="patronymic" name="patronymic" type="text" v-model="patronymic" label="Отчество"></v-text-field>
+                                                </v-col>
+                                            </v-row>
+                                            <v-text-field id="email" name="email" prepend-icon="mdi-email" type="email" v-model="email" label="E-mail"></v-text-field>
+                                        </v-form>
+                                    </v-card-text>
+                                    <v-card-actions>
+                                        <div class="flex-grow-1"></div>
+                                        <v-btn color="green darken-1" text @click="submitRegistration()">Регистрация</v-btn>
+                                        <v-btn color="red darken-1" text @click="dialog = false">Отмена</v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+                        </v-card-actions>
                     </v-card>
                 </v-col>
             </v-row>

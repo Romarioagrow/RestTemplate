@@ -1,4 +1,5 @@
 package server.services;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 import lombok.AllArgsConstructor;
@@ -15,9 +16,9 @@ import server.config.AliasConfig;
 import server.domain.OriginalProduct;
 import server.domain.Product;
 import server.domain.UniqueBrand;
-import server.repos.BrandsRepo;
-import server.repos.OriginalRepo;
-import server.repos.ProductRepo;
+import server.domain.User;
+import server.repos.*;
+
 import java.io.*;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
@@ -40,21 +41,71 @@ public class ProductBuilder {
     private final ProductRepo productRepo;
     private final AliasConfig aliasConfig;
     private final BrandsRepo brandsRepo;
+    private final OrderRepo orderRepo;
+    private final UserRepo userRepo;
 
     public void updateProductsDB(MultipartFile excelFile) throws FileNotFoundException {
         try
         {
             log.info(excelFile.getOriginalFilename());
+
             parseSupplierFile(excelFile);
+
             matchProductDetails();
+
             resolveDuplicates();
+
             resolveAvailable();
+
             mapCatalogJSON();
+
+            checkOrdersForProductAvailable();
+
             log.info("Update Complete! Products available: " + productRepo.findAll().size());
         }
         catch (NullPointerException | IOException e) {
             e.getStackTrace();
         }
+    }
+
+    private void checkOrdersForProductAvailable() {
+        /*Удлаить из корзины всех неподверэженных заказов исчезжнувшие product после обновления бд*/
+        orderRepo.findAllByAcceptedFalse().forEach(order -> {
+
+            //log.info(order);
+
+            order.getOrderedProducts().forEach((productID, amount) -> {
+                try {
+                    Product product = productRepo.findByProductID(productID);
+
+                    /*Откат цен заказа*/
+                    if (product == null) {
+                        OriginalProduct originalProduct = originalRepo.findByProductID(productID);
+                        order.setTotalPrice(order.getTotalPrice() - originalProduct.getFinalPrice() * amount);
+                        order.setTotalBonus(order.getTotalBonus() - originalProduct.getBonus() * amount);
+
+                        /*Откат скидки заказа и пользователя*/
+                        if (order.getDiscount() != null) {
+                            order.setTotalPrice(order.getTotalPrice() + order.getDiscount());
+                            User user = order.getUser();
+                            if (order.getUser() != null) {
+                                order.setDiscount(null);
+                                order.setDiscountPrice(null);
+                                user.setBonus(user.getBonus() + originalProduct.getBonus() * amount);
+                                userRepo.save(user);
+                            }
+
+                        }
+
+                        order.getOrderedProducts().remove(productID);
+                        orderRepo.save(order);
+                    }
+                }
+                catch (NullPointerException e) {
+                    e.getStackTrace();
+                }
+            });
+        });
     }
 
     /*Создать-обновить каталог в JSON и сохранить в папку*/
@@ -152,6 +203,7 @@ public class ProductBuilder {
                 product = new Product();
                 product.setProductID(productID);
             }
+
             /*matchGroup()*/
             String originalGroup = originalProduct.getOriginalType();
             mapping: for (Map.Entry<String,String> aliasEntry : aliases.entrySet())
@@ -169,6 +221,7 @@ public class ProductBuilder {
                 product = defaultProductMatch(originalProduct, product);
                 countDefault++;
             }
+
             product = resolveProductsDetails(originalProduct, product);
             productRepo.save(product);
         }
@@ -453,7 +506,6 @@ public class ProductBuilder {
     private boolean productWithUniquePrice(OriginalProduct originalProduct) {
         String originalBrand = originalProduct.getOriginalBrand().toUpperCase();
         String[] uniqueBrands = {"ARDIN","SENTORE","BINATONE","AMCV","DOFFLER","DOFFLER PLUS","EXCOMP","LERAN"};
-
         if (Arrays.asList(uniqueBrands).contains(originalBrand)) {
             return brandsRepo.findByProductID(originalProduct.getProductID()) != null;
         }
@@ -587,7 +639,7 @@ public class ProductBuilder {
 
                     brandProduct.setFullName(line[1]);
                     brandProduct.setBrand(line[2]);
-                    brandProduct.setAnnotation(line[3]);
+                    brandProduct.setAnnotation(line[3].trim());
                     brandProduct.setOriginalPrice(line[4]);
                     brandProduct.setFinalPrice(line[5]);
                     brandProduct.setPercent(line[6]);

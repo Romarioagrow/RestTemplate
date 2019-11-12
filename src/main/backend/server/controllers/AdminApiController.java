@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import server.domain.Order;
 import server.domain.User;
+import server.repos.OriginalRepo;
 import server.services.OrderService;
 import server.services.ProductBuilder;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @Log
@@ -21,6 +23,7 @@ import java.util.List;
 public class AdminApiController {
     private final ProductBuilder productBuilder;
     private final OrderService orderService;
+    private final OriginalRepo originalRepo;
 
     @PostMapping("/deleteOrder")
     private List<Order> deleteOrder(@RequestBody String orderID) {
@@ -43,8 +46,13 @@ public class AdminApiController {
     }
 
     @GetMapping("/acceptedOrders")
-    private List<Order> getAcceptedOrders() {
-        return orderService.getAcceptedOrders();
+    private List<Order> getAllAcceptedOrders() {
+        return orderService.getAllAcceptedOrders();
+    }
+
+    @GetMapping("/completedOrders")
+    private List<Order> getAllCompletedOrders() {
+        return orderService.getAllCompletedOrders();
     }
 
     @GetMapping
@@ -86,6 +94,11 @@ public class AdminApiController {
     @PostMapping("/test")
     private void uploadProductsDBFile(@AuthenticationPrincipal User user) {
         log.info("TEST USER: " + user.getFirstName());
-        productBuilder.test();
+        //productBuilder.test();
+        originalRepo.findAll().forEach(originalProduct -> {
+            originalProduct.setUpdateDate(LocalDate.ofYearDay(2019,50));
+            originalRepo.save(originalProduct);
+            log.info(originalProduct.getUpdateDate().toString());
+        });
     }
 }

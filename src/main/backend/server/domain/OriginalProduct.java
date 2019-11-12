@@ -25,4 +25,5 @@ public class Item {
 
     private Boolean isAvailable;
 
+    private Integer finalPrice, bonus;
 }

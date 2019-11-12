@@ -249,8 +249,23 @@
             discountAmount  :0,
             discountApplied :false
         }),
+        created() {
+            axios.post('/api/order/orderedProducts').then(response => {
+                this.loadData(response)
+            })
+            if (this.auth) {
+                this.lastName   = this.$store.state.currentUser.lastName
+                this.firstName  = this.$store.state.currentUser.firstName
+                this.patronymic = this.$store.state.currentUser.patronymic
+                this.mobile     = this.$store.state.currentUser.username
+                this.email      = this.$store.state.currentUser.email
+            }
+        },
         methods: {
             loadData(response) {
+
+                console.log(response.data)
+
                 const order = response.data[0]
                 const productList = response.data[1]
                 this.$store.dispatch('updateOrder', order)
@@ -271,6 +286,7 @@
                 this.discountPercent = this.calculateDiscount
 
                 console.log(Object.keys(productList).length === 0)
+                console.log(this.orderedProducts)
 
                 /*На всякий случай*/
                 if (Object.keys(productList).length === 0) {
@@ -378,19 +394,6 @@
             },
             discountPrice() {
                 return this.$store.state.currentOrder.discountPrice
-            }
-        },
-        created() {
-            axios.post('/api/order/orderedProducts').then(response => {
-                this.loadData(response)
-            })
-
-            if (this.auth) {
-                this.lastName   = this.$store.state.currentUser.lastName
-                this.firstName  = this.$store.state.currentUser.firstName
-                this.patronymic = this.$store.state.currentUser.patronymic
-                this.mobile     = this.$store.state.currentUser.username
-                this.email      = this.$store.state.currentUser.email
             }
         }
     }

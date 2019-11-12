@@ -6,10 +6,12 @@ import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import server.domain.Order;
+import server.domain.OriginalProduct;
 import server.domain.Product;
 import server.domain.User;
 import server.dto.OrderedProduct;
 import server.repos.OrderRepo;
+import server.repos.OriginalRepo;
 import server.repos.ProductRepo;
 import server.repos.UserRepo;
 import java.util.*;
@@ -21,6 +23,7 @@ public class OrderService {
     private final OrderRepo orderRepo;
     private final UserRepo userRepo;
     private final ProductRepo productRepo;
+    private final OriginalRepo originalRepo;
 
     public boolean acceptOrder(Map<String, String> orderDetails) {
         log.info(orderDetails.toString());
@@ -67,7 +70,6 @@ public class OrderService {
         order.setTotalPrice(order.getTotalPrice() + product.getFinalPrice());
         order.setTotalBonus(order.getTotalBonus() + product.getBonus());
         orderRepo.save(order);
-
         return order;
     }
 
@@ -84,7 +86,6 @@ public class OrderService {
         orderRepo.save(order);
         return payloadOrderData(order);
     }
-
     public LinkedList<Object> increaseAmount(String productID, User user) {
         productID = productID.replaceAll("=","");
 
@@ -98,7 +99,6 @@ public class OrderService {
         orderRepo.save(order);
         return payloadOrderData(order);
     }
-
     public LinkedList<Object> decreaseAmount(String productID, User user) {
         productID = productID.replaceAll("=","");
 
@@ -112,12 +112,6 @@ public class OrderService {
         orderRepo.save(order);
         return payloadOrderData(order);
     }
-
-    public LinkedList<Object> getOrderData(User user) {
-        Order order = getActiveOrder(user);
-        return payloadOrderData(order);
-    }
-
     private LinkedList<Object> payloadOrderData(Order order) {
         LinkedList<Object> payload = new LinkedList<>();
         Map<String, Integer> orderedProducts = new LinkedHashMap<>();
@@ -135,6 +129,91 @@ public class OrderService {
         return payload;
     }
 
+    public LinkedList<Object> getOrderData(User user) {
+        Order order = getActiveOrder(user);
+        return payloadOrderData(order);
+
+        /*LinkedList<Object> payload = new LinkedList<>();
+        Map<String, Integer> orderedProducts = new LinkedHashMap<>();*/
+
+        /*order.getOrderedProducts().forEach((productID, amount) -> {
+            try {
+                Product product = getProduct(productID);
+                if (product != null) {
+                    String productJson = new ObjectMapper().writeValueAsString(product);
+                    orderedProducts.put(productJson, amount);
+                }
+                else {
+                    OriginalProduct originalProduct = originalRepo.findByProductID(productID);
+                    order.setTotalPrice(order.getTotalPrice() - originalProduct.getFinalPrice() * amount);
+                    order.setTotalBonus(order.getTotalBonus() - originalProduct.getBonus() * amount);
+                    if (order.getDiscount() != null) {
+                        order.setTotalPrice(order.getTotalPrice() + order.getDiscount());
+                        if (user != null) {
+                            order.setDiscount(null);
+                            order.setDiscountPrice(null);
+                            user.setBonus(user.getBonus() + originalProduct.getBonus() * amount);
+                            userRepo.save(user);
+                        }
+                        orderRepo.save(order);
+                    }
+                }
+            }
+            catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            catch (NullPointerException e) {
+                e.getStackTrace();
+            }
+        });*/
+
+        /*orderedProducts.forEach((s, integer) -> {
+            log.info(s + " " + integer.toString());
+        });
+
+        payload.add(order);
+        payload.add(orderedProducts);
+        return payload;*/
+    }
+    /*private LinkedList<Object> payloadCreateOrderData(Order order) {
+        LinkedList<Object> payload = new LinkedList<>();
+        Map<String, Integer> orderedProducts = new LinkedHashMap<>();
+        order.getOrderedProducts().forEach((productID, amount) -> {
+            try {
+
+                Product product = getProduct(productID);
+                if (product != null) {
+                    String productJson = new ObjectMapper().writeValueAsString(product);
+                    orderedProducts.put(productJson, amount);
+                }
+                else {
+                    OriginalProduct originalProduct = originalRepo.findByProductID(productID);
+                    order.setTotalPrice(order.getTotalPrice() - originalProduct.getFinalPrice() * amount);
+                    order.setTotalPrice(order.getTotalBonus() - originalProduct.getBonus() * amount);
+                    if (order.getDiscount() != null) {
+                        order.setTotalPrice(order.getTotalPrice() + order.getDiscount());
+                        order.setDiscount();
+                    }
+                }
+
+            }
+            catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            catch (NullPointerException e) {
+                e.getStackTrace();
+            }
+        });
+
+        orderedProducts.forEach((s, integer) -> {
+            log.info(s + " " + integer.toString());
+        });
+
+        payload.add(order);
+        payload.add(orderedProducts);
+        return payload;
+    }*/
+
     private Order getActiveOrder(User user) {
         if (user != null) {
             Order userOrder = orderRepo.findByUserAndAcceptedFalse(user);
@@ -151,13 +230,13 @@ public class OrderService {
         return productRepo.findByProductID(productID.replaceAll("=", ""));
     }
 
-    public List<Order> getAcceptedOrders(User user) {
+    public List<Order> getAllAcceptedOrders(User user) {
         List<Order> orders = orderRepo.findAllByUserAndAcceptedTrueAndCompletedFalse(user);
         orders.sort(Comparator.comparing(Order::getOpenDate).reversed());
         return orders;
     }
 
-    public List<Order> getCompletedOrders(User user) {
+    public List<Order> getUserCompletedOrders(User user) {
         List<Order> orders = orderRepo.findAllByUserAndCompletedTrue(user);
         orders.sort(Comparator.comparing(Order::getOpenDate).reversed());
         return orders;
@@ -183,12 +262,6 @@ public class OrderService {
         payload.add(user);
         payload.add(order);
         return payload;
-    }
-
-    public List<Order> getAcceptedOrders() {
-        List<Order> acceptedOrders = orderRepo.findAllByAcceptedTrueAndCompletedFalse();
-        acceptedOrders.sort(Comparator.comparing(Order::getOpenDate).reversed());
-        return acceptedOrders;
     }
 
     public boolean confirmOrder(Long orderID) {
@@ -223,5 +296,18 @@ public class OrderService {
         List<Order> orders = orderRepo.findAllByAcceptedTrueAndCompletedFalse();
         orders.sort(Comparator.comparing(Order::getOpenDate).reversed());
         return orders;
+    }
+
+    public List<Order> getAllAcceptedOrders() {
+        List<Order> acceptedOrders = orderRepo.findAllByAcceptedTrueAndCompletedFalse();
+        acceptedOrders.sort(Comparator.comparing(Order::getOpenDate).reversed());
+        return acceptedOrders;
+    }
+
+
+    public List<Order> getAllCompletedOrders() {
+        List<Order> completedOrders = orderRepo.findAllByCompletedTrue();
+        completedOrders.sort(Comparator.comparing(Order::getOpenDate).reversed());
+        return completedOrders;
     }
 }
