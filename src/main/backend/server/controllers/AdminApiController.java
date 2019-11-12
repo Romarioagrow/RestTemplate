@@ -37,6 +37,11 @@ public class AdminApiController {
         return orderService.confirmOrder(Long.parseLong(orderID.replaceAll("=","")));
     }
 
+    @PostMapping("/cancelConfirmOrder")
+    private boolean cancelConfirmOrder(@RequestBody String orderID) {
+        return orderService.cancelConfirmOrder(Long.parseLong(orderID.replaceAll("=","")));
+    }
+
     @GetMapping("/acceptedOrders")
     private List<Order> getAcceptedOrders() {
         return orderService.getAcceptedOrders();

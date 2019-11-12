@@ -139,10 +139,17 @@
                                     <v-card-actions>
                                         <v-row>
                                             <v-col>
-                                                <v-btn class="ma-2" outlined color="primary" dark @click="confirmOrder(order.orderID)">
-                                                    Подтвердить
-                                                    <v-icon dark right>mdi-checkbox-marked-circle</v-icon>
-                                                </v-btn>
+                                                <div v-if="!order.confirmed">
+                                                    <v-btn class="ma-2" outlined color="primary" dark @click="confirmOrder(order.orderID)">
+                                                        Подтвердить
+                                                        <v-icon dark right>mdi-checkbox-marked-circle</v-icon>
+                                                    </v-btn>
+                                                </div>
+                                                <div v-else>
+                                                    <v-btn class="ma-2" color="primary" dark @click="cancelConfirmOrder(order.orderID)">
+                                                        Отменить подтверждение
+                                                    </v-btn>
+                                                </div>
                                             </v-col>
                                             <v-col>
                                                 <v-btn class="ma-2" outlined color="green" dark @click="completeOrder(order.orderID)">
@@ -233,21 +240,30 @@
                 this.activeContainerOrders = true
             },
             confirmOrder(orderID) {
-                axios.post('admin/confirmOrder', orderID).then((response) => {
-                    console.log(response)
+                axios.post('admin/confirmOrder', orderID).then(() => {
+                    axios.get('/admin/acceptedOrders').then(response => {
+                        this.acceptedOrders = response.data
+                    })
+                })
+            },
+            cancelConfirmOrder(orderID) {
+                axios.post('admin/cancelConfirmOrder', orderID).then(() => {
+                    axios.get('/admin/acceptedOrders').then(response => {
+                        this.acceptedOrders = response.data
+                    })
                 })
             },
             completeOrder(orderID) {
                 axios.post('admin/completeOrder', orderID).then((response) => {
-                    console.log(response)
+
                 })
             },
             deleteOrder(orderID) {
                 axios.post('admin/deleteOrder', orderID).then((response) => {
-                    console.log(response)
                     this.acceptedOrders = response.data
                 })
-            }
+            },
+
         }
     }
 </script>

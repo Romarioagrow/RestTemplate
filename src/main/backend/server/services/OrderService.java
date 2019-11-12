@@ -186,7 +186,7 @@ public class OrderService {
     }
 
     public List<Order> getAcceptedOrders() {
-        List<Order> acceptedOrders = orderRepo.findAllByAcceptedTrue();
+        List<Order> acceptedOrders = orderRepo.findAllByAcceptedTrueAndCompletedFalse();
         acceptedOrders.sort(Comparator.comparing(Order::getOpenDate).reversed());
         return acceptedOrders;
     }
@@ -210,12 +210,18 @@ public class OrderService {
         return true;
     }
 
+    public boolean cancelConfirmOrder(Long orderID) {
+        Order order = orderRepo.findByOrderID(orderID);
+        order.setConfirmed(false);
+        orderRepo.save(order);
+        /// sendNotificationToUser(order.getUser())
+        return true;
+    }
+
     public List<Order> deleteOrder(Long orderID) {
         orderRepo.delete(orderRepo.findByOrderID(orderID));
-        List<Order> orders = orderRepo.findAllByAcceptedTrue();
+        List<Order> orders = orderRepo.findAllByAcceptedTrueAndCompletedFalse();
         orders.sort(Comparator.comparing(Order::getOpenDate).reversed());
         return orders;
     }
-
-
 }
