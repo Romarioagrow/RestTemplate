@@ -1,96 +1,110 @@
 <template>
     <div>
         <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
-        <v-row v-if="!loading">
-            <v-navigation-drawer class="mt-5" v-show="drawer" v-model="drawer" :mini-variant.sync="mini" width="500">
-                <v-list-item>
-                    <v-btn icon @click.stop="mini = !mini">
-                        <v-icon>mdi-shopping</v-icon>
-                    </v-btn>
-                    <v-container>
-                        <v-row>
-                            <v-col cols="10">
-                                <span><strong>{{ (group.charAt(0).toUpperCase() + group.substr(1)).replace('_',' ') }}</strong></span>
-                            </v-col>
-                            <v-col>
+
+        <v-navigation-drawer app width="350" v-if="showFilters">
+
+            <template v-slot:prepend>
+                <v-container>
+                    <v-row>
+                        <v-col>
+                            <span><strong>{{ (group.charAt(0).toUpperCase() + group.substr(1)).replace('_',' ') }}</strong></span>
+                        </v-col>
+                        <v-col cols="3">
+                            <v-btn icon @click="hideFilters()">
                                 <v-icon>mdi-chevron-left</v-icon>
-                            </v-col>
-                        </v-row>
-                        <v-expansion-panels multiple>
-                            <!--Автовывод фильтров-цен-->
-                            <v-expansion-panel class="mt-2">
-                                <v-expansion-panel-header >Цены</v-expansion-panel-header>
-                                <v-expansion-panel-content>
-                                    <v-card-text>
-                                        <v-row>
-                                            <v-col class="px-4">
-                                                <v-range-slider class="align-center" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
-                                                    <template v-slot:prepend>
-                                                        <v-text-field class="" @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
-                                                    </template>
-                                                    <template v-slot:append>
-                                                        <v-text-field class="" @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
-                                                    </template>
-                                                </v-range-slider>
-                                            </v-col>
-                                        </v-row>
-                                    </v-card-text>
-                                </v-expansion-panel-content>
-                            </v-expansion-panel>
-                            <!--Автовывод фильтров-брендов-->
-                            <v-expansion-panel class="mt-2" >
-                                <v-expansion-panel-header>Бренды</v-expansion-panel-header>
-                                <v-expansion-panel-content class="ml-3">
-                                    <div v-for="brand in twoColsBrands" >
-                                        <v-row>
-                                            <v-col class="p-0 m-0">
-                                                <v-checkbox @change="filterProducts()" v-model="selectedBrands" :label="brand.firstBrand" :value="brand.firstBrand" height="2"></v-checkbox>
-                                            </v-col>
-                                            <v-col class="p-0 m-0" v-if="brand.secondBrand !== undefined">
-                                                <v-checkbox @change="filterProducts()" v-model="selectedBrands" :label="brand.secondBrand" :value="brand.secondBrand" height="2"></v-checkbox>
-                                            </v-col>
-                                        </v-row>
-                                    </div>
-                                </v-expansion-panel-content>
-                            </v-expansion-panel>
-                            <!--Автовывод фильтров-диапазонов-->
-                            <v-expansion-panel class="mt-2" v-for="[key, val] of filtersDiapasons" :key="key" >
-                                <v-expansion-panel-header :class="{'red': val[1] === undefined}">{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
-                                <v-expansion-panel-content class="ml-3">
-                                    <v-row>
-                                        <v-col class="px-4">
-                                            <v-range-slider v-model="val" :min="val[0]" :max="val[1]" hide-details class="align-center" @end="filterProducts(key +':'+ val)">
-                                                <template v-slot:prepend>
-                                                    <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
-                                                </template>
-                                                <template v-slot:append>
-                                                    <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
-                                                </template>
-                                            </v-range-slider>
-                                        </v-col>
-                                    </v-row>
-                                </v-expansion-panel-content>
-                            </v-expansion-panel>
-                            <!--Автовывод фильтров-параметров-->
-                            <v-expansion-panel class="mt-2" v-for="[key, val] of filtersParams" :key="key">
-                                <v-expansion-panel-header>{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
-                                <v-expansion-panel-content class="ml-3">
-                                    <div v-for="(param, i) in val" :key="i" :brand="param">
-                                        <v-row>
-                                            <v-col class="p-0 m-0">
-                                                <v-checkbox @change="filterProducts()" v-model="selectedParams" :label="param" :value="key +': '+param" height="2"></v-checkbox>
-                                            </v-col>
-                                        </v-row>
-                                    </div>
-                                </v-expansion-panel-content>
-                            </v-expansion-panel>
-                        </v-expansion-panels>
-                    </v-container>
-                </v-list-item>
-            </v-navigation-drawer>
-            <!---->
-            <v-item-group multiple>
-                <v-container fluid>
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </template>
+
+            <v-divider></v-divider>
+
+            <v-card-actions>
+                <v-expansion-panels multiple>
+
+                    <v-expansion-panel>
+                        <v-expansion-panel-header >Цены</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <v-card-text>
+                                <v-row>
+                                    <v-col>
+                                        <v-range-slider class="align-center" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
+                                            <template v-slot:prepend>
+                                                <v-text-field class="" @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
+                                            </template>
+                                            <template v-slot:append>
+                                                <v-text-field class="" @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
+                                            </template>
+                                        </v-range-slider>
+                                    </v-col>
+                                </v-row>
+                            </v-card-text>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>Бренды</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <div v-for="brand in twoColsBrands" >
+                                <v-row>
+                                    <v-col class="p-0 m-0">
+                                        <v-checkbox @change="filterProducts()" v-model="selectedBrands" :label="brand.firstBrand" :value="brand.firstBrand" height="2"></v-checkbox>
+                                    </v-col>
+                                    <v-col class="p-0 m-0" v-if="brand.secondBrand !== undefined">
+                                        <v-checkbox @change="filterProducts()" v-model="selectedBrands" :label="brand.secondBrand" :value="brand.secondBrand" height="2"></v-checkbox>
+                                    </v-col>
+                                </v-row>
+                            </div>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+
+                    <v-expansion-panel v-for="[key, val] of filtersDiapasons" :key="key" >
+                        <v-expansion-panel-header :class="{'red': val[1] === undefined}">{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <v-row>
+                                <v-col>
+                                    <v-range-slider v-model="val" :min="val[0]" :max="val[1]" hide-details class="align-center" @end="filterProducts(key +':'+ val)">
+                                        <template v-slot:prepend>
+                                            <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                        </template>
+                                        <template v-slot:append>
+                                            <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                        </template>
+                                    </v-range-slider>
+                                </v-col>
+                            </v-row>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+
+                    <v-expansion-panel v-for="[key, val] of filtersParams" :key="key">
+                        <v-expansion-panel-header>{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <div v-for="(param, i) in val" :key="i" :brand="param">
+                                <v-row>
+                                    <v-col class="p-0 m-0">
+                                        <v-checkbox @change="filterProducts()" v-model="selectedParams" :label="param" :value="key +': '+param" height="2"></v-checkbox>
+                                    </v-col>
+                                </v-row>
+                            </div>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+            </v-card-actions>
+        </v-navigation-drawer>
+
+
+
+
+            <b-container fluid fill-height>
+
+                <v-row>
+                    <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
+                </v-row>
+
+
+                <!--<b-container>
                     <v-row>
                         <v-col>
                             <router-link to="/">
@@ -106,14 +120,15 @@
                             <v-btn depressed disabled text small>{{linkProductGroup}}</v-btn>
                         </v-col>
                     </v-row>
-                    <!---->
+
                     <strong class="ml-3" v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</strong>
+
                     <v-row class="mt-1 ml-1" v-if="totalPages !== 1">
                         <div class="text-center">
                             <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="7" @input="loadPage(page)"></v-pagination>
                         </div>
                     </v-row>
-                    <!---->
+
                     <v-sheet class="mx-auto mt-2">
                         <v-slide-group multiple show-arrows>
                             <v-slide-item v-for="feature in filtersFeats" :key="feature" v-slot:default="{ active, toggle }">
@@ -123,18 +138,161 @@
                             </v-slide-item>
                         </v-slide-group>
                     </v-sheet>
+
                     <v-row>
                         <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
                     </v-row>
+
                     <v-row>
                         <div class="text-center" v-if="totalPages !== 1">
                             <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="7" @input="loadPage(page)"></v-pagination>
                         </div>
                     </v-row>
-                </v-container>
-            </v-item-group>
-        </v-row>
+                </b-container>-->
+            </b-container>
+
+
+
     </div>
+
+
+
+    <!-- <div>
+         <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
+         <v-row v-if="!loading">
+             <v-navigation-drawer class="mt-5" v-show="drawer" v-model="drawer" :mini-variant.sync="mini" width="500">
+                 <v-list-item>
+                     <v-btn icon @click.stop="mini = !mini">
+                         <v-icon>mdi-shopping</v-icon>
+                     </v-btn>
+                     <v-container>
+                         <v-row>
+                             <v-col cols="10">
+                                 <span><strong>{{ (group.charAt(0).toUpperCase() + group.substr(1)).replace('_',' ') }}</strong></span>
+                             </v-col>
+                             <v-col>
+                                 <v-icon>mdi-chevron-left</v-icon>
+                             </v-col>
+                         </v-row>
+                         <v-expansion-panels multiple>
+                             &lt;!&ndash;Автовывод фильтров-цен&ndash;&gt;
+                             <v-expansion-panel class="mt-2">
+                                 <v-expansion-panel-header >Цены</v-expansion-panel-header>
+                                 <v-expansion-panel-content>
+                                     <v-card-text>
+                                         <v-row>
+                                             <v-col class="px-4">
+                                                 <v-range-slider class="align-center" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
+                                                     <template v-slot:prepend>
+                                                         <v-text-field class="" @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
+                                                     </template>
+                                                     <template v-slot:append>
+                                                         <v-text-field class="" @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
+                                                     </template>
+                                                 </v-range-slider>
+                                             </v-col>
+                                         </v-row>
+                                     </v-card-text>
+                                 </v-expansion-panel-content>
+                             </v-expansion-panel>
+                             &lt;!&ndash;Автовывод фильтров-брендов&ndash;&gt;
+                             <v-expansion-panel class="mt-2" >
+                                 <v-expansion-panel-header>Бренды</v-expansion-panel-header>
+                                 <v-expansion-panel-content class="ml-3">
+                                     <div v-for="brand in twoColsBrands" >
+                                         <v-row>
+                                             <v-col class="p-0 m-0">
+                                                 <v-checkbox @change="filterProducts()" v-model="selectedBrands" :label="brand.firstBrand" :value="brand.firstBrand" height="2"></v-checkbox>
+                                             </v-col>
+                                             <v-col class="p-0 m-0" v-if="brand.secondBrand !== undefined">
+                                                 <v-checkbox @change="filterProducts()" v-model="selectedBrands" :label="brand.secondBrand" :value="brand.secondBrand" height="2"></v-checkbox>
+                                             </v-col>
+                                         </v-row>
+                                     </div>
+                                 </v-expansion-panel-content>
+                             </v-expansion-panel>
+                             &lt;!&ndash;Автовывод фильтров-диапазонов&ndash;&gt;
+                             <v-expansion-panel class="mt-2" v-for="[key, val] of filtersDiapasons" :key="key" >
+                                 <v-expansion-panel-header :class="{'red': val[1] === undefined}">{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
+                                 <v-expansion-panel-content class="ml-3">
+                                     <v-row>
+                                         <v-col class="px-4">
+                                             <v-range-slider v-model="val" :min="val[0]" :max="val[1]" hide-details class="align-center" @end="filterProducts(key +':'+ val)">
+                                                 <template v-slot:prepend>
+                                                     <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                 </template>
+                                                 <template v-slot:append>
+                                                     <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                                 </template>
+                                             </v-range-slider>
+                                         </v-col>
+                                     </v-row>
+                                 </v-expansion-panel-content>
+                             </v-expansion-panel>
+                             &lt;!&ndash;Автовывод фильтров-параметров&ndash;&gt;
+                             <v-expansion-panel class="mt-2" v-for="[key, val] of filtersParams" :key="key">
+                                 <v-expansion-panel-header>{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
+                                 <v-expansion-panel-content class="ml-3">
+                                     <div v-for="(param, i) in val" :key="i" :brand="param">
+                                         <v-row>
+                                             <v-col class="p-0 m-0">
+                                                 <v-checkbox @change="filterProducts()" v-model="selectedParams" :label="param" :value="key +': '+param" height="2"></v-checkbox>
+                                             </v-col>
+                                         </v-row>
+                                     </div>
+                                 </v-expansion-panel-content>
+                             </v-expansion-panel>
+                         </v-expansion-panels>
+                     </v-container>
+                 </v-list-item>
+             </v-navigation-drawer>
+             &lt;!&ndash;&ndash;&gt;
+             <v-item-group multiple>
+                 <v-container fluid>
+                     <v-row>
+                         <v-col>
+                             <router-link to="/">
+                                 <v-btn depressed text small>Каталог</v-btn>
+                             </router-link>
+                         </v-col>
+                         <v-col>
+                             <router-link to="/">
+                                 <v-btn depressed text small>{{linkCategory}}</v-btn>
+                             </router-link>
+                         </v-col>
+                         <v-col>
+                             <v-btn depressed disabled text small>{{linkProductGroup}}</v-btn>
+                         </v-col>
+                     </v-row>
+                     &lt;!&ndash;&ndash;&gt;
+                     <strong class="ml-3" v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</strong>
+                     <v-row class="mt-1 ml-1" v-if="totalPages !== 1">
+                         <div class="text-center">
+                             <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="7" @input="loadPage(page)"></v-pagination>
+                         </div>
+                     </v-row>
+                     &lt;!&ndash;&ndash;&gt;
+                     <v-sheet class="mx-auto mt-2">
+                         <v-slide-group multiple show-arrows>
+                             <v-slide-item v-for="feature in filtersFeats" :key="feature" v-slot:default="{ active, toggle }">
+                                 <v-btn class="mx-2"  :input-value="active" active-class="purple white text" depressed rounded @click="toggle" @mousedown="filterProducts(feature)">
+                                     {{ feature }}
+                                 </v-btn>
+                             </v-slide-item>
+                         </v-slide-group>
+                     </v-sheet>
+                     <v-row>
+                         <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
+                     </v-row>
+                     <v-row>
+                         <div class="text-center" v-if="totalPages !== 1">
+                             <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="7" @input="loadPage(page)"></v-pagination>
+                         </div>
+                     </v-row>
+                 </v-container>
+             </v-item-group>
+         </v-row>
+     </div>-->
 </template>
 
 <script>
@@ -144,6 +302,7 @@
         components: {ProductCard},
         data() {
             return {
+                showFilters: true,
                 loading: true,
                 products: [],
                 selectedBrands: [],
@@ -264,6 +423,10 @@
                     this.totalPages = response.data.totalPages
                     this.totalProductsFound = response.data.totalElements
                 })
+            },
+            hideFilters() {
+                this.showFilters = false
+                this.$store.dispatch('showFilters')
             }
         }
     }

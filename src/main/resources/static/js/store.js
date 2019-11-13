@@ -9,7 +9,8 @@ export default new Vuex.Store({
     state: {
         currentUser: null,
         currentOrder: null,
-        orderedProducts: []
+        orderedProducts: [],
+        filtersClosedButton: false
     },
     mutations: {
         setCurrentUser(currentState, user) {
@@ -32,6 +33,12 @@ export default new Vuex.Store({
         },
         clearOrderedProducts(currentState) {
             currentState.orderedProducts = []
+        },
+        hideFiltersButton(currentState) {
+            currentState.filtersClosedButton = false
+        },
+        showFiltersButton(currentState) {
+            currentState.filtersClosedButton = true
         }
 
     },
@@ -75,6 +82,12 @@ export default new Vuex.Store({
         },
         clearOrderedProducts(context) {
             context.commit('clearOrderedProducts')
+        },
+        hideFilters(context) {
+            context.commit('hideFiltersButton')
+        },
+        showFilters(context) {
+            context.commit('showFiltersButton')
         }
     },
     plugins: [createPersistedState()]

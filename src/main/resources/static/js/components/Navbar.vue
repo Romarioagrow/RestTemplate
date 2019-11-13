@@ -2,11 +2,14 @@
     <div>
         <v-app-bar color="#f48337" dark app height="70" src="http://www.picshare.ru/uploads/191113/6b5152mGVs.jpg">
 
+            <!--<v-btn outlined class="mr-3" v-if="filtersClosed">Фильтры</v-btn>-->
+
+
             <router-link to="/">
                 <v-app-bar-nav-icon></v-app-bar-nav-icon>
             </router-link>
 
-            <v-toolbar-title class="mr-5">
+            <v-toolbar-title>
                 <router-link to="/">
                     <v-img src="http://www.picshare.ru/uploads/191113/E699PhEOi3.png" contain height="60"></v-img>
                 </router-link>
@@ -103,6 +106,9 @@
             },
             admin() {
                 return this.$store.state.currentUser && this.$store.state.currentUser.roles.includes('ADMIN')
+            },
+            filtersClosed() {
+                return this.$store.state.filtersClosedButton
             }
         }
     }
