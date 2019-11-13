@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-app-bar color="#f48337" dark app height="70" src="http://www.picshare.ru/uploads/191113/6b5152mGVs.jpg">
+        <v-app-bar color="#f48337" dark :clipped-left="$vuetify.breakpoint.lgAndUp" app height="70" src="http://www.picshare.ru/uploads/191113/6b5152mGVs.jpg">
 
             <!--<v-btn outlined class="mr-3" v-if="filtersClosed">Фильтры</v-btn>-->
 

@@ -2,7 +2,7 @@
     <div>
         <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
 
-        <v-navigation-drawer app width="350" v-if="showFilters">
+        <v-navigation-drawer app width="350" v-if="showFilters" :clipped="$vuetify.breakpoint.lgAndUp">
 
             <template v-slot:prepend>
                 <v-container>
