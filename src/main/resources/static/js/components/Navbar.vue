@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-app-bar color="#343a40" dark>
+        <v-app-bar color="#343a40" dark app height="70" src="static/js/assets/img/components/navpic.jpg">
 
             <router-link to="/" class="mr-5">
                 <v-app-bar-nav-icon></v-app-bar-nav-icon>

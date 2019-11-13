@@ -3,19 +3,16 @@
         <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
         <b-container fluid class="flu">
             <div v-if="!loading" class="indent">
-                <h1>
-                    Каталог товаров
-                </h1>
-                <v-tabs center-active  show-arrows :centered="true" :icons-and-text="true">
+                <v-tabs center-active show-arrows :centered="true" :icons-and-text="true">
                     <v-tabs-slider color="#e52d00"></v-tabs-slider>
                     <v-tab v-for="(value, key, index) of allCategories" :key="index" :href="'#tab-' + index">
                         {{key}}
                         <v-icon>{{icons[index]}}</v-icon>
                     </v-tab>
-                    <v-tab-item class="mt-3" v-for="(value, key, index) of allCategories" :key="index" :value="'tab-' + index">
+                    <v-tab-item class="mt-3 mb-3" v-for="(value, key, index) of allCategories" :key="index" :value="'tab-' + index">
                         <v-card flat tile>
                             <v-item-group>
-                                <v-row align="start" justify="space-between" class="bkcl">
+                                <v-row align="center" justify="space-between" class="bkcl">
                                     <catalog-groups v-for="group in value" :key="group[0]" :group="group" ></catalog-groups>
                                 </v-row>
                             </v-item-group>
@@ -76,5 +73,8 @@
     }
     .flu {
         width: 95%;
+    }
+    .navbr {
+        width: 70%;
     }
 </style>
