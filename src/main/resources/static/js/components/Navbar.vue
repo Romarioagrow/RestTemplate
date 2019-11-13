@@ -1,12 +1,18 @@
 <template>
     <div>
-        <v-app-bar color="#343a40" dark app height="70" src="static/js/assets/img/components/navpic.jpg">
+        <v-app-bar color="#f48337" dark app height="70" src="http://www.picshare.ru/uploads/191113/6b5152mGVs.jpg">
 
-            <router-link to="/" class="mr-5">
+            <router-link to="/">
                 <v-app-bar-nav-icon></v-app-bar-nav-icon>
             </router-link>
 
-            <v-toolbar-title style="color:#e52d00;">Expert</v-toolbar-title>
+            <v-toolbar-title class="mr-5">
+                <router-link to="/">
+                    <v-img src="http://www.picshare.ru/uploads/191113/E699PhEOi3.png" contain height="60"></v-img>
+                </router-link>
+            </v-toolbar-title>
+
+            <v-spacer></v-spacer>
 
             <v-autocomplete
                     v-model="select"
@@ -23,8 +29,10 @@
                     @keyup="search()"
             ></v-autocomplete>
 
+            <v-spacer></v-spacer>
+
             <router-link to="/order" class="ml-5">
-                <v-btn>
+                <v-btn tile outlined>
                     <span>Корзина</span>
                     <v-icon>mdi-cart</v-icon>
                 </v-btn>
@@ -32,13 +40,13 @@
 
             <div v-if="!admin">
                 <router-link to="/user/cabinet" class="ml-5" v-if="auth">
-                    <v-btn>
+                    <v-btn tile outlined>
                         <span>Личный кабинет</span>
                         <v-icon>mdi-account</v-icon>
                     </v-btn>
                 </router-link>
                 <router-link to="/login" class="ml-5" v-else>
-                    <v-btn>
+                    <v-btn tile outlined>
                         <span>Вход</span>
                         <v-icon>mdi-login-variant</v-icon>
                     </v-btn>

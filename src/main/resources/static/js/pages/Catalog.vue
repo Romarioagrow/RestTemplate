@@ -25,8 +25,10 @@
 </template>
 
 <script>
-    import CatalogGroups from "components/CatalogGroups.vue";
+    import CatalogGroups from "components/CatalogGroups.vue"
     import catalogJSON from 'assets/json/catalog.json'
+
+
     export default {
         components: {
             CatalogGroups
@@ -53,7 +55,10 @@
                     'mdi-bike',
                     'mdi-coffee',
                     'mdi-archive'
-                ]
+                ],
+                /*pics: [
+                    {navpic: require('@/assets/img/logo.png')},
+                ]*/
             }
         },
         created() {
@@ -64,7 +69,6 @@
 </script>
 <style scoped>
     .indent {
-        padding-top: 2rem;
         padding-left: 8rem;
         padding-right: 8rem;
     }
