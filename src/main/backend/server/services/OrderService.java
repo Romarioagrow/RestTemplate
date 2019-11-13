@@ -134,21 +134,27 @@ public class OrderService {
         return payloadOrderData(order);
 
         /*LinkedList<Object> payload = new LinkedList<>();
-        Map<String, Integer> orderedProducts = new LinkedHashMap<>();*/
+        Map<String, Integer> orderedProducts = new LinkedHashMap<>();
 
-        /*order.getOrderedProducts().forEach((productID, amount) -> {
+        order.getOrderedProducts().forEach((productID, amount) -> {
             try {
                 Product product = getProduct(productID);
                 if (product != null) {
                     String productJson = new ObjectMapper().writeValueAsString(product);
                     orderedProducts.put(productJson, amount);
                 }
-                else {
+                else
+                    {
                     OriginalProduct originalProduct = originalRepo.findByProductID(productID);
+                    *//*Цена заказа с вычетом удаленного продукта*//*
                     order.setTotalPrice(order.getTotalPrice() - originalProduct.getFinalPrice() * amount);
+                    *//*Бонус заказа с вычетом удаленного продукта*//*
                     order.setTotalBonus(order.getTotalBonus() - originalProduct.getBonus() * amount);
+
+                    *//**//*
                     if (order.getDiscount() != null) {
                         order.setTotalPrice(order.getTotalPrice() + order.getDiscount());
+
                         if (user != null) {
                             order.setDiscount(null);
                             order.setDiscountPrice(null);
@@ -165,9 +171,9 @@ public class OrderService {
             catch (NullPointerException e) {
                 e.getStackTrace();
             }
-        });*/
+        });
 
-        /*orderedProducts.forEach((s, integer) -> {
+        orderedProducts.forEach((s, integer) -> {
             log.info(s + " " + integer.toString());
         });
 

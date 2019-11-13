@@ -1,5 +1,4 @@
 package server.services;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 import lombok.AllArgsConstructor;
@@ -13,10 +12,7 @@ import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import server.config.AliasConfig;
-import server.domain.OriginalProduct;
-import server.domain.Product;
-import server.domain.UniqueBrand;
-import server.domain.User;
+import server.domain.*;
 import server.repos.*;
 
 import java.io.*;
@@ -47,6 +43,7 @@ public class ProductBuilder {
     public void updateProductsDB(MultipartFile excelFile) throws FileNotFoundException {
         try
         {
+            System.out.println();
             log.info(excelFile.getOriginalFilename());
 
             parseSupplierFile(excelFile);
@@ -69,46 +66,88 @@ public class ProductBuilder {
     }
 
     private void checkOrdersForProductAvailable() {
-        /*Удлаить из корзины всех неподверэженных заказов исчезжнувшие product после обновления бд*/
         orderRepo.findAllByAcceptedFalse().forEach(order -> {
+            order.getOrderedProducts().entrySet().removeIf(orderedEntry -> productRepo.findByProductID(orderedEntry.getKey()) == null);
 
-            //log.info(order);
-
-            order.getOrderedProducts().forEach((productID, amount) -> {
-                try {
-                    Product product = productRepo.findByProductID(productID);
-
-                    /*Откат цен заказа*/
-                    if (product == null) {
-                        OriginalProduct originalProduct = originalRepo.findByProductID(productID);
-                        order.setTotalPrice(order.getTotalPrice() - originalProduct.getFinalPrice() * amount);
-                        order.setTotalBonus(order.getTotalBonus() - originalProduct.getBonus() * amount);
-
-                        /*Откат скидки заказа и пользователя*/
-                        if (order.getDiscount() != null) {
-                            order.setTotalPrice(order.getTotalPrice() + order.getDiscount());
-                            User user = order.getUser();
-                            if (order.getUser() != null) {
-                                order.setDiscount(null);
-                                order.setDiscountPrice(null);
-                                user.setBonus(user.getBonus() + originalProduct.getBonus() * amount);
-                                userRepo.save(user);
-                            }
-
-                        }
-
-                        order.getOrderedProducts().remove(productID);
-                        orderRepo.save(order);
-                    }
-                }
-                catch (NullPointerException e) {
-                    e.getStackTrace();
-                }
+            AtomicInteger totalPrice = new AtomicInteger(), bonus = new AtomicInteger();
+            order.getOrderedProducts().forEach((productID, amount) ->
+            {
+                Product product = productRepo.findByProductID(productID);
+                totalPrice.addAndGet(product.getFinalPrice() * amount);
+                bonus.addAndGet(product.getBonus() * amount);
             });
+
+            order.setTotalPrice(totalPrice.get());
+            order.setTotalBonus(bonus.get());
+            orderRepo.save(order);
         });
+        //orderRepo.findAllByAcceptedFalse().forEach(order -> log.info(order.getOrderedProducts().size() + ""));
     }
 
-    /*Создать-обновить каталог в JSON и сохранить в папку*/
+    /*private void checkOrdersForProductAvailable() {
+        log.info("Проверка наличия товаров в заказах");
+
+        *//*Удлаить из корзины всех неподверэженных заказов исчезжнувшие product после обновления бд*//*
+        for (Order order : orderRepo.findAllByAcceptedFalse()) {
+
+            System.out.println();
+            //log.info(order.toString());
+
+            Map<String, Integer> pair = order.getOrderedProducts();
+            log.info(pair.toString());
+            log.info(pair.size() + "");
+
+            for (Map.Entry<String, Integer> entry : pair.entrySet()) {
+
+                log.info("Key in entry " + entry.getKey());
+
+                String productID = entry.getKey();
+                Integer amount = entry.getValue();
+
+                log.info((productRepo.findByProductID(productID) == null) + "");
+
+                *//*Product product = productRepo.findByProductID(productID);
+
+                log.info(product.toString());
+                log.info((product == null) + "");*//*
+
+                *//*Откат цен заказа*//*
+                if (productRepo.findByProductID(productID) == null) {
+
+                    log.info("PRODUCT IS NULL");
+
+                    OriginalProduct originalProduct = originalRepo.findByProductID(productID);
+                    order.setTotalPrice(order.getTotalPrice() - originalProduct.getFinalPrice() * amount);
+                    order.setTotalBonus(order.getTotalBonus() - originalProduct.getBonus() * amount);
+
+                    *//*Откат скидки заказа и пользователя*//*
+                    if (order.getDiscount() != null) {
+                        order.setTotalPrice(order.getTotalPrice() + order.getDiscount());
+                        User user = order.getUser();
+                        if (order.getUser() != null) {
+                            order.setDiscount(null);
+                            order.setDiscountPrice(null);
+                            user.setBonus(user.getBonus() + originalProduct.getBonus() * amount);
+                            userRepo.save(user);
+                        }
+                    }
+
+                    Map<String, Integer> ordered = order.getOrderedProducts();
+                    ordered.remove(productID);
+                    order.setOrderedProducts(ordered);
+                    orderRepo.save(order);
+                }
+
+            }
+
+        }
+
+        log.info("///");
+        orderRepo.findAllByAcceptedFalse().forEach(order -> log.info(order.getOrderedProducts().toString()));
+
+    }*/
+
+    /*Обновить каталог в JSON и сохранить в папку*/
     public void mapCatalogJSON() throws IOException {
         LinkedHashMap<String, List<ArrayList<String>>> fullCatalog = new LinkedHashMap<>();
         String[] categories = {
@@ -191,6 +230,7 @@ public class ProductBuilder {
 
     private void matchProductDetails() throws FileNotFoundException {
         log.info("Маппинг группы и параметров...");
+
         int countJSON = 0, countDefault = 0;
         List<OriginalProduct> originalProducts = originalRepo.findByUpdateDate(LocalDate.now());
         LinkedHashMap<String, String> aliases = aliasConfig.aliasesMap();
@@ -265,7 +305,9 @@ public class ProductBuilder {
         product.setBrand(originalBrand);
         product.setUpdateDate(LocalDate.now());
 
-        //if (originalProduct.get)
+        originalProduct.setFinalPrice(finalPrice);
+        originalProduct.setBonus(bonus);
+        originalRepo.save(originalProduct);
 
         return product;
     }

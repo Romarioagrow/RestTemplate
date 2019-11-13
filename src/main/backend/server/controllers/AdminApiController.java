@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import server.domain.Order;
 import server.domain.User;
 import server.repos.OriginalRepo;
+import server.repos.ProductRepo;
 import server.services.OrderService;
 import server.services.ProductBuilder;
 import java.io.FileNotFoundException;
@@ -24,6 +25,7 @@ public class AdminApiController {
     private final ProductBuilder productBuilder;
     private final OrderService orderService;
     private final OriginalRepo originalRepo;
+    private final ProductRepo productRepo;
 
     @PostMapping("/deleteOrder")
     private List<Order> deleteOrder(@RequestBody String orderID) {
@@ -95,10 +97,58 @@ public class AdminApiController {
     private void uploadProductsDBFile(@AuthenticationPrincipal User user) {
         log.info("TEST USER: " + user.getFirstName());
         //productBuilder.test();
-        originalRepo.findAll().forEach(originalProduct -> {
+
+        Runnable taskOriginal = () -> {
+            String threadName = Thread.currentThread().getName();
+            System.out.println("thread  " + threadName);
+
+            originalRepo.findAll().forEach(originalProduct -> {
+                originalProduct.setUpdateDate(LocalDate.ofYearDay(2019,50));
+                originalRepo.save(originalProduct);
+                log.info("original " + originalProduct.getUpdateDate().toString());
+            });
+
+        };
+
+        taskOriginal.run();
+        new Thread(taskOriginal).start();
+
+        Runnable taskProducts = () -> {
+            String threadName = Thread.currentThread().getName();
+            System.out.println("thread  " + threadName);
+
+            productRepo.findAll().forEach(product -> {
+                product.setUpdateDate(LocalDate.ofYearDay(2019,50));
+                productRepo.save(product);
+                log.info("product " + product.getUpdateDate().toString());
+            });
+
+
+        };
+
+
+
+        taskProducts.run();
+        new Thread(taskProducts).start();
+
+
+        /*Thread thread = new Thread(task);
+        thread.start();*/
+
+
+
+
+
+        /*originalRepo.findAll().forEach(originalProduct -> {
             originalProduct.setUpdateDate(LocalDate.ofYearDay(2019,50));
             originalRepo.save(originalProduct);
             log.info(originalProduct.getUpdateDate().toString());
-        });
+        });*/
+
+        /*productRepo.findAll().forEach(product -> {
+            product.setUpdateDate(LocalDate.ofYearDay(2019,50));
+            productRepo.save(product);
+            log.info(product.getUpdateDate().toString());
+        });*/
     }
 }
