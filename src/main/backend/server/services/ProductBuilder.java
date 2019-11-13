@@ -38,9 +38,8 @@ public class ProductBuilder {
     private final AliasConfig aliasConfig;
     private final BrandsRepo brandsRepo;
     private final OrderRepo orderRepo;
-    private final UserRepo userRepo;
 
-    public void updateProductsDB(MultipartFile excelFile) throws FileNotFoundException {
+    public void updateProductsDB(MultipartFile excelFile) {
         try
         {
             System.out.println();
@@ -81,71 +80,7 @@ public class ProductBuilder {
             order.setTotalBonus(bonus.get());
             orderRepo.save(order);
         });
-        //orderRepo.findAllByAcceptedFalse().forEach(order -> log.info(order.getOrderedProducts().size() + ""));
     }
-
-    /*private void checkOrdersForProductAvailable() {
-        log.info("Проверка наличия товаров в заказах");
-
-        *//*Удлаить из корзины всех неподверэженных заказов исчезжнувшие product после обновления бд*//*
-        for (Order order : orderRepo.findAllByAcceptedFalse()) {
-
-            System.out.println();
-            //log.info(order.toString());
-
-            Map<String, Integer> pair = order.getOrderedProducts();
-            log.info(pair.toString());
-            log.info(pair.size() + "");
-
-            for (Map.Entry<String, Integer> entry : pair.entrySet()) {
-
-                log.info("Key in entry " + entry.getKey());
-
-                String productID = entry.getKey();
-                Integer amount = entry.getValue();
-
-                log.info((productRepo.findByProductID(productID) == null) + "");
-
-                *//*Product product = productRepo.findByProductID(productID);
-
-                log.info(product.toString());
-                log.info((product == null) + "");*//*
-
-                *//*Откат цен заказа*//*
-                if (productRepo.findByProductID(productID) == null) {
-
-                    log.info("PRODUCT IS NULL");
-
-                    OriginalProduct originalProduct = originalRepo.findByProductID(productID);
-                    order.setTotalPrice(order.getTotalPrice() - originalProduct.getFinalPrice() * amount);
-                    order.setTotalBonus(order.getTotalBonus() - originalProduct.getBonus() * amount);
-
-                    *//*Откат скидки заказа и пользователя*//*
-                    if (order.getDiscount() != null) {
-                        order.setTotalPrice(order.getTotalPrice() + order.getDiscount());
-                        User user = order.getUser();
-                        if (order.getUser() != null) {
-                            order.setDiscount(null);
-                            order.setDiscountPrice(null);
-                            user.setBonus(user.getBonus() + originalProduct.getBonus() * amount);
-                            userRepo.save(user);
-                        }
-                    }
-
-                    Map<String, Integer> ordered = order.getOrderedProducts();
-                    ordered.remove(productID);
-                    order.setOrderedProducts(ordered);
-                    orderRepo.save(order);
-                }
-
-            }
-
-        }
-
-        log.info("///");
-        orderRepo.findAllByAcceptedFalse().forEach(order -> log.info(order.getOrderedProducts().toString()));
-
-    }*/
 
     /*Обновить каталог в JSON и сохранить в папку*/
     public void mapCatalogJSON() throws IOException {
@@ -185,7 +120,6 @@ public class ProductBuilder {
         new ObjectMapper().writeValue(new File("D:\\Projects\\Rest\\src\\main\\resources\\static\\js\\assets\\json\\catalog.json"), fullCatalog);
     }
 
-    /*#0*/
     /*Обновление данных таблицы поставщиков*/
     private void parseSupplierFile(MultipartFile excelFile) {
         if (!Objects.requireNonNull(excelFile.getOriginalFilename()).isEmpty())
@@ -308,7 +242,6 @@ public class ProductBuilder {
         originalProduct.setFinalPrice(finalPrice);
         originalProduct.setBonus(bonus);
         originalRepo.save(originalProduct);
-
         return product;
     }
 

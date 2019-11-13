@@ -65,12 +65,7 @@ public class AdminApiController {
 
     @PostMapping("/uploadFileDB")
     private void uploadProductsDBFile(@RequestParam("file") MultipartFile file) {
-        try {
-            productBuilder.updateProductsDB(file);
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        productBuilder.updateProductsDB(file);
     }
 
     @PostMapping("/updateCatalog")
@@ -99,9 +94,6 @@ public class AdminApiController {
         //productBuilder.test();
 
         Runnable taskOriginal = () -> {
-            String threadName = Thread.currentThread().getName();
-            System.out.println("thread  " + threadName);
-
             originalRepo.findAll().forEach(originalProduct -> {
                 originalProduct.setUpdateDate(LocalDate.ofYearDay(2019,50));
                 originalRepo.save(originalProduct);
@@ -109,46 +101,17 @@ public class AdminApiController {
             });
 
         };
-
         taskOriginal.run();
         new Thread(taskOriginal).start();
 
         Runnable taskProducts = () -> {
-            String threadName = Thread.currentThread().getName();
-            System.out.println("thread  " + threadName);
-
             productRepo.findAll().forEach(product -> {
                 product.setUpdateDate(LocalDate.ofYearDay(2019,50));
                 productRepo.save(product);
                 log.info("product " + product.getUpdateDate().toString());
             });
-
-
         };
-
-
-
         taskProducts.run();
         new Thread(taskProducts).start();
-
-
-        /*Thread thread = new Thread(task);
-        thread.start();*/
-
-
-
-
-
-        /*originalRepo.findAll().forEach(originalProduct -> {
-            originalProduct.setUpdateDate(LocalDate.ofYearDay(2019,50));
-            originalRepo.save(originalProduct);
-            log.info(originalProduct.getUpdateDate().toString());
-        });*/
-
-        /*productRepo.findAll().forEach(product -> {
-            product.setUpdateDate(LocalDate.ofYearDay(2019,50));
-            productRepo.save(product);
-            log.info(product.getUpdateDate().toString());
-        });*/
     }
 }

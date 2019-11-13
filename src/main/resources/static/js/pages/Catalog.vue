@@ -1,31 +1,27 @@
 <template>
     <div>
         <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
-        <b-container fluid>
+        <b-container fluid class="flu">
             <div v-if="!loading" class="indent">
                 <h1>
                     Каталог товаров
                 </h1>
-                <v-card>
-                    <v-tabs center-active dark show-arrows background-color="#635A4F" :centered="true" :icons-and-text="true">
-                        <v-tabs-slider color="#e52d00"></v-tabs-slider>
-                        <v-tab v-for="(value, key, index) of allCategories" :key="index" :href="'#tab-' + index">
-                            {{key}}
-                            <v-icon>{{icons[index]}}</v-icon>
-                        </v-tab>
-                        <v-tab-item v-for="(value, key, index) of allCategories" :key="index" :value="'tab-' + index">
-                            <v-card flat tile>
-                                <v-item-group>
-                                    <b-container fluid>
-                                        <v-row align="stretch" justify="space-around">
-                                            <catalog-groups v-for="group in value" :key="group[0]" :group="group" ></catalog-groups>
-                                        </v-row>
-                                    </b-container>
-                                </v-item-group>
-                            </v-card>
-                        </v-tab-item>
-                    </v-tabs>
-                </v-card>
+                <v-tabs center-active  show-arrows :centered="true" :icons-and-text="true">
+                    <v-tabs-slider color="#e52d00"></v-tabs-slider>
+                    <v-tab v-for="(value, key, index) of allCategories" :key="index" :href="'#tab-' + index">
+                        {{key}}
+                        <v-icon>{{icons[index]}}</v-icon>
+                    </v-tab>
+                    <v-tab-item class="mt-3" v-for="(value, key, index) of allCategories" :key="index" :value="'tab-' + index">
+                        <v-card flat tile>
+                            <v-item-group>
+                                <v-row align="start" justify="space-between" class="bkcl">
+                                    <catalog-groups v-for="group in value" :key="group[0]" :group="group" ></catalog-groups>
+                                </v-row>
+                            </v-item-group>
+                        </v-card>
+                    </v-tab-item>
+                </v-tabs>
             </div>
         </b-container>
     </div>
@@ -74,5 +70,11 @@
         padding-top: 2rem;
         padding-left: 8rem;
         padding-right: 8rem;
+    }
+    .bkcl {
+        background-color: #fafafa;
+    }
+    .flu {
+        width: 95%;
     }
 </style>

@@ -1,10 +1,13 @@
 <template>
-    <router-link :to="path">
-        <v-card class="mx-auto mt-3" width="300" height="300">
-            <v-img class="white--text w-50" :src="group[1]" contain width="200" height="200"></v-img>
+    <router-link :to="path" class="mt-4 mr-2">
+        <v-card width="225" height="225">
             <v-card-title>
-                <div>{{group[0]}}</div>
+                <v-img class="white--text" :src="group[1]" contain height="125" ></v-img>
             </v-card-title>
+
+            <v-card-text>
+                <p class="font-weight-bold text-center">{{group[0]}}</p>
+            </v-card-text>
         </v-card>
     </router-link>
 </template>

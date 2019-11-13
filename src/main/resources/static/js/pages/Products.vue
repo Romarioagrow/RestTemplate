@@ -92,17 +92,17 @@
             <v-item-group multiple>
                 <v-container fluid>
                     <v-row>
-                        <v-col cols="3">
+                        <v-col>
                             <router-link to="/">
                                 <v-btn depressed text small>Каталог</v-btn>
                             </router-link>
                         </v-col>
-                        <v-col cols="3">
+                        <v-col>
                             <router-link to="/">
                                 <v-btn depressed text small>{{linkCategory}}</v-btn>
                             </router-link>
                         </v-col>
-                        <v-col cols="3">
+                        <v-col>
                             <v-btn depressed disabled text small>{{linkProductGroup}}</v-btn>
                         </v-col>
                     </v-row>
