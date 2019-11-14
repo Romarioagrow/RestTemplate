@@ -10,7 +10,8 @@ export default new Vuex.Store({
         currentUser: null,
         currentOrder: null,
         orderedProducts: [],
-        filtersClosedButton: false
+        filtersClosedButton: false,
+        showSearchedArea: false
     },
     mutations: {
         setCurrentUser(currentState, user) {
@@ -39,6 +40,12 @@ export default new Vuex.Store({
         },
         showFiltersButton(currentState) {
             currentState.filtersClosedButton = true
+        },
+        showSearchedAreaTrue(currentState) {
+            currentState.showSearchedArea = true
+        },
+        hideSearchedAreaTrue(currentState) {
+            currentState.showSearchedArea = false
         }
 
     },
@@ -88,6 +95,12 @@ export default new Vuex.Store({
         },
         showFilters(context) {
             context.commit('showFiltersButton')
+        },
+        showSearchedArea(context) {
+            context.commit('showSearchedAreaTrue')
+        },
+        hideSearchedArea(context) {
+            context.commit('hideSearchedAreaTrue')
         }
     },
     plugins: [createPersistedState()]

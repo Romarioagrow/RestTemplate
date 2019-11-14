@@ -89,6 +89,14 @@
                         </v-col>
                         <v-col>
                             <v-card class="mt-3">
+                                <v-card-title>Обновить поиск</v-card-title>
+                                <v-card-actions class="ml-5">
+                                    <v-btn color="blue" v-on:click="updateSearch()">Поиск</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-col>
+                        <v-col>
+                            <v-card class="mt-3">
                                 <v-card-title>Спарсить ссылки фото RUSBT</v-card-title>
                                 <v-card-actions class="ml-5">
                                     <v-btn color="yellow" v-on:click="parsRUSBTPics()">Запустить парсер</v-btn>
@@ -400,6 +408,11 @@
             },
             test() {
                 axios.post('admin/test').then((response) => {
+                    console.log(response)
+                })
+            },
+            updateSearch() {
+                axios.post('admin/updateSearch').then((response) => {
                     console.log(response)
                 })
             }

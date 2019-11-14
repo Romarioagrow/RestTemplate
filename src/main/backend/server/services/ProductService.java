@@ -220,7 +220,7 @@ public class ProductService {
                 products = products.stream().filter(product ->
                 {
                     String brandFilters = Arrays.toString(filters.get("brands"));
-                    return org.apache.commons.lang3.StringUtils.containsIgnoreCase(brandFilters, product.getBrand().trim());
+                    return containsIgnoreCase(brandFilters, product.getBrand().trim());
                 }).collect(Collectors.toList());
             }
 
@@ -233,15 +233,15 @@ public class ProductService {
 
                     for (String diapason : selectedDiapasons)
                     {
-                        String diapasonKey  = org.apache.commons.lang3.StringUtils.substringBefore(diapason, ":");
-                        Double minimum = Double.parseDouble(org.apache.commons.lang3.StringUtils.substringBetween(diapason, ":",","));
-                        Double maximum = Double.parseDouble(org.apache.commons.lang3.StringUtils.substringAfter(diapason, ","));
+                        String diapasonKey  = substringBefore(diapason, ":");
+                        Double minimum = Double.parseDouble(substringBetween(diapason, ":",","));
+                        Double maximum = Double.parseDouble(substringAfter(diapason, ","));
 
                         if (minimum == null || maximum == null) return false;
 
                         if (annotation.contains(diapasonKey)) {
-                            String parseValue = org.apache.commons.lang3.StringUtils.substringBetween(annotation, diapasonKey, ";");
-                            if (parseValue.contains(": ")) parseValue = org.apache.commons.lang3.StringUtils.substringAfter(parseValue, ": ");
+                            String parseValue = substringBetween(annotation, diapasonKey, ";");
+                            if (parseValue.contains(": ")) parseValue = substringAfter(parseValue, ": ");
 
                             Double checkVal = Double.parseDouble(parseValue.replaceAll(",","."));
                             if (checkVal == null || checkVal < minimum || checkVal > maximum) return false;
@@ -269,7 +269,7 @@ public class ProductService {
                 {
                     String annotation = product.getShortAnnotation();
                     for (String feature : filters.get("features")) {
-                        if (org.apache.commons.lang3.StringUtils.containsIgnoreCase(annotation, feature)) return true;
+                        if (containsIgnoreCase(annotation, feature)) return true;
                     }
                     return false;
                 }).collect(Collectors.toList());
@@ -297,6 +297,38 @@ public class ProductService {
             e.getStackTrace();
         }
         return null;
+    }
+
+    public List<Product> searchProducts(String searchRequest) {
+        log.info(searchRequest);
+
+        List<Product> products;
+
+        /*Поиск по shortSearchName*/
+        String search = searchRequest.replaceAll(" ", "").replaceAll("-", "").toLowerCase();
+
+        products = productRepo.findAll().stream().filter(product -> containsIgnoreCase(product.getSearchName(), search)).collect(Collectors.toList());
+
+
+        /*if (products.size() != 0) */
+
+        return products;
+
+        /*Поиск по вхождению в оригинальное название*/
+        /*products = productRepo.findByOriginalNameContainsIgnoreCaseAndIsAvailableTrue(searchRequest);
+        if (products.size() != 0) return products;*/
+
+        /*поиск по раздельным словам массив*/
+        /// ()
+
+        /*Поиск по группам*/
+        /*products = productRepo.findByOriginalTypeContainsIgnoreCaseAndIsAvailableTrueAndFinalPriceIsNotNull(searchRequest);
+        if (products.size() != 0) return products;
+        return products;
+
+
+
+        return null;*/
     }
 }
 

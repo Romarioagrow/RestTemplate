@@ -1,8 +1,10 @@
 <template>
-    <v-app>
+    <v-app >
         <navbar></navbar>
         <v-content class="bg">
-            <router-view></router-view>
+            <div @click="hideSearch()">
+                <router-view ></router-view>
+            </div>
         </v-content>
         <v-footer>
             <v-spacer></v-spacer>
@@ -16,7 +18,13 @@
     import Footer from "components/Footer.vue";
 
     export default {
-        components: {Navbar, Footer}
+        components: {Navbar, Footer},
+        methods: {
+            hideSearch() {
+                console.log('dfgjghjj')
+                this.$store.dispatch('hideSearchedArea')
+            }
+        }
     }
 </script>
 <style scoped>

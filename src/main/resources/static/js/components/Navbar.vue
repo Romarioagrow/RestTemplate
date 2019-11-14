@@ -2,9 +2,6 @@
     <div>
         <v-app-bar color="#f48337" dark :clipped-left="$vuetify.breakpoint.lgAndUp" app height="70" src="http://www.picshare.ru/uploads/191113/6b5152mGVs.jpg">
 
-            <!--<v-btn outlined class="mr-3" v-if="filtersClosed">Фильтры</v-btn>-->
-
-
             <router-link to="/">
                 <v-app-bar-nav-icon></v-app-bar-nav-icon>
             </router-link>
@@ -29,8 +26,41 @@
                     hide-details
                     label="Найдите что вам нужно"
                     solo-inverted
-                    @keyup="search()"
+                    @keyup="searchProducts()"
             ></v-autocomplete>
+
+            <!--<v-container v-if="searchArea" class="search">
+                <v-card outlined>
+                    <v-list subheader>
+                        <v-subheader>Найдено</v-subheader>
+
+                        <v-list-item v-for="product in searchedProducts" :key="product.productID" @click="">
+
+
+                            <v-list-item-avatar>
+                                <v-img :src="product.pic"></v-img>
+                            </v-list-item-avatar>
+
+
+                            <v-list-item-content class="ml-12">
+                                <router-link :to="'/products/product/' + product.productID">
+                                    <v-list-item-title v-text="product.fullName" style="color: black"></v-list-item-title>
+                                </router-link>
+                            </v-list-item-content>
+
+
+                        </v-list-item>
+                    </v-list>
+                </v-card>
+            </v-container>-->
+
+            <v-card class="search" width="30%" style=" background-color: #fafafa; color: black" v-if="searchArea">
+                <v-card-text style="color: black">
+                    <p v-for="product in searchedProducts" :key="product.productID">
+                        {{product.fullName}}
+                    </p>
+                </v-card-text>
+            </v-card>
 
             <v-spacer></v-spacer>
 
@@ -67,6 +97,8 @@
 </template>
 
 <script>
+    import searchJSON from 'assets/json/search.json'
+    import axios from "axios";
     export default {
         name: "Navbar",
         data: () => ({
@@ -79,26 +111,64 @@
                 'Alabama',
                 'Alaska',
             ],
+
+            searchedProducts: []
         }),
-        watch: {
+        created() {
+            this.states = searchJSON
+        },
+        /*watch: {
             search (val) {
                 val && val !== this.select && this.querySelections(val)
             },
-        },
+        },*/
         methods: {
-            /*search() {
-
-            },*/
-            querySelections(v) {
+            searchProducts() {
                 this.loading = true
-                // Simulated ajax query
+
+                console.log(this.search)
+
+
+
+                axios.post('api/products/searchProducts', this.search).then(response => {
+                    //console.log(response.data)
+
+                    this.searchedProducts = response.data
+                    this.$store.dispatch('showSearchedArea')
+                })
+
+
+
+                this.loading = false
+
+
+               /* setTimeout(() => {
+                    /!*console.log(this.search)
+                    console.log(this.states)*!/
+
+                    axios.post('api/products/searchProducts')
+
+                    this.loading = false
+                }, 500)*/
+
+
+            },
+            /*querySelections(v) {
+                this.loading = true
                 setTimeout(() => {
+                    //this.items = ['suka', 'lol','loloi']
+
+
+
                     this.items = this.states.filter(e => {
                         return (e || '').toLowerCase().indexOf((v || '').toLowerCase()) > -1
                     })
+
+                    console.log(this.items)
+
                     this.loading = false
                 }, 500)
-            }
+            }*/
         },
         computed: {
             auth () {
@@ -109,10 +179,20 @@
             },
             filtersClosed() {
                 return this.$store.state.filtersClosedButton
+            },
+            searchArea() {
+                return this.$store.state.showSearchedArea
             }
+
         }
     }
 </script>
 
 <style scoped>
+    .search {
+        position: absolute;
+        left: 39%;
+        top: 100%;
+        background-color: #fafafa;
+    }
 </style>

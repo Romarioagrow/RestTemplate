@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div >
         <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
         <b-container fluid class="flu">
             <div v-if="!loading" class="indent">
@@ -27,8 +27,6 @@
 <script>
     import CatalogGroups from "components/CatalogGroups.vue"
     import catalogJSON from 'assets/json/catalog.json'
-
-
     export default {
         components: {
             CatalogGroups
@@ -56,15 +54,18 @@
                     'mdi-coffee',
                     'mdi-archive'
                 ],
-                /*pics: [
-                    {navpic: require('@/assets/img/logo.png')},
-                ]*/
             }
         },
         created() {
             this.allCategories = catalogJSON
             this.loading = false
-        }
+        },
+       /* methods: {
+            hideSearch() {
+                console.log('dfgjghjj')
+                this.$store.dispatch('hideSearchedArea')
+            }
+        }*/
     }
 </script>
 <style scoped>

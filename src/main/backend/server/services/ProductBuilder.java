@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import server.config.AliasConfig;
 import server.domain.*;
+import server.dto.SearchProduct;
 import server.repos.*;
 
 import java.io.*;
@@ -116,7 +117,7 @@ public class ProductBuilder {
             });
             fullCatalog.put(category, productGroups);
         }
-        fullCatalog.forEach((s, productGroups) -> log.info(s + " " + productGroups.toString()));
+        //fullCatalog.forEach((s, productGroups) -> log.info(s + " " + productGroups.toString()));
         new ObjectMapper().writeValue(new File("D:\\Projects\\Rest\\src\\main\\resources\\static\\js\\assets\\json\\catalog.json"), fullCatalog);
     }
 
@@ -710,5 +711,20 @@ public class ProductBuilder {
 
     public void test() {
         log.info("test");
+    }
+
+    public void updateSearch() throws IOException {
+        List<SearchProduct> searchProducts = new ArrayList<>();
+        productRepo.findAll().forEach(product -> {
+            SearchProduct searchProduct = new SearchProduct();
+            searchProduct.setCategory(product.getProductCategory());
+            searchProduct.setGroup(product.getProductGroup());
+            searchProduct.setProductID(product.getProductID());
+            searchProduct.setFullName(product.getFullName());
+            searchProduct.setFinalPrice(product.getFinalPrice());
+            searchProducts.add(searchProduct);
+            log.info(searchProduct.toString());
+        });
+        new ObjectMapper().writeValue(new File("D:\\Projects\\Rest\\src\\main\\resources\\static\\js\\assets\\json\\search.json"), searchProducts);
     }
 }

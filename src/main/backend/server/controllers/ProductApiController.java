@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import server.domain.Product;
 import server.dto.FiltersList;
 import server.services.ProductService;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Log
@@ -35,6 +38,11 @@ public class ProductApiController {
     @PostMapping("/filter/{group}/{page}")
     private Page<Product> filterProducts(@RequestBody Map<String, String[]> filters, @PathVariable String group, @PathVariable(required = false) int page) {
         return productService.filterProducts(filters, group, PageRequest.of(page, 15, Sort.Direction.ASC, "pic"));
+    }
+
+    @PostMapping("/searchProducts")
+    private List<Product> searchProducts(@RequestBody String searchRequest) {
+        return productService.searchProducts(searchRequest.replaceAll("=",""));
     }
 
 

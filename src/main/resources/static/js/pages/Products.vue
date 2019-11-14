@@ -96,7 +96,6 @@
 
 
 
-
         <b-container fluid fill-height>
 
             <v-row class="p-3">
@@ -113,25 +112,9 @@
                 <p v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</p>
             </v-row>
 
-            <!--<v-row v-if="totalPages !== 1">
-                <v-col cols="3">
-                    <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="6" @input="loadPage(page)"></v-pagination>
-                </v-col>
-            </v-row>-->
-
-
-            <!--<v-slide-group multiple show-arrows>
-                <v-slide-item v-for="feature in filtersFeats" :key="feature" v-slot:default="{ active, toggle }">
-                    <v-btn class="mx-2" :input-value="active" active-class="orange white text" depressed rounded @click="filterProducts(feature)">
-                        {{ feature }}
-                    </v-btn>
-                </v-slide-item>
-            </v-slide-group>-->
-
-
             <v-slide-group multiple show-arrows>
                 <v-slide-item v-for="feature in filtersFeats" :key="feature" v-slot:default="{ active, toggle }">
-                    <v-btn class="mx-2" :input-value="active" active-class="orange text" depressed rounded @click="toggle" @mouseup="filterProducts(feature)">
+                    <v-btn class="mx-2" style="background-color: #fafafa" :input-value="active" active-class="orange text" depressed rounded @click="toggle" @mouseup="filterProducts(feature)">
                         {{ feature }}
                     </v-btn>
                 </v-slide-item>
@@ -141,13 +124,6 @@
             <v-row>
                 <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
             </v-row>
-
-
-            <!--<v-row v-if="totalPages !== 1">
-                <v-col cols="3">
-                    <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="6" @input="loadPage(page)"></v-pagination>
-                </v-col>
-            </v-row>-->
 
 
             <!--<b-container>
@@ -282,44 +258,27 @@
             })
         },
         mounted() {
-
             /*ДЛЯ БЕЗФИЛЬТРОВ И С ФИЛЬТРАМИ*/
             /*ПАГИНАЦИЯ ПОДГРУЗКОЙ*/
-
             window.onscroll = () =>{
                 const el = document.documentElement
                 const isBottomOfScreen = el.scrollTop + window.innerHeight === el.offsetHeight
 
                 if(isBottomOfScreen) {
-                    console.log('bottom')
-                    console.log('/api/products/group'+this.requestGroup + '/' + this.scrollPage)
-
-                    console.log(this.filters)
-
                     if (Object.keys(this.filters).length === 0) {
-                        console.log('ПУСТО')
                         axios.get('/api/products/group'+this.requestGroup + '/' + this.scrollPage).then(response => {
                             console.log(response.data.content)
                             this.products = this.products.concat(response.data.content)
                             this.scrollPage+=1
-                            console.log(this.products)
                         })
                     }
                     else {
                         /*если есть заполненнные фильтры, то отфильтровать и отправить на страницу 15 штук первых товаров*/
                         /*затем при прокрутке до дна прислать еще 15 товаров с этими же фильтрами */
-                        console.log('ЕСТЬ ФИЛЬТРЫ')
-
                         this.filtersScrollPage+=1
-
                         const filterURL = '/api/products/filter' + this.requestGroup + '/' + this.filtersScrollPage
                         axios.post(filterURL, this.filters).then(response => {
-
                             this.products = this.products.concat(response.data.content)
-
-                            //this.products = response.data.content
-                            //this.totalPages = response.data.totalPages
-                            //this.totalProductsFound = response.data.totalElements
                         })
 
                     }
@@ -399,5 +358,8 @@
 <style scoped>
     .red {
         background-color: darkred;
+    }
+    .bgclr {
+        background-color: red;
     }
 </style>
