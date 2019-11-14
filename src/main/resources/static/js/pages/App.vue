@@ -1,13 +1,13 @@
 <template>
     <v-app>
         <navbar></navbar>
-        <v-content>
+        <v-content class="bg">
             <router-view></router-view>
         </v-content>
-        <!--<v-footer>
+        <v-footer>
             <v-spacer></v-spacer>
             <div> {{ new Date().getFullYear() }}</div>
-        </v-footer>-->
+        </v-footer>
     </v-app>
 </template>
 
@@ -19,5 +19,9 @@
         components: {Navbar, Footer}
     }
 </script>
-<style scoped></style>
+<style scoped>
+    .bg{
+        background-color: #f2f2f2;
+    }
+</style>
 

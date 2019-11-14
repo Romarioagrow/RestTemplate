@@ -73,7 +73,7 @@
         padding-right: 8rem;
     }
     .bkcl {
-        background-color: #fafafa;
+        background-color: #f2f2f2;
     }
     .flu {
         width: 95%;

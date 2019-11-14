@@ -200,6 +200,8 @@ public class ProductService {
         return productRepo.findByProductID(productID);
     }
 
+    /*filter by pic and then by price*/
+
     public Page<Product> filterProducts(Map<String, String[]> filters, String group) {
         List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
         try
