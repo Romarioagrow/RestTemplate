@@ -236,7 +236,9 @@
                 pageRequest: '',
                 totalProductsFound: 0,
 
-                scrollPage: 1
+                scrollPage: 1,
+                filtersScrollPage: 0,
+                filters: {}
             }
         },
         created() {
@@ -280,6 +282,10 @@
             })
         },
         mounted() {
+
+            /*ДЛЯ БЕЗФИЛЬТРОВ И С ФИЛЬТРАМИ*/
+            /*ПАГИНАЦИЯ ПОДГРУЗКОЙ*/
+
             window.onscroll = () =>{
                 const el = document.documentElement
                 const isBottomOfScreen = el.scrollTop + window.innerHeight === el.offsetHeight
@@ -288,26 +294,36 @@
                     console.log('bottom')
                     console.log('/api/products/group'+this.requestGroup + '/' + this.scrollPage)
 
-                    axios.get('/api/products/group'+this.requestGroup + '/' + this.scrollPage).then(response => {
+                    console.log(this.filters)
 
-                        console.log(response.data.content)
-                        this.scrollPage+=1
+                    if (Object.keys(this.filters).length === 0) {
+                        console.log('ПУСТО')
+                        axios.get('/api/products/group'+this.requestGroup + '/' + this.scrollPage).then(response => {
+                            console.log(response.data.content)
+                            this.products = this.products.concat(response.data.content)
+                            this.scrollPage+=1
+                            console.log(this.products)
+                        })
+                    }
+                    else {
+                        /*если есть заполненнные фильтры, то отфильтровать и отправить на страницу 15 штук первых товаров*/
+                        /*затем при прокрутке до дна прислать еще 15 товаров с этими же фильтрами */
+                        console.log('ЕСТЬ ФИЛЬТРЫ')
 
+                        this.filtersScrollPage+=1
 
+                        const filterURL = '/api/products/filter' + this.requestGroup + '/' + this.filtersScrollPage
+                        axios.post(filterURL, this.filters).then(response => {
 
-                        let addProducts = response.data.content
+                            this.products = this.products.concat(response.data.content)
 
-                        this.products = this.products.concat(addProducts)
+                            //this.products = response.data.content
+                            //this.totalPages = response.data.totalPages
+                            //this.totalProductsFound = response.data.totalElements
+                        })
 
+                    }
 
-                        console.log(this.products)
-                        //this.products = response.data.content
-
-                        //this.products.push(response.data.content)
-
-                        /*this.products.push(response.data.content)
-                        this.scrollPage+=1*/
-                    })
 
                 }
             }
@@ -336,7 +352,8 @@
                     this.products = response.data.content)
             },
             filterProducts(param) {
-                let filters = {}
+                //let filters = {}
+                this.filtersScrollPage = 0
 
                 if (param !== undefined)
                 {
@@ -353,16 +370,19 @@
                     }
                 }
 
-                filters['prices']   = this.priceRange
-                filters['brands']   = this.selectedBrands
-                filters['params']   = this.selectedParams
-                filters['features'] = this.selectedFeatures
+                this.filters['prices']   = this.priceRange
+                this.filters['brands']   = this.selectedBrands
+                this.filters['params']   = this.selectedParams
+                this.filters['features'] = this.selectedFeatures
 
                 let selectedDiapasons = []
                 for (const [key, value] of Object.entries(this.selectedDiapasons)) selectedDiapasons.push(key+':'+value)
-                filters['selectedDiapasons'] = selectedDiapasons
+                this.filters['selectedDiapasons'] = selectedDiapasons
 
-                axios.post('/api/products/filter' + this.requestGroup, filters).then(response => {
+                console.log('/api/products/filter' + this.requestGroup)
+
+                const filterURL = '/api/products/filter' + this.requestGroup + '/' + this.filtersScrollPage
+                axios.post(filterURL, this.filters).then(response => {
                     this.products = response.data.content
                     this.totalPages = response.data.totalPages
                     this.totalProductsFound = response.data.totalElements

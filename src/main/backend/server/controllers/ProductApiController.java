@@ -32,9 +32,9 @@ public class ProductApiController {
         return productService.getProductByID(productID);
     }
 
-    @PostMapping("/filter/{group}")
-    private Page<Product> filterProducts(@RequestBody Map<String, String[]> filters, @PathVariable String group) {
-        return productService.filterProducts(filters, group);
+    @PostMapping("/filter/{group}/{page}")
+    private Page<Product> filterProducts(@RequestBody Map<String, String[]> filters, @PathVariable String group, @PathVariable(required = false) int page) {
+        return productService.filterProducts(filters, group, PageRequest.of(page, 15, Sort.Direction.ASC, "pic"));
     }
 
 

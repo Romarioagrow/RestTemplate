@@ -202,7 +202,7 @@ public class ProductService {
 
     /*filter by pic and then by price*/
 
-    public Page<Product> filterProducts(Map<String, String[]> filters, String group) {
+    public Page<Product> filterProducts(Map<String, String[]> filters, String group, Pageable pageable) {
         List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
         try
         {
@@ -279,18 +279,24 @@ public class ProductService {
             e.printStackTrace();
         }
         products.sort(Comparator.comparing(Product::getSupplier));
-        return productsPage(products);
+        return productsPage(products, pageable);
     }
 
     private boolean filterHasContent(Map<String, String[]> filters, String selectedDiapasons) {
         return !Arrays.toString(filters.get(selectedDiapasons)).equals("[]");
     }
 
-    private Page<Product> productsPage(List<Product> products) {
-        Pageable pageable = PageRequest.of(0, 100, Sort.Direction.DESC, "supplier"); /// добавить пагинацию при фильтрации
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), products.size());
-        return new PageImpl<>(products.subList(start, end), pageable, products.size());
+    private Page<Product> productsPage(List<Product> products, Pageable pageable) {
+        //Pageable pageable = PageRequest.of(0, 100, Sort.Direction.DESC, "supplier"); /// добавить пагинацию при фильтрации
+        try{
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), products.size());
+            return new PageImpl<>(products.subList(start, end), pageable, products.size());
+        }
+        catch (IllegalArgumentException e) {
+            e.getStackTrace();
+        }
+        return null;
     }
 }
 
