@@ -304,14 +304,27 @@ public class ProductService {
     public List<Product> searchProducts(String searchRequest) {
         log.info(searchRequest);
 
-        List<Product> products;
+        List<Product> products =  productRepo.findAll();
 
-        /*Поиск по shortSearchName*/
-        String search = searchRequest.replaceAll(" ", "").replaceAll("-", "").toLowerCase();
+        //String finalSearchRequest = searchRequest;
+        if (!searchRequest.contains("+")) {
 
-        products = productRepo.findAll().stream().filter(product ->
-                containsIgnoreCase(product.getSearchName(), search)).collect(Collectors.toList());
-
+            products = products.stream()
+                    .filter(product -> containsIgnoreCase(product.getSearchName(), searchRequest))
+                    .limit(10)
+                    .collect(Collectors.toList());
+        }
+        else
+        {
+            String[] requests = searchRequest.split("\\+");
+            for (String request : requests) {
+                log.info("req: " + request);
+                products = products.stream()
+                        .filter(product -> containsIgnoreCase(product.getSearchName(), request))
+                        .limit(10)
+                        .collect(Collectors.toList());
+            }
+        }
 
         /*if (products.size() != 0) */
         log.info(products.size()+"");
@@ -334,6 +347,11 @@ public class ProductService {
 
         return null;*/
     }
+
+    /*public String correctSearchRequest(String searchRequest) {
+
+        return searchRequest.replaceAll("=","").replaceAll("+","");
+    }*/
 }
 
 /*КАК ВАРИАНТ СОЗДАТЬ ШАБЛОНЫ ДЛЯ ДОБАЛВЕНИЯ KEY/VALUE ДЛЯ RUSBT SHORTANNO*/

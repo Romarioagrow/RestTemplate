@@ -42,7 +42,6 @@ public class ProductApiController {
 
     @PostMapping("/search")
     private List<Product> searchProducts(@RequestBody String searchRequest) {
-        log.info(searchRequest);
         return productService.searchProducts(searchRequest.replaceAll("=",""));
     }
 

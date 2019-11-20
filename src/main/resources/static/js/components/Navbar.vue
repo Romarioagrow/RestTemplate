@@ -47,16 +47,37 @@
                 </p>
             </v-container>-->
 
-            <v-container v-if="searchArea" class="display-result">
+            <!--ВОТ ЭТА//////////-->
+            <!--<v-container v-if="searchArea" class="display-result">
                 <div v-for="product in searchedProducts" :key="product.productID">
                     <p @click="goToProductPage(product.productID)" >
                         {{product.fullName}}
                     </p>
                 </div>
+            </v-container>-->
+
+            <v-container v-if="searchArea" class="display-result">
+                <v-list shaped color="white">
+                    <v-list-item-group >
+                        <v-list-item v-for="product in searchedProducts" :key="product.productID" @click="goToProductPage(product.productID)" color="black" class="searchedItem">
+
+                            <v-list-item-avatar>
+                                <v-img :src="product.pic"></v-img>
+                            </v-list-item-avatar>
+
+                            <v-list-item-content>
+                                <v-list-item-title v-text="product.fullName" style="color: black"></v-list-item-title>
+                            </v-list-item-content>
+
+                            <!--<p @click="goToProductPage(product.productID)" >
+                                {{product.fullName}}
+                            </p>-->
+                        </v-list-item>
+                    </v-list-item-group>
+                </v-list>
             </v-container>
 
-
-            <v-spacer></v-spacer>
+                <v-spacer></v-spacer>
 
             <router-link to="/order" class="ml-5">
                 <v-btn tile outlined>
@@ -104,19 +125,6 @@
                 this.$store.dispatch('searchProducts', searchQuery)
 
                 //this.loading = true
-                //this.$store.dispatch('showSearchedArea')
-
-                /*const request = this.search
-                //const request = JSON.stringify(this.search);
-                console.log(request)
-
-                axios.post('api/products/search', request).then(response => {
-                    //console.log(response.data)
-
-                    this.searchedProducts = response.data
-                    console.log(this.searchedProducts)
-                    this.$store.dispatch('showSearchedArea')
-                })*/
                 //this.loading = false
 
                 /* setTimeout(() => {
@@ -162,6 +170,12 @@
 </script>
 
 <style scoped>
+    /*.searchedItem {
+         background-color: #fafafa
+     }*/
+    .searchedItem:hover {
+        background-color: #f2f2f2
+    }
     .search {
         position: absolute;
         left: 39%;
@@ -177,7 +191,7 @@
         max-height: 400px;
         overflow: auto;
         box-shadow: 0 5px 13px 0 rgba(0,0,0,.2);
-        background-color: white;
+        background-color: white !important;
         border: 1px solid #ececec;
         padding: 15px;
         z-index: 50;

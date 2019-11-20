@@ -360,7 +360,7 @@
                 axios.post('admin/parsePicsRUSBT').then(console.log('pics parsed'));
             },
             logout() {
-                axios.post('user/logout').then((response) => {
+                axios.post('user/logout').then(() => {
                     this.$store.dispatch('logout')
                     this.$router.push('/')
                 })
