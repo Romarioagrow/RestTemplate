@@ -11,9 +11,27 @@ export default new Vuex.Store({
         currentOrder: null,
         orderedProducts: [],
         filtersClosedButton: false,
-        showSearchedArea: false
+        showSearchedArea: false,
+
+        searchQuery: '',
+        searchedProducts:[],
+        searchLoading: false,
     },
     mutations: {
+        setSearchQuery(currentState, query) {
+            currentState.searchQuery = query
+        },
+        setSearchedProducts(currentState, searchedProducts) {
+            currentState.searchedProducts = searchedProducts
+        },
+        showSearchedAreaTrue(currentState) {
+            currentState.showSearchedArea = true
+        },
+        hideSearchedAreaTrue(currentState) {
+            currentState.showSearchedArea = false
+        },
+
+
         setCurrentUser(currentState, user) {
             currentState.currentUser = user
         },
@@ -41,15 +59,42 @@ export default new Vuex.Store({
         showFiltersButton(currentState) {
             currentState.filtersClosedButton = true
         },
-        showSearchedAreaTrue(currentState) {
-            currentState.showSearchedArea = true
-        },
-        hideSearchedAreaTrue(currentState) {
-            currentState.showSearchedArea = false
-        }
+
+
 
     },
     actions: {
+        searchProducts(context, searchQuery) {
+
+            //console.log(searchQuery)
+            context.commit('setSearchQuery', searchQuery)
+
+            const request = this.state.searchQuery
+            console.log(request)
+
+            if (request) {
+                axios.post('/api/products/search', request).then(response => {
+
+                    context.commit('setSearchedProducts', response.data)
+                    context.commit('showSearchedAreaTrue')
+
+
+                   // context.
+
+
+                    //console.log(response.data.length)
+
+                    /*this.searchedProducts = response.data
+                    console.log(this.searchedProducts)
+
+                    this.$store.dispatch('showSearchedArea')*/
+                })
+            }
+
+
+        },
+
+
         login(context) {
             let sessionProducts
             if (this.state.currentOrder != null) {

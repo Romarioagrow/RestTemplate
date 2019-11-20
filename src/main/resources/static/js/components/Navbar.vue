@@ -14,7 +14,7 @@
 
             <v-spacer></v-spacer>
 
-            <v-autocomplete
+            <!--<v-autocomplete
                     v-model="select"
                     :loading="loading"
                     :items="items"
@@ -27,40 +27,28 @@
                     label="Найдите что вам нужно"
                     solo-inverted
                     @keyup="searchProducts()"
-            ></v-autocomplete>
-
-            <!--<v-container v-if="searchArea" class="search">
-                <v-card outlined>
-                    <v-list subheader>
-                        <v-subheader>Найдено</v-subheader>
-
-                        <v-list-item v-for="product in searchedProducts" :key="product.productID" @click="">
+            ></v-autocomplete>-->
 
 
-                            <v-list-item-avatar>
-                                <v-img :src="product.pic"></v-img>
-                            </v-list-item-avatar>
+            <v-text-field
+                    id="searchInput"
+
+                    class="mt-5"
+                    label="Найдите что вам нужно"
+                    single-line
+                    outlined
+                    @keyup="searchProducts(this)"
+            ></v-text-field>
 
 
-                            <v-list-item-content class="ml-12">
-                                <router-link :to="'/products/product/' + product.productID">
-                                    <v-list-item-title v-text="product.fullName" style="color: black"></v-list-item-title>
-                                </router-link>
-                            </v-list-item-content>
-
-
-                        </v-list-item>
-                    </v-list>
-                </v-card>
-            </v-container>-->
-
-            <v-card class="search" width="30%" style=" background-color: #fafafa; color: black" v-if="searchArea">
-                <v-card-text style="color: black">
-                    <p v-for="product in searchedProducts" :key="product.productID">
+            <v-container v-if="searchArea" class="display-result">
+                <p v-for="product in searchedProducts" :key="product.productID">
+                    <router-link :to="'/products/product/'+product.productID">
                         {{product.fullName}}
-                    </p>
-                </v-card-text>
-            </v-card>
+                    </router-link>
+                </p>
+            </v-container>
+
 
             <v-spacer></v-spacer>
 
@@ -97,7 +85,7 @@
 </template>
 
 <script>
-    import searchJSON from 'assets/json/search.json'
+    /*import searchJSON from 'assets/json/search.json'*/
     import axios from "axios";
     export default {
         name: "Navbar",
@@ -105,72 +93,65 @@
             collapseOnScroll: true,
             loading: false,
             items: [],
-            search: null,
-            select: null,
+           /* search: '',*/
             states: [
                 'Alabama',
                 'Alaska',
             ],
 
-            searchedProducts: []
+            /*searchedProducts: []*/
         }),
-        created() {
-            this.states = searchJSON
-        },
-        /*watch: {
-            search (val) {
-                val && val !== this.select && this.querySelections(val)
-            },
-        },*/
         methods: {
             searchProducts() {
-                this.loading = true
 
-                console.log(this.search)
+                //console.log(document.getElementById('searchInput').value)
+
+                const searchQuery = document.getElementById('searchInput').value
+                this.$store.dispatch('searchProducts', searchQuery)
 
 
+                //this.loading = true
 
-                axios.post('api/products/searchProducts', this.search).then(response => {
+
+                //this.$store.dispatch('showSearchedArea')
+
+                /*const request = this.search
+                //const request = JSON.stringify(this.search);
+                console.log(request)
+
+                axios.post('api/products/search', request).then(response => {
                     //console.log(response.data)
 
                     this.searchedProducts = response.data
+                    console.log(this.searchedProducts)
                     this.$store.dispatch('showSearchedArea')
-                })
+                })*/
+
+                //this.loading = false
 
 
+                /* setTimeout(() => {
+                     /!*console.log(this.search)
+                     console.log(this.states)*!/
 
-                this.loading = false
+                     axios.post('api/products/searchProducts')
 
-
-               /* setTimeout(() => {
-                    /!*console.log(this.search)
-                    console.log(this.states)*!/
-
-                    axios.post('api/products/searchProducts')
-
-                    this.loading = false
-                }, 500)*/
+                     this.loading = false
+                 }, 500)*/
 
 
             },
-            /*querySelections(v) {
-                this.loading = true
-                setTimeout(() => {
-                    //this.items = ['suka', 'lol','loloi']
-
-
-
-                    this.items = this.states.filter(e => {
-                        return (e || '').toLowerCase().indexOf((v || '').toLowerCase()) > -1
-                    })
-
-                    console.log(this.items)
-
-                    this.loading = false
-                }, 500)
-            }*/
         },
         computed: {
+            /*searchQueryData() {
+                return this.$store.state.searchQuery
+            },*/
+            searchedProducts() {
+                return this.$store.state.searchedProducts
+            },
+
+
+
             auth () {
                 return this.$store.state.currentUser && !this.$store.state.currentUser.roles.includes('ADMIN')
             },
@@ -194,5 +175,19 @@
         left: 39%;
         top: 100%;
         background-color: #fafafa;
+    }
+    .display-result {
+        position: absolute;
+        color: black;
+        width: 50%;
+        left: 30%;
+        top: 100%;
+        max-height: 400px;
+        overflow: auto;
+        box-shadow: 0 5px 13px 0 rgba(0,0,0,.2);
+        background-color: white;
+        border: 1px solid #ececec;
+        padding: 15px;
+        z-index: 50;
     }
 </style>

@@ -40,8 +40,9 @@ public class ProductApiController {
         return productService.filterProducts(filters, group, PageRequest.of(page, 15, Sort.Direction.ASC, "pic"));
     }
 
-    @PostMapping("/searchProducts")
+    @PostMapping("/search")
     private List<Product> searchProducts(@RequestBody String searchRequest) {
+        log.info(searchRequest);
         return productService.searchProducts(searchRequest.replaceAll("=",""));
     }
 

@@ -307,10 +307,12 @@ public class ProductService {
         /*Поиск по shortSearchName*/
         String search = searchRequest.replaceAll(" ", "").replaceAll("-", "").toLowerCase();
 
-        products = productRepo.findAll().stream().filter(product -> containsIgnoreCase(product.getSearchName(), search)).collect(Collectors.toList());
+        products = productRepo.findAll().stream().filter(product ->
+                containsIgnoreCase(product.getSearchName(), search)).collect(Collectors.toList());
 
 
         /*if (products.size() != 0) */
+        log.info(products.size()+"");
 
         return products;
 
