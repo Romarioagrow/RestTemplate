@@ -96,8 +96,8 @@
                 this.anno =  (this.product.formattedAnnotation.split('<br>').map(String)).filter(Boolean)
                 this.linkBack = '/products/'+ (this.product.productGroup).toLowerCase();
 
-                console.log(this.product)
-                console.log(this.anno)
+                //console.log(this.product)
+                //console.log(this.anno)
             });
         },
         methods: {

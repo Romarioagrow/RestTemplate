@@ -14,11 +14,11 @@
 
             <v-spacer></v-spacer>
 
-            <!--<v-autocomplete
-                    v-model="select"
-                    :loading="loading"
-                    :items="items"
-                    :search-input.sync="search"
+            <!--:loading="loading"
+            v-model="select"-->
+            <v-autocomplete
+                    id="searchInput"
+
                     cache-items
                     class="mx-4"
                     flat
@@ -27,26 +27,32 @@
                     label="Найдите что вам нужно"
                     solo-inverted
                     @keyup="searchProducts()"
-            ></v-autocomplete>-->
+            ></v-autocomplete>
 
-
-            <v-text-field
+            <!--<v-text-field
                     id="searchInput"
-
                     class="mt-5"
                     label="Найдите что вам нужно"
                     single-line
                     outlined
-                    @keyup="searchProducts(this)"
-            ></v-text-field>
+                    @keyup="searchProducts()"
+            ></v-text-field>-->
 
 
-            <v-container v-if="searchArea" class="display-result">
+            <!--<v-container v-if="searchArea" class="display-result">
                 <p v-for="product in searchedProducts" :key="product.productID">
                     <router-link :to="'/products/product/'+product.productID">
                         {{product.fullName}}
                     </router-link>
                 </p>
+            </v-container>-->
+
+            <v-container v-if="searchArea" class="display-result">
+                <div v-for="product in searchedProducts" :key="product.productID">
+                    <p @click="goToProductPage(product.productID)" >
+                        {{product.fullName}}
+                    </p>
+                </div>
             </v-container>
 
 
@@ -85,34 +91,19 @@
 </template>
 
 <script>
-    /*import searchJSON from 'assets/json/search.json'*/
     import axios from "axios";
     export default {
         name: "Navbar",
         data: () => ({
             collapseOnScroll: true,
             loading: false,
-            items: [],
-           /* search: '',*/
-            states: [
-                'Alabama',
-                'Alaska',
-            ],
-
-            /*searchedProducts: []*/
         }),
         methods: {
             searchProducts() {
-
-                //console.log(document.getElementById('searchInput').value)
-
                 const searchQuery = document.getElementById('searchInput').value
                 this.$store.dispatch('searchProducts', searchQuery)
 
-
                 //this.loading = true
-
-
                 //this.$store.dispatch('showSearchedArea')
 
                 /*const request = this.search
@@ -126,9 +117,7 @@
                     console.log(this.searchedProducts)
                     this.$store.dispatch('showSearchedArea')
                 })*/
-
                 //this.loading = false
-
 
                 /* setTimeout(() => {
                      /!*console.log(this.search)
@@ -138,20 +127,24 @@
 
                      this.loading = false
                  }, 500)*/
-
-
             },
+            goToProductPage(productID) {
+                //console.log('productID')
+
+                this.$store.commit('hideSearchedAreaTrue')
+                //this.$router.go('/products/product/'+productID)
+
+                if (this.$route.fullPath.includes('product/')) {
+                    this.$router.push('/products/product/'+productID)
+                    location.reload()
+                }
+                else this.$router.push('/products/product/'+productID)
+            }
         },
         computed: {
-            /*searchQueryData() {
-                return this.$store.state.searchQuery
-            },*/
             searchedProducts() {
                 return this.$store.state.searchedProducts
             },
-
-
-
             auth () {
                 return this.$store.state.currentUser && !this.$store.state.currentUser.roles.includes('ADMIN')
             },
@@ -164,7 +157,6 @@
             searchArea() {
                 return this.$store.state.showSearchedArea
             }
-
         }
     }
 </script>

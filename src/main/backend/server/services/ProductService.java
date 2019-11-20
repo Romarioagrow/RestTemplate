@@ -32,6 +32,8 @@ public class ProductService {
         FiltersList filtersList = new FiltersList();
 
         /*Наполнение списка товаров нужной группы*/
+
+        /* List<Product> products = productRepo.findProductsByProductGroupIgnoreCaseAndSupplier(group, "RBT");*/
         List<Product> products = productRepo.findProductsByProductGroupIgnoreCase(group);
 
         try
