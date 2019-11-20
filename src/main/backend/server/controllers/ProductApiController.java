@@ -9,6 +9,7 @@ import server.domain.Product;
 import server.dto.FiltersList;
 import server.services.ProductService;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +42,10 @@ public class ProductApiController {
     }
 
     @PostMapping("/search")
-    private List<Product> searchProducts(@RequestBody String searchRequest) {
-        return productService.searchProducts(searchRequest.replaceAll("=",""));
+    /*@RequestMapping(value = "/search", produces = "text/plain;charset=UTF-8", method = RequestMethod.POST)
+    @ResponseBody*/
+    private List<Product> searchProducts(@RequestBody String searchRequest) throws UnsupportedEncodingException {
+        return productService.searchProducts(searchRequest);
     }
 
 

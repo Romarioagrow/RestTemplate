@@ -9,6 +9,8 @@ import server.dto.FiltersList;
 import server.dto.ProductGroup;
 import server.repos.ProductRepo;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
@@ -82,6 +84,9 @@ public class ProductService {
                         String key = substringBefore(filter, ":");
                         String val = substringAfter(filter, ": ");
 
+                        key = capitalize(key);
+                        val = capitalize(val);
+
                         /*Digit diapasons*/
                         if (filterIsDiapasonParam(val)) {
                             try {
@@ -122,6 +127,8 @@ public class ProductService {
                 val.add(first);
                 val.add(last);
             });
+
+            log.info(filtersList.toString());
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -258,8 +265,9 @@ public class ProductService {
                 products = products.stream().filter(product ->
                 {
                     String annotation = product.getShortAnnotation();
+
                     for (String param : filters.get("params")) {
-                        if (annotation.contains(param)) return true;
+                        if (containsIgnoreCase(annotation, param)) return true;
                     }
                     return false;
                 }).collect(Collectors.toList());
@@ -306,8 +314,7 @@ public class ProductService {
 
         List<Product> products =  productRepo.findAll();
 
-        //String finalSearchRequest = searchRequest;
-        if (!searchRequest.contains("+")) {
+        if (!searchRequest.contains(" ")) {
 
             products = products.stream()
                     .filter(product -> containsIgnoreCase(product.getSearchName(), searchRequest))
@@ -316,19 +323,17 @@ public class ProductService {
         }
         else
         {
-            String[] requests = searchRequest.split("\\+");
+            String[] requests = searchRequest.split(" ");
             for (String request : requests) {
-                log.info("req: " + request);
+                log.info("\nreq: " + request);
                 products = products.stream()
                         .filter(product -> containsIgnoreCase(product.getSearchName(), request))
-                        .limit(10)
                         .collect(Collectors.toList());
             }
+            products = products.stream().limit(10).collect(Collectors.toList());
         }
 
-        /*if (products.size() != 0) */
-        log.info(products.size()+"");
-
+        //log.info(products.size() + "");
         return products;
 
         /*Поиск по вхождению в оригинальное название*/

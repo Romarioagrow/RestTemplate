@@ -72,12 +72,35 @@ export default new Vuex.Store({
             console.log(request)
 
             if (request) {
-                axios.post('/api/products/search', request).then(response => {
+
+
+                const url = '/api/products/search'
+
+                const headers = {
+                    'Content-Type': 'application/json',
+                }
+
+                axios.post(url, request, {
+                    headers: headers
+                })
+                    .then((response) => {
+                        context.commit('setSearchedProducts', response.data)
+                        context.commit('showSearchedAreaTrue')
+                    })
+                    .catch((error) => {
+                        dispatch({
+                            type: ERROR_FINDING_USER
+                        })
+                    })
+
+
+
+                /*axios.post('/api/products/search', request).then(response => {
 
                     context.commit('setSearchedProducts', response.data)
                     context.commit('showSearchedAreaTrue')
 
-                })
+                })*/
             }
         },
         /*goToSearchedProduct(context, productID) {

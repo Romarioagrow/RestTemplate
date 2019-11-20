@@ -28,34 +28,6 @@
                     solo-inverted
                     @keyup="searchProducts()"
             ></v-autocomplete>
-
-            <!--<v-text-field
-                    id="searchInput"
-                    class="mt-5"
-                    label="Найдите что вам нужно"
-                    single-line
-                    outlined
-                    @keyup="searchProducts()"
-            ></v-text-field>-->
-
-
-            <!--<v-container v-if="searchArea" class="display-result">
-                <p v-for="product in searchedProducts" :key="product.productID">
-                    <router-link :to="'/products/product/'+product.productID">
-                        {{product.fullName}}
-                    </router-link>
-                </p>
-            </v-container>-->
-
-            <!--ВОТ ЭТА//////////-->
-            <!--<v-container v-if="searchArea" class="display-result">
-                <div v-for="product in searchedProducts" :key="product.productID">
-                    <p @click="goToProductPage(product.productID)" >
-                        {{product.fullName}}
-                    </p>
-                </div>
-            </v-container>-->
-
             <v-container v-if="searchArea" class="display-result">
                 <v-list shaped color="white">
                     <v-list-item-group >
@@ -69,9 +41,10 @@
                                 <v-list-item-title v-text="product.fullName" style="color: black"></v-list-item-title>
                             </v-list-item-content>
 
-                            <!--<p @click="goToProductPage(product.productID)" >
-                                {{product.fullName}}
-                            </p>-->
+                            <v-list-item-avatar width="150">
+                                <v-list-item-title v-text="product.finalPrice+' ₽'" style="color: black"></v-list-item-title>
+                            </v-list-item-avatar>
+
                         </v-list-item>
                     </v-list-item-group>
                 </v-list>
