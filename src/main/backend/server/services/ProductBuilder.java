@@ -282,15 +282,20 @@ public class ProductBuilder {
             String originalBrand        = row.getCell(4).toString();
             String supplier             = supplierRBT ? "RBT" : "RUSBT";
 
-            String originalPic = null;
-            if (supplierRBT) {
-                originalPic = StringUtils.substringBetween(row.getCell(3).toString(), "\"", "\""); /*при попытке row.getCell(3).getHyperlink().getAddress() вылетает NullPointer*/
+            //String originalPic = null;
+
+            String originalPic = getOriginalPicLink(supplier, row);
+
+            /*if (supplierRBT) {
+                originalPic = StringUtils.substringBetween(row.getCell(3).toString(), "\"", "\""); *//*при попытке row.getCell(3).getHyperlink().getAddress() вылетает NullPointer*//*
             }
             else if (!row.getCell(15).toString().isEmpty()) {
                 String linkToPic = row.getCell(15).getHyperlink().getAddress();
                 originalProduct.setLinkToPic(linkToPic);
-            }
+            }*/
             //else originalPic = "Ссылки нет!";
+
+            log.info(originalPic);
 
             originalProduct.setOriginalCategory(originalCategory);
             originalProduct.setOriginalGroup(originalGroup);
@@ -301,7 +306,7 @@ public class ProductBuilder {
             originalProduct.setOriginalAmount(originalAmount);
             originalProduct.setOriginalBrand(originalBrand);
             originalProduct.setSupplier(supplier);
-            originalProduct.setOriginalPic(originalPic);
+            originalProduct.setOriginalPic(originalPic != null ? originalPic : "_no_link");
             originalProduct.setUpdateDate(LocalDate.now());
             originalProduct.setIsAvailable(true);
             originalRepo.save(originalProduct);
@@ -309,6 +314,17 @@ public class ProductBuilder {
         catch (NullPointerException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getOriginalPicLink(String supplier, Row row) {
+        String picLink = null;
+        if (supplier.equals("RBT")) {
+            picLink =  StringUtils.substringBetween(row.getCell(3).toString(), "\"", "\""); /*при попытке row.getCell(3).getHyperlink().getAddress() вылетает NullPointer*/
+        }
+        else if (!row.getCell(15).toString().isEmpty()) {
+            picLink = row.getCell(15).getHyperlink().getAddress();
+        }
+        return picLink != null ? picLink : "_no_link";
     }
 
     private void updateOriginalProduct(Row row, String productID, boolean supplierRBT) {

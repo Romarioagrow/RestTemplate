@@ -96,10 +96,20 @@ public class AdminApiController {
 
     @PostMapping("/test")
     private void uploadProductsDBFile(@AuthenticationPrincipal User user) {
-        log.info("TEST USER: " + user.getFirstName());
+
+        productRepo.findAll().forEach(product -> {
+            if (product.getPic() == null) {
+                product.setPic("_no_link");
+                productRepo.save(product);
+                log.info(product.getPic());
+            }
+        });
+
+
+        //log.info("TEST USER: " + user.getFirstName());
         //productBuilder.test();
 
-        Runnable taskOriginal = () -> {
+        /*Runnable taskOriginal = () -> {
             originalRepo.findAll().forEach(originalProduct -> {
                 originalProduct.setUpdateDate(LocalDate.ofYearDay(2019,50));
                 originalRepo.save(originalProduct);
@@ -118,6 +128,6 @@ public class AdminApiController {
             });
         };
         taskProducts.run();
-        new Thread(taskProducts).start();
+        new Thread(taskProducts).start();*/
     }
 }

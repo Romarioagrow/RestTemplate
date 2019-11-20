@@ -26,7 +26,9 @@ public class ProductService {
     private final ProductRepo productRepo;
 
     public Page<Product> getProductsByGroup(String group, Pageable pageable) {
-        return productRepo.findByProductGroupIgnoreCase(group, pageable);
+        /*Page<Product> products = productRepo.findByProductGroupIgnoreCase(group, pageable);
+        products.so*/
+        return productRepo.findByProductGroupIgnoreCaseOrderByPicDesc(group, pageable);
     }
 
     /*Создать фильтры для группы products*/
@@ -284,11 +286,18 @@ public class ProductService {
                     return false;
                 }).collect(Collectors.toList());
             }
+
+            products.sort(Comparator.comparingInt(Product::getFinalPrice).thenComparing(Product::getPic));
+            //products.sort(Comparator.comparing(Product::getPic).reversed().thenComparing(Product::getFinalPrice));
+            //products.sort(Comparator.comparing(Product::getFinalPrice));
+
+            //products.sort(Comparator.comparing(Product::getFinalPrice).reversed());
+            //products.forEach(product -> log.info(product.getFinalPrice() + ""));
         }
         catch (NullPointerException | NumberFormatException e) {
             e.printStackTrace();
         }
-        products.sort(Comparator.comparing(Product::getSupplier));
+
         return productsPage(products, pageable);
     }
 
@@ -297,6 +306,8 @@ public class ProductService {
     }
 
     private Page<Product> productsPage(List<Product> products, Pageable pageable) {
+
+
         //Pageable pageable = PageRequest.of(0, 100, Sort.Direction.DESC, "supplier"); /// добавить пагинацию при фильтрации
         try{
             int start = (int) pageable.getOffset();
