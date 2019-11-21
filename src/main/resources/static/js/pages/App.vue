@@ -1,12 +1,12 @@
 <template>
     <v-app >
-
         <navbar></navbar>
 
 
 
         <v-content class="bg">
             <div @click="hideSearch()">
+               <!-- <v-progress-linear indeterminate color="#e52d00"></v-progress-linear>-->
                 <router-view ></router-view>
             </div>
         </v-content>
@@ -17,14 +17,12 @@
             <div> {{ new Date().getFullYear() }}</div>
         </v-footer>
 
-
     </v-app>
 </template>
 
 <script>
     import Navbar from "components/Navbar.vue";
     import Footer from "components/Footer.vue";
-
     export default {
         components: {Navbar, Footer},
         methods: {
@@ -34,6 +32,7 @@
         }
     }
 </script>
+
 <style scoped>
     .bg{
         background-color: #f2f2f2;

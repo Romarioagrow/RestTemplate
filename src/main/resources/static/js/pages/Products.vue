@@ -3,19 +3,8 @@
         <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
 
         <v-toolbar flat >
-            <!--<v-toolbar-title>
-                <p v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</p>
-            </v-toolbar-title>-->
-
-            <!--<v-spacer></v-spacer>-->
-
-            <!--<v-toolbar-items>
-                <v-btn class="ma-2" small outlined color="indigo">Outlined Button</v-btn>
-            </v-toolbar-items>-->
-
             <v-toolbar-items>
                 <v-btn v-if="showFiltersButtonToolbar" small depressed outlined color="indigo" max-height="50%" style="margin-top: 15px" @click="returnFilters()">Открыть фильтры</v-btn>
-
 
                 <v-btn depressed text small>
                     <router-link to="/">
@@ -30,35 +19,10 @@
                 </v-btn>
 
                 <v-btn depressed disabled text small>{{linkProductGroup}}</v-btn>
-
-
-
-                <!--<v-btn text>Link 1</v-btn>
-                <v-btn text>Link 2</v-btn>
-                <v-btn text>Link 3</v-btn>-->
             </v-toolbar-items>
-
-            <!--<v-spacer></v-spacer>
-
-            <template v-if="$vuetify.breakpoint.smAndUp">
-
-                <v-select :items="items" label="Сортировка" solo
-                ></v-select>
-
-                &lt;!&ndash;<v-btn icon>
-                    <v-icon>mdi-export-variant</v-icon>
-                </v-btn>
-                <v-btn icon>
-                    <v-icon>mdi-delete-circle</v-icon>
-                </v-btn>
-                <v-btn icon>
-                    <v-icon>mdi-plus-circle</v-icon>
-                </v-btn>&ndash;&gt;
-            </template>-->
         </v-toolbar>
 
         <v-navigation-drawer app width="350" v-if="showFilters" :clipped="$vuetify.breakpoint.lgAndUp">
-
             <template v-slot:prepend>
                 <v-container>
                     <v-row>
@@ -75,7 +39,6 @@
                     <div>
                         <p v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</p>
                     </div>
-
                 </v-container>
             </template>
 
@@ -147,26 +110,13 @@
                             </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
+
                 </v-expansion-panels>
             </v-card-actions>
         </v-navigation-drawer>
 
 
         <b-container fluid fill-height>
-
-            <!--<v-row class="p-3">
-                <router-link to="/">
-                    <v-btn depressed text small>Каталог</v-btn>
-                </router-link>
-                <router-link to="/">
-                    <v-btn depressed text small>{{linkCategory}}</v-btn>
-                </router-link>
-                <v-btn depressed disabled text small>{{linkProductGroup}}</v-btn>
-            </v-row>-->
-
-            <!--<v-row class="ml-3">
-                <p v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</p>
-            </v-row>-->
 
             <v-slide-group multiple show-arrows class="mt-5">
                 <v-slide-item v-for="feature in filtersFeats" :key="feature" v-slot:default="{ active, toggle }">
@@ -220,12 +170,10 @@
                 filtersRequest: '',
                 pageRequest: '',
                 totalProductsFound: 0,
-
                 scrollPage: 1,
                 filtersScrollPage: 0,
                 filters: {},
                 showFiltersButtonToolbar: false
-                /*items: ['По цене '],*/
             }
         },
         created() {
@@ -269,10 +217,6 @@
             })
         },
         mounted() {
-
-            /*ДЛЯ БЕЗФИЛЬТРОВ И С ФИЛЬТРАМИ*/
-            /*ПАГИНАЦИЯ ПОДГРУЗКОЙ*/
-
             window.onscroll = () =>{
                 const el = document.documentElement
                 const isBottomOfScreen = el.scrollTop + window.innerHeight === el.offsetHeight
@@ -285,9 +229,8 @@
                             this.scrollPage+=1
                         })
                     }
-                    else {
-                        /*если есть заполненнные фильтры, то отфильтровать и отправить на страницу 15 штук первых товаров*/
-                        /*затем при прокрутке до дна прислать еще 15 товаров с этими же фильтрами */
+                    else
+                    {
                         this.filtersScrollPage+=1
                         const filterURL = '/api/products/filter' + this.requestGroup + '/' + this.filtersScrollPage
                         axios.post(filterURL, this.filters).then(response => {
@@ -325,7 +268,6 @@
                     this.products = response.data.content)
             },
             filterProducts(param) {
-                //let filters = {}
                 this.filtersScrollPage = 0
 
                 if (param !== undefined)
@@ -373,11 +315,4 @@
     }
 </script>
 
-<style scoped>
-    .red {
-        background-color: darkred;
-    }
-    .bgclr {
-        background-color: red;
-    }
-</style>
+<style scoped></style>

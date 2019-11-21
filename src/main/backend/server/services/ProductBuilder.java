@@ -15,7 +15,6 @@ import server.config.AliasConfig;
 import server.domain.*;
 import server.dto.SearchProduct;
 import server.repos.*;
-
 import java.io.*;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
@@ -24,7 +23,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -417,15 +415,15 @@ public class ProductBuilder {
         }
 
         switch (originalCategory) {
-            case "Аудио": return "Автотовары";
-            case "Электроника": return "Теле-Видео-Аудио";
+            case "Аудио"                    : return "Автотовары";
+            case "Электроника"              : return "Теле-Видео-Аудио";
             case "Крупная техника для кухни":
-            case "Мелкая техника для кухни": return "Кухонная техника";
-            case "Красота и здоровье":return "Приборы персонального ухода";
+            case "Мелкая техника для кухни" : return "Кухонная техника";
+            case "Красота и здоровье"       : return "Приборы персонального ухода";
             case "Инструменты для дома, дачи и авто":
-            case "Инструмент": return "Строительные инструменты";
-            case "Гаджеты": return "Цифровые устройства";
-            case "Отдых и Развлечения" : return "Спорт и отдых";
+            case "Инструмент"               : return "Строительные инструменты";
+            case "Гаджеты"                  : return "Цифровые устройства";
+            case "Отдых и Развлечения"      : return "Спорт и отдых";
             default: return originalCategory;
         }
     }
@@ -444,12 +442,12 @@ public class ProductBuilder {
         return shortModelName.replaceAll("-", "").replaceAll("_", "").replaceAll("_", "").replaceAll("\\(", "").replaceAll("\\)", "").replaceAll("/", "").toLowerCase();
     }
 
-    private String formatAnnotation(String annotation) {
+    /*private String formatAnnotation(String annotation) {
         if (!annotation.isEmpty() && annotation.contains(";")) {
             return annotation.replaceAll(";", "<br>");
         }
         return null;
-    }
+    }*/
 
     private String resolveAnnotation(OriginalProduct originalProduct, boolean supplierRBT) {
         String annotation;
@@ -498,7 +496,7 @@ public class ProductBuilder {
         if (productWithUniquePrice(originalProduct)) {
             return Integer.parseInt(StringUtils.deleteWhitespace(brandsRepo.findByProductID(originalProduct.getProductID()).getFinalPrice()));
         }
-        /*else if (productPriceModified())*/
+        /// else if (productPriceModified())
         else return makeRoundFinalPrice(originalProduct.getOriginalPrice(), coefficient);
     }
 
@@ -654,7 +652,7 @@ public class ProductBuilder {
     }
 
     public void parsePicsRUSBT() {
-        //findInBigBase();
+        /// findInBigBase();
 
         AtomicInteger count404 = new AtomicInteger(), countPic = new AtomicInteger(), countAnno = new AtomicInteger(), countInfo = new AtomicInteger();
         List<OriginalProduct> originalProducts = originalRepo.findByLinkToPicNotNull();
@@ -724,7 +722,7 @@ public class ProductBuilder {
                 exp.printStackTrace();
             }
         });
-        //downloadPics();
+        /// downloadPics();
 
         System.out.println();
         log.info("Всего товаров: "      + originalProducts.size());

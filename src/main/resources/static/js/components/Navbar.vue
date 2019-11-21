@@ -87,10 +87,7 @@
                 </v-btn>
             </router-link>
 
-
         </v-app-bar>
-
-        <!--<v-progress-linear indeterminate color="#e52d00"></v-progress-linear>-->
     </div>
 </template>
 
@@ -108,23 +105,17 @@
                 const searchQuery = document.getElementById('searchInput').value
                 this.$store.dispatch('searchProducts', searchQuery)
 
-                //this.loading = true
-                //this.loading = false
-
-                /* setTimeout(() => {
+                /*this.loading = true
+                this.loading = false
+                setTimeout(() => {
                      /!*console.log(this.search)
                      console.log(this.states)*!/
-
                      axios.post('api/products/searchProducts')
-
                      this.loading = false
                  }, 500)*/
             },
             goToProductPage(productID) {
-                //console.log('productID')
-
                 this.$store.commit('hideSearchedAreaTrue')
-                //this.$router.go('/products/product/'+productID)
 
                 if (this.$route.fullPath.includes('product/')) {
                     this.$router.push('/products/product/'+productID)
@@ -157,17 +148,8 @@
 </script>
 
 <style scoped>
-    /*.searchedItem {
-         background-color: #fafafa
-     }*/
     .searchedItem:hover {
         background-color: #f2f2f2
-    }
-    .search {
-        position: absolute;
-        left: 39%;
-        top: 100%;
-        background-color: #fafafa;
     }
     .display-result {
         position: absolute;

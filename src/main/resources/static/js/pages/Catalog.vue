@@ -59,13 +59,7 @@
         created() {
             this.allCategories = catalogJSON
             this.loading = false
-        },
-       /* methods: {
-            hideSearch() {
-                console.log('dfgjghjj')
-                this.$store.dispatch('hideSearchedArea')
-            }
-        }*/
+        }
     }
 </script>
 <style scoped>
@@ -78,8 +72,5 @@
     }
     .flu {
         width: 95%;
-    }
-    .navbr {
-        width: 70%;
     }
 </style>

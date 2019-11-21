@@ -32,14 +32,12 @@ export default new Vuex.Store({
             currentState.showSearchedArea = false
         },
 
-
         setCurrentUser(currentState, user) {
             currentState.currentUser = user
         },
         logoutUser(currentState) {
             currentState.currentUser = null
         },
-
 
         setOrderDB(currentState, order) {
             currentState.currentOrder = order
@@ -57,7 +55,6 @@ export default new Vuex.Store({
             currentState.orderedProducts = []
         },
 
-
         hideFiltersButton(currentState) {
             currentState.filtersClosedButton = false
         },
@@ -73,14 +70,10 @@ export default new Vuex.Store({
             console.log(request)
 
             if (request) {
-
-
                 const url = '/api/products/search'
-
                 const headers = {
                     'Content-Type': 'application/json',
                 }
-
                 axios.post(url, request, {
                     headers: headers
                 })
@@ -93,22 +86,8 @@ export default new Vuex.Store({
                             type: ERROR_FINDING_USER
                         })
                     })
-
-
-
-                /*axios.post('/api/products/search', request).then(response => {
-
-                    context.commit('setSearchedProducts', response.data)
-                    context.commit('showSearchedAreaTrue')
-
-                })*/
             }
         },
-        /*goToSearchedProduct(context, productID) {
-            context.commit('hideSearchedAreaTrue')
-            router.push('/products/product/'+productID)
-        },*/
-
         login(context) {
             let sessionProducts
             if (this.state.currentOrder != null) {
@@ -161,8 +140,6 @@ export default new Vuex.Store({
         hideSearchedArea(context) {
             context.commit('hideSearchedAreaTrue')
         }
-
-
     },
     plugins: [createPersistedState()]
 });

@@ -6,12 +6,10 @@ import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import server.domain.Order;
-import server.domain.OriginalProduct;
 import server.domain.Product;
 import server.domain.User;
 import server.dto.OrderedProduct;
 import server.repos.OrderRepo;
-import server.repos.OriginalRepo;
 import server.repos.ProductRepo;
 import server.repos.UserRepo;
 import java.util.*;
@@ -23,11 +21,8 @@ public class OrderService {
     private final OrderRepo orderRepo;
     private final UserRepo userRepo;
     private final ProductRepo productRepo;
-    private final OriginalRepo originalRepo;
 
     public boolean acceptOrder(Map<String, String> orderDetails) {
-        log.info(orderDetails.toString());
-
         Long orderID = Long.parseLong(orderDetails.get("orderID"));
         Order order = orderRepo.findByOrderID(orderID);
 
@@ -50,7 +45,6 @@ public class OrderService {
 
         order.setAccepted(true);
         orderRepo.save(order);
-        log.info(order.toString());
         return true;
     }
 
@@ -72,10 +66,7 @@ public class OrderService {
         orderRepo.save(order);
         return order;
     }
-    /*
-    При добавлении корзины из сессии новому/cуществующему пользователю
-    * баллы не умножаются на количество
-    */
+
     public LinkedList<Object> deleteProductFromOrder(String productID, User user) {
         productID = productID.replaceAll("=","");
 
@@ -226,7 +217,6 @@ public class OrderService {
         acceptedOrders.sort(Comparator.comparing(Order::getOpenDate).reversed());
         return acceptedOrders;
     }
-
 
     public List<Order> getAllCompletedOrders() {
         List<Order> completedOrders = orderRepo.findAllByCompletedTrue();

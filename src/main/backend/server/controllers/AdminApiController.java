@@ -11,9 +11,7 @@ import server.repos.OriginalRepo;
 import server.repos.ProductRepo;
 import server.services.OrderService;
 import server.services.ProductBuilder;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 
 @Log
@@ -105,21 +103,17 @@ public class AdminApiController {
             }
         });
 
-
-        //log.info("TEST USER: " + user.getFirstName());
-        //productBuilder.test();
-
-        /*Runnable taskOriginal = () -> {
+        /*log.info("TEST USER: " + user.getFirstName());
+        productBuilder.test();
+        Runnable taskOriginal = () -> {
             originalRepo.findAll().forEach(originalProduct -> {
                 originalProduct.setUpdateDate(LocalDate.ofYearDay(2019,50));
                 originalRepo.save(originalProduct);
                 log.info("original " + originalProduct.getUpdateDate().toString());
             });
-
         };
         taskOriginal.run();
         new Thread(taskOriginal).start();
-
         Runnable taskProducts = () -> {
             productRepo.findAll().forEach(product -> {
                 product.setUpdateDate(LocalDate.ofYearDay(2019,50));

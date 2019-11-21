@@ -269,9 +269,6 @@
         },
         methods: {
             loadData(response) {
-
-                console.log(response.data)
-
                 const order = response.data[0]
                 const productList = response.data[1]
                 this.$store.dispatch('updateOrder', order)

@@ -1,16 +1,14 @@
 package server.services;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import server.domain.Product;
 import server.dto.FiltersList;
-import server.dto.ProductGroup;
 import server.repos.ProductRepo;
-
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
@@ -26,8 +24,6 @@ public class ProductService {
     private final ProductRepo productRepo;
 
     public Page<Product> getProductsByGroup(String group, Pageable pageable) {
-        /*Page<Product> products = productRepo.findByProductGroupIgnoreCase(group, pageable);
-        products.so*/
         return productRepo.findByProductGroupIgnoreCaseOrderByPicAsc(group, pageable);
     }
 
@@ -36,8 +32,6 @@ public class ProductService {
         FiltersList filtersList = new FiltersList();
 
         /*Наполнение списка товаров нужной группы*/
-
-        /* List<Product> products = productRepo.findProductsByProductGroupIgnoreCaseAndSupplier(group, "RBT");*/
         List<Product> products = productRepo.findProductsByProductGroupIgnoreCase(group);
 
         try
@@ -129,8 +123,6 @@ public class ProductService {
                 val.add(first);
                 val.add(last);
             });
-
-            log.info(filtersList.toString());
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -211,8 +203,6 @@ public class ProductService {
         return productRepo.findByProductID(productID);
     }
 
-    /*filter by pic and then by price*/
-
     public Page<Product> filterProducts(Map<String, String[]> filters, String group, Pageable pageable) {
         List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
         try
@@ -288,11 +278,6 @@ public class ProductService {
             }
 
             products.sort(Comparator.comparingInt(Product::getFinalPrice).thenComparing(Product::getPic));
-            //products.sort(Comparator.comparing(Product::getPic).reversed().thenComparing(Product::getFinalPrice));
-            //products.sort(Comparator.comparing(Product::getFinalPrice));
-
-            //products.sort(Comparator.comparing(Product::getFinalPrice).reversed());
-            //products.forEach(product -> log.info(product.getFinalPrice() + ""));
         }
         catch (NullPointerException | NumberFormatException e) {
             e.printStackTrace();
@@ -318,8 +303,6 @@ public class ProductService {
     }
 
     public List<Product> searchProducts(String searchRequest) {
-        log.info(searchRequest);
-
         List<Product> products =  productRepo.findAll();
 
         if (!searchRequest.contains(" ")) {
@@ -344,63 +327,3 @@ public class ProductService {
         return products;
     }
 }
-
-/*КАК ВАРИАНТ СОЗДАТЬ ШАБЛОНЫ ДЛЯ ДОБАЛВЕНИЯ KEY/VALUE ДЛЯ RUSBT SHORTANNO*/
-/*ДОБАВЛЯТЬ СИНОНИМЫ ЧЕРЕЗ ИЛИ*/
-/*НУЖНО ЧТО БЫ ПРОДОЛЖАЛ ФИЛЬТРОВАТЬ УЖЕ ОТФИЛЬТРОВАННЫЕ ОДИН РАЗ ТОВАРЫ*/
-/*ДЛЯ КАЖДОЙ ФИЛЬТРАЦИИ ОТПРАВЛЯТЬ СПИСОК УЖЕ ОТФИЛЬТРОВАННЫХ ТОВАРОВ*/
-/*НА CHECK IN ФИЛЬТРОВАТЬ CURRENT_PRODUCT_FILTER, НА CHECK OUT PRODUCTS = BY GROUP */
-
-/*ФИЛЬТРОВАТЬ УЖЕ НАПОЛНЕНУЮ КОЛЛЕКЦИЮ PRODUCTS И ПЕРЕРИСОВЫВАТЬ ДОСТУПНЫЕ ФИЛЬТРЫ ИЗ НЕЕ*/
-
-/*!!FORMATTED ANNOTATION: УДАЛИТЬ ИЗ АННОТАЦИИ ВСЕ "НЕТ", "-" И ТД, B ВСТАВИТЬ ПЕРЕНОС СТРОКИ ДЛЯ КАЖДОГО*/
-
-/*
-    * ЗАГРУЗКА ДАННЫХ НА СТРАНИЦЕ PRODUCTS
-    * beforeCreated многопоточно:
-    * List/Page product,
-    * List<Filters>
-      после завершения всех операций loading = false
-    * */
-
-/*
- * ПРИ ФИЛЬТРАЦИИ ВЫВОДИТЬ TOTAL PAGES ТАК ЖЕ КАК ПРИ ЗАГРУЗКЕ ВСЕХ PRODUCTS*/
-
-/*
- * ДЛЯ ФИЛЬТРАЦИИ RUSBT ДОБАВЛЯТЬ ЕДИНИЦУ ИЗМЕРЕНИЯ ИЗ АННОТАЦИИ*/
-
-/*!!!!!
- * Для работы с поставщиками использовать сущность OriginalProduct, для работы с сервисами и выводом Product
- * Для работы с самим заказом вцелом Order, внутри которого находится OrderList, products добавлять в OrderList*/
-/*!!!!
-
- */
-/*Все внутренние методы для фильтрации в FilterService*/
-
-/*При фильтрации обрабатывать итерируемый фильтр, для нужных случаев по группам товаров добавлять синоним для фильтра*/
-
-/*Добавить возможность обязательного добавления собственного фильтра в фильтры*/
-
-/*
- * В базе у products специальное поле для фильтрации аннтоации, filteredAnnotation, все пробелы в словах внутри фильтра заменить на _, и при фильтрации у фильтра аналогично*/
-
-/*при выборе фильтра-особенности, отображать этот фильтр на карточке товара!*/
-
-/*
- * Сначала ишет уникальные фильтры через И, если их ноль, то тогда через или*/
-
-/*
- * если у двух поставщиков есть одинаковое свойство с одним и тем же словом в названии,
- * в списке оставлять свойство с наименьшим количеством слов в названии: из DVB-T2 и Приём DVB-T2 оставить DVB-T2,
- * фильтровать по contains */
-
-/*
- * При фильтрации в filterService фильтров-особенностей
- * искать по contains(filter) || contains(filter.concat(": есть"))
- * для некоторых фильтров добавить метод с присвоеннием синонимов (Ultra hd = 4K) и проверять на contains синонима
- * так же сформировать списки-фильтры: цвет, габариты, объем, тип, мощность (Ширина: 60, Глубина: 70, высота: 140 = 60х70х140 как минимальный вариант )
- *
- */
-
-/*
- * Формировать shortAnnotation по несколько пунктов из аннотации для каждой группы*/
