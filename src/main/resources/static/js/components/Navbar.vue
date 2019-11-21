@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-app-bar color="#f48337" dark :clipped-left="$vuetify.breakpoint.lgAndUp" app height="70" src="http://www.picshare.ru/uploads/191113/6b5152mGVs.jpg">
+        <v-app-bar color="#f48337" dark :clipped-left="$vuetify.breakpoint.lgAndUp" app height="70" src="https://i.ibb.co/fnWNYW0/navpic.jpg">
 
             <router-link to="/">
                 <v-app-bar-nav-icon></v-app-bar-nav-icon>
@@ -8,7 +8,7 @@
 
             <v-toolbar-title>
                 <router-link to="/">
-                    <v-img src="http://www.picshare.ru/uploads/191113/E699PhEOi3.png" contain height="60"></v-img>
+                    <v-img src="https://i.ibb.co/wZnvNdZ/logo.png" contain height="60"></v-img>
                 </router-link>
             </v-toolbar-title>
 

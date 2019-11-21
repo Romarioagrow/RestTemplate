@@ -18,7 +18,18 @@
                             <v-list-item-subtitle>{{ product.productType }}</v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
-                    <v-img :src="product.pic" contain max-height="300"></v-img>
+
+
+                    <a @mouseover="this.style.cursor='pointer'">
+                        <v-img class="white--text" contain max-height="300" :src="product.pic" alt="Bad Link" @click.stop="picDialog = true"></v-img>
+                    </a>
+                    <v-dialog v-model="picDialog" max-width="80%">
+                        <v-card>
+                            <v-img class="white--text" height="1000" contain :src="product.pic" alt="Bad Link" @click.stop="picDialog = true"></v-img>
+                        </v-card>
+                    </v-dialog>
+
+
                     <b-card>
                         <b-card-body>
                             <!--{{ product.annotation }}-->
@@ -85,7 +96,8 @@
             return {
                 product: '',
                 linkBack: '',
-                anno: []
+                anno: [],
+                picDialog: false
             }
         },
         beforeCreate() {
@@ -96,8 +108,6 @@
                 this.anno =  (this.product.formattedAnnotation.split('<br>').map(String)).filter(Boolean)
                 this.linkBack = '/products/'+ (this.product.productGroup).toLowerCase();
 
-                //console.log(this.product)
-                //console.log(this.anno)
             });
         },
         methods: {

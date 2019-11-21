@@ -81,26 +81,23 @@
 
             <v-divider></v-divider>
 
-            <v-card-actions>
-                <v-expansion-panels multiple>
+            <v-card-actions class="pl-0 pr-1">
+                <v-expansion-panels multiple >
 
                     <v-expansion-panel>
                         <v-expansion-panel-header >Цены</v-expansion-panel-header>
                         <v-expansion-panel-content>
-                            <v-card-text>
-                                <v-row>
-                                    <v-col>
-                                        <v-range-slider class="align-center" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
-                                            <template v-slot:prepend>
-                                                <v-text-field class="" @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
-                                            </template>
-                                            <template v-slot:append>
-                                                <v-text-field class="" @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
-                                            </template>
-                                        </v-range-slider>
-                                    </v-col>
-                                </v-row>
-                            </v-card-text>
+                            <v-card-actions>
+                                <v-range-slider class="align-center" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
+                                    <template v-slot:prepend>
+                                        <v-text-field @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
+                                    </template>
+                                    <template v-slot:append>
+                                        <v-text-field @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
+                                    </template>
+                                </v-range-slider>
+
+                            </v-card-actions>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 
@@ -110,10 +107,10 @@
                             <div v-for="brand in twoColsBrands" >
                                 <v-row>
                                     <v-col class="p-0 m-0">
-                                        <v-checkbox @change="filterProducts()" v-model="selectedBrands" :label="brand.firstBrand" :value="brand.firstBrand" height="2"></v-checkbox>
+                                        <v-checkbox class="mt-0" @change="filterProducts()" v-model="selectedBrands" :label="brand.firstBrand" :value="brand.firstBrand" height="2"></v-checkbox>
                                     </v-col>
                                     <v-col class="p-0 m-0" v-if="brand.secondBrand !== undefined">
-                                        <v-checkbox @change="filterProducts()" v-model="selectedBrands" :label="brand.secondBrand" :value="brand.secondBrand" height="2"></v-checkbox>
+                                        <v-checkbox class="mt-0" @change="filterProducts()" v-model="selectedBrands" :label="brand.secondBrand" :value="brand.secondBrand" height="2"></v-checkbox>
                                     </v-col>
                                 </v-row>
                             </div>
@@ -144,7 +141,7 @@
                             <div v-for="(param, i) in val" :key="i" :brand="param">
                                 <v-row>
                                     <v-col class="p-0 m-0">
-                                        <v-checkbox @change="filterProducts()" v-model="selectedParams" :label="param" :value="key +': '+param" height="2"></v-checkbox>
+                                        <v-checkbox class="mt-2" @change="filterProducts()" v-model="selectedParams" :label="param" :value="key +': '+param" height="2"></v-checkbox>
                                     </v-col>
                                 </v-row>
                             </div>
