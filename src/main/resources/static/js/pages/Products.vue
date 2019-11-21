@@ -2,6 +2,61 @@
     <div>
         <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
 
+        <v-toolbar flat >
+            <!--<v-toolbar-title>
+                <p v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</p>
+            </v-toolbar-title>-->
+
+            <!--<v-spacer></v-spacer>-->
+
+            <!--<v-toolbar-items>
+                <v-btn class="ma-2" small outlined color="indigo">Outlined Button</v-btn>
+            </v-toolbar-items>-->
+
+            <v-toolbar-items>
+                <v-btn v-if="showFiltersButtonToolbar" small depressed outlined color="indigo" max-height="50%" style="margin-top: 15px" @click="returnFilters()">Открыть фильтры</v-btn>
+
+
+                <v-btn depressed text small>
+                    <router-link to="/">
+                        Каталог
+                    </router-link>
+                </v-btn>
+
+                <v-btn depressed text small>
+                    <router-link to="/">
+                        {{linkCategory}}
+                    </router-link>
+                </v-btn>
+
+                <v-btn depressed disabled text small>{{linkProductGroup}}</v-btn>
+
+
+
+                <!--<v-btn text>Link 1</v-btn>
+                <v-btn text>Link 2</v-btn>
+                <v-btn text>Link 3</v-btn>-->
+            </v-toolbar-items>
+
+            <!--<v-spacer></v-spacer>
+
+            <template v-if="$vuetify.breakpoint.smAndUp">
+
+                <v-select :items="items" label="Сортировка" solo
+                ></v-select>
+
+                &lt;!&ndash;<v-btn icon>
+                    <v-icon>mdi-export-variant</v-icon>
+                </v-btn>
+                <v-btn icon>
+                    <v-icon>mdi-delete-circle</v-icon>
+                </v-btn>
+                <v-btn icon>
+                    <v-icon>mdi-plus-circle</v-icon>
+                </v-btn>&ndash;&gt;
+            </template>-->
+        </v-toolbar>
+
         <v-navigation-drawer app width="350" v-if="showFilters" :clipped="$vuetify.breakpoint.lgAndUp">
 
             <template v-slot:prepend>
@@ -16,6 +71,11 @@
                             </v-btn>
                         </v-col>
                     </v-row>
+
+                    <div>
+                        <p v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</p>
+                    </div>
+
                 </v-container>
             </template>
 
@@ -95,10 +155,9 @@
         </v-navigation-drawer>
 
 
-
         <b-container fluid fill-height>
 
-            <v-row class="p-3">
+            <!--<v-row class="p-3">
                 <router-link to="/">
                     <v-btn depressed text small>Каталог</v-btn>
                 </router-link>
@@ -106,13 +165,13 @@
                     <v-btn depressed text small>{{linkCategory}}</v-btn>
                 </router-link>
                 <v-btn depressed disabled text small>{{linkProductGroup}}</v-btn>
-            </v-row>
+            </v-row>-->
 
-            <v-row class="ml-3">
+            <!--<v-row class="ml-3">
                 <p v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</p>
-            </v-row>
+            </v-row>-->
 
-            <v-slide-group multiple show-arrows>
+            <v-slide-group multiple show-arrows class="mt-5">
                 <v-slide-item v-for="feature in filtersFeats" :key="feature" v-slot:default="{ active, toggle }">
                     <v-btn class="mx-2" style="background-color: #fafafa" :input-value="active" active-class="orange text" depressed rounded @click="toggle" @mouseup="filterProducts(feature)">
                         {{ feature }}
@@ -120,57 +179,10 @@
                 </v-slide-item>
             </v-slide-group>
 
-
             <v-row>
                 <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
             </v-row>
 
-
-            <!--<b-container>
-                <v-row>
-                    <v-col>
-                        <router-link to="/">
-                            <v-btn depressed text small>Каталог</v-btn>
-                        </router-link>
-                    </v-col>
-                    <v-col>
-                        <router-link to="/">
-                            <v-btn depressed text small>{{linkCategory}}</v-btn>
-                        </router-link>
-                    </v-col>
-                    <v-col>
-                        <v-btn depressed disabled text small>{{linkProductGroup}}</v-btn>
-                    </v-col>
-                </v-row>
-
-                <strong class="ml-3" v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</strong>
-
-                <v-row class="mt-1 ml-1" v-if="totalPages !== 1">
-                    <div class="text-center">
-                        <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="7" @input="loadPage(page)"></v-pagination>
-                    </div>
-                </v-row>
-
-                <v-sheet class="mx-auto mt-2">
-                    <v-slide-group multiple show-arrows>
-                        <v-slide-item v-for="feature in filtersFeats" :key="feature" v-slot:default="{ active, toggle }">
-                            <v-btn class="mx-2"  :input-value="active" active-class="purple white text" depressed rounded @click="toggle" @mousedown="filterProducts(feature)">
-                                {{ feature }}
-                            </v-btn>
-                        </v-slide-item>
-                    </v-slide-group>
-                </v-sheet>
-
-                <v-row>
-                    <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
-                </v-row>
-
-                <v-row>
-                    <div class="text-center" v-if="totalPages !== 1">
-                        <v-pagination color="#e52d00" v-model="page" :length="totalPages" :total-visible="7" @input="loadPage(page)"></v-pagination>
-                    </div>
-                </v-row>
-            </b-container>-->
         </b-container>
     </div>
 </template>
@@ -214,7 +226,9 @@
 
                 scrollPage: 1,
                 filtersScrollPage: 0,
-                filters: {}
+                filters: {},
+                showFiltersButtonToolbar: false
+                /*items: ['По цене '],*/
             }
         },
         created() {
@@ -258,8 +272,10 @@
             })
         },
         mounted() {
+
             /*ДЛЯ БЕЗФИЛЬТРОВ И С ФИЛЬТРАМИ*/
             /*ПАГИНАЦИЯ ПОДГРУЗКОЙ*/
+
             window.onscroll = () =>{
                 const el = document.documentElement
                 const isBottomOfScreen = el.scrollTop + window.innerHeight === el.offsetHeight
@@ -282,8 +298,6 @@
                         })
 
                     }
-
-
                 }
             }
         },
@@ -303,6 +317,9 @@
                 }
                 return twoColsBrands
             },
+            filterButton() {
+                return this.$store.state.filtersClosedButton
+            }
         },
         methods: {
             loadPage(page) {
@@ -349,7 +366,11 @@
             },
             hideFilters() {
                 this.showFilters = false
-                this.$store.dispatch('showFilters')
+                this.showFiltersButtonToolbar = true
+            },
+            returnFilters() {
+                this.showFilters = true
+                this.showFiltersButtonToolbar = false
             }
         }
     }

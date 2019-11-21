@@ -80,7 +80,11 @@
                     <v-icon>mdi-account-badge-horizontal</v-icon>
                 </v-btn>
             </router-link>
+
+
         </v-app-bar>
+
+        <!--<v-progress-linear indeterminate color="#e52d00"></v-progress-linear>-->
     </div>
 </template>
 

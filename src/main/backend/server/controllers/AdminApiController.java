@@ -98,8 +98,8 @@ public class AdminApiController {
     private void uploadProductsDBFile(@AuthenticationPrincipal User user) {
 
         productRepo.findAll().forEach(product -> {
-            if (product.getPic() == null) {
-                product.setPic("_no_link");
+            if (product.getPic().equals("_no_link")) {
+                product.setPic("https://legprom71.ru/Content/images/no-photo.png");
                 productRepo.save(product);
                 log.info(product.getPic());
             }

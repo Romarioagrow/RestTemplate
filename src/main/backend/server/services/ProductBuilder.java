@@ -54,6 +54,8 @@ public class ProductBuilder {
 
             resolveAvailable();
 
+            checkProductGroupCorrect();
+
             mapCatalogJSON();
 
             checkOrdersForProductAvailable();
@@ -63,6 +65,26 @@ public class ProductBuilder {
         catch (NullPointerException | IOException e) {
             e.getStackTrace();
         }
+    }
+
+    private void checkProductGroupCorrect() {
+        productRepo.findByProductGroupIgnoreCase("Клавиатуры, мыши, комплекты").forEach(product -> {
+            if (product.getSingleTypeName().contains("мышь")) {
+                product.setProductGroup("Мыши");
+            }
+            else if (product.getSingleTypeName().contains("клавиатура")) {
+                product.setProductGroup("Клавиатуры");
+            }
+            product.setProductCategory("Компьютеры и оргтехника");
+            productRepo.save(product);
+        });
+
+        productRepo.findAll().forEach(product -> {
+            if (product.getPic() == null) {
+                product.setPic("https://legprom71.ru/Content/images/no-photo.png");
+                productRepo.save(product);
+            }
+        });
     }
 
     private void checkOrdersForProductAvailable() {
@@ -105,7 +127,7 @@ public class ProductBuilder {
                 ArrayList<String> group = new ArrayList<>();
                 try
                 {
-                    Product product = productRepo.findFirstByProductGroupAndPicIsNotNull(productGroup);
+                    Product product = productRepo.findFirstByProductGroupAndPicIsNotNullAndPicNotContains(productGroup, "legprom71");
                     String pic = product != null ? product.getPic() : "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
                     group.add(productGroup);
                     group.add(pic);
@@ -117,7 +139,6 @@ public class ProductBuilder {
             });
             fullCatalog.put(category, productGroups);
         }
-        //fullCatalog.forEach((s, productGroups) -> log.info(s + " " + productGroups.toString()));
         new ObjectMapper().writeValue(new File("D:\\Projects\\Rest\\src\\main\\resources\\static\\js\\assets\\json\\catalog.json"), fullCatalog);
     }
 
@@ -281,21 +302,7 @@ public class ProductBuilder {
             String originalAmount       = supplierRBT ? row.getCell(6).toString() : row.getCell(7).toString().concat(row.getCell(8).toString());
             String originalBrand        = row.getCell(4).toString();
             String supplier             = supplierRBT ? "RBT" : "RUSBT";
-
-            //String originalPic = null;
-
             String originalPic = getOriginalPicLink(supplier, row);
-
-            /*if (supplierRBT) {
-                originalPic = StringUtils.substringBetween(row.getCell(3).toString(), "\"", "\""); *//*при попытке row.getCell(3).getHyperlink().getAddress() вылетает NullPointer*//*
-            }
-            else if (!row.getCell(15).toString().isEmpty()) {
-                String linkToPic = row.getCell(15).getHyperlink().getAddress();
-                originalProduct.setLinkToPic(linkToPic);
-            }*/
-            //else originalPic = "Ссылки нет!";
-
-            log.info(originalPic);
 
             originalProduct.setOriginalCategory(originalCategory);
             originalProduct.setOriginalGroup(originalGroup);
@@ -306,7 +313,7 @@ public class ProductBuilder {
             originalProduct.setOriginalAmount(originalAmount);
             originalProduct.setOriginalBrand(originalBrand);
             originalProduct.setSupplier(supplier);
-            originalProduct.setOriginalPic(originalPic != null ? originalPic : "_no_link");
+            originalProduct.setOriginalPic(originalPic);
             originalProduct.setUpdateDate(LocalDate.now());
             originalProduct.setIsAvailable(true);
             originalRepo.save(originalProduct);
@@ -324,7 +331,7 @@ public class ProductBuilder {
         else if (!row.getCell(15).toString().isEmpty()) {
             picLink = row.getCell(15).getHyperlink().getAddress();
         }
-        return picLink != null ? picLink : "_no_link";
+        return picLink != null ? picLink : "https://legprom71.ru/Content/images/no-photo.png";
     }
 
     private void updateOriginalProduct(Row row, String productID, boolean supplierRBT) {

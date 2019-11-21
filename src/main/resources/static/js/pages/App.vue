@@ -1,15 +1,23 @@
 <template>
     <v-app >
+
         <navbar></navbar>
+
+
+
         <v-content class="bg">
             <div @click="hideSearch()">
                 <router-view ></router-view>
             </div>
         </v-content>
+
+
         <v-footer>
             <v-spacer></v-spacer>
             <div> {{ new Date().getFullYear() }}</div>
         </v-footer>
+
+
     </v-app>
 </template>
 
@@ -21,7 +29,6 @@
         components: {Navbar, Footer},
         methods: {
             hideSearch() {
-                console.log('dfgjghjj')
                 this.$store.dispatch('hideSearchedArea')
             }
         }

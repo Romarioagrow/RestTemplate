@@ -10,6 +10,7 @@ export default new Vuex.Store({
         currentUser: null,
         currentOrder: null,
         orderedProducts: [],
+
         filtersClosedButton: false,
         showSearchedArea: false,
 
@@ -151,7 +152,7 @@ export default new Vuex.Store({
         hideFilters(context) {
             context.commit('hideFiltersButton')
         },
-        showFilters(context) {
+        showFiltersButton(context) {
             context.commit('showFiltersButton')
         },
         showSearchedArea(context) {

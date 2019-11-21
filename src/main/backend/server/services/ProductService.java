@@ -28,7 +28,7 @@ public class ProductService {
     public Page<Product> getProductsByGroup(String group, Pageable pageable) {
         /*Page<Product> products = productRepo.findByProductGroupIgnoreCase(group, pageable);
         products.so*/
-        return productRepo.findByProductGroupIgnoreCaseOrderByPicDesc(group, pageable);
+        return productRepo.findByProductGroupIgnoreCaseOrderByPicAsc(group, pageable);
     }
 
     /*Создать фильтры для группы products*/
@@ -306,9 +306,6 @@ public class ProductService {
     }
 
     private Page<Product> productsPage(List<Product> products, Pageable pageable) {
-
-
-        //Pageable pageable = PageRequest.of(0, 100, Sort.Direction.DESC, "supplier"); /// добавить пагинацию при фильтрации
         try{
             int start = (int) pageable.getOffset();
             int end = Math.min((start + pageable.getPageSize()), products.size());
@@ -344,30 +341,8 @@ public class ProductService {
             products = products.stream().limit(10).collect(Collectors.toList());
         }
 
-        //log.info(products.size() + "");
         return products;
-
-        /*Поиск по вхождению в оригинальное название*/
-        /*products = productRepo.findByOriginalNameContainsIgnoreCaseAndIsAvailableTrue(searchRequest);
-        if (products.size() != 0) return products;*/
-
-        /*поиск по раздельным словам массив*/
-        /// ()
-
-        /*Поиск по группам*/
-        /*products = productRepo.findByOriginalTypeContainsIgnoreCaseAndIsAvailableTrueAndFinalPriceIsNotNull(searchRequest);
-        if (products.size() != 0) return products;
-        return products;
-
-
-
-        return null;*/
     }
-
-    /*public String correctSearchRequest(String searchRequest) {
-
-        return searchRequest.replaceAll("=","").replaceAll("+","");
-    }*/
 }
 
 /*КАК ВАРИАНТ СОЗДАТЬ ШАБЛОНЫ ДЛЯ ДОБАЛВЕНИЯ KEY/VALUE ДЛЯ RUSBT SHORTANNO*/
