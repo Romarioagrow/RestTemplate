@@ -73,7 +73,7 @@
                         </v-dialog>-->
                     </v-card-actions>
                     <v-card-actions v-else>
-                        <v-btn class="goToOrderButton" block @click="toOrder()">
+                        <v-btn class="goToOrderButton" block @click="toOrder()" style="background-color: #e52d00; color: #ffffff">
                             Перейти в корзину
                         </v-btn>
                     </v-card-actions>

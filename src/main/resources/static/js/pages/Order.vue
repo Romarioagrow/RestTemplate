@@ -3,7 +3,7 @@
         <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
         <b-container fluid style="width: 90%;" v-else>
             <v-row>
-                <v-col cols="8">
+                <v-col cols="8" v-if="orderHasProducts">
                     <v-card outlined>
                         <v-list subheader>
                             <v-subheader>Товары в корзине</v-subheader>
@@ -84,7 +84,7 @@
                                     </v-card-text>
                                 </v-col>
                                 <v-col>
-                                    <v-badge left>
+                                    <v-badge left color="#000000">
                                         <template v-slot:badge>
                                             <span>{{productAmount}}</span>
                                         </template>
@@ -98,7 +98,7 @@
                                     </v-card-text>
                                 </v-col>
                                 <v-col>
-                                    <v-badge left>
+                                    <v-badge left color="#000000">
                                         <template v-slot:badge>
                                             <span>{{itemAmount}}</span>
                                         </template>
@@ -213,8 +213,11 @@
                         </v-card-actions>
                     </v-card>
                     <v-card v-else>
+                        <v-card-title>
+                            Корзина пуста
+                        </v-card-title>
                         <v-card-actions class="chartAreaWrapper">
-                            <v-btn color="primary" block dark @click="toCatalog()">
+                            <v-btn color="#e52d00" block dark @click="toCatalog()">
                                 <v-icon dark right>mdi-backburger</v-icon>
                                 В каталог
                             </v-btn>
@@ -329,7 +332,7 @@
 
                 let address = ''
                 if (this.city) {
-                    address = this.city + ',' + this.street  + ',' + this.house  + ',' + this.flat
+                    address = this.city + ';' + this.street  + ';' + this.house  + ';' + this.flat
                 }
 
                 let orderDetails = {
@@ -397,6 +400,9 @@
             },
             discountPrice() {
                 return this.$store.state.currentOrder.discountPrice
+            },
+            orderHasProducts() {
+                return this.$store.state.orderedProducts.length > 0
             }
         }
     }

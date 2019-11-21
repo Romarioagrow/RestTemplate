@@ -50,13 +50,19 @@
                 </v-list>
             </v-container>
 
-                <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
 
             <router-link to="/order" class="ml-5">
                 <v-btn tile outlined>
-                    <span>Корзина</span>
-                    <v-icon>mdi-cart</v-icon>
+                    Корзина
+                    <v-badge color="#000000" right>
+                        <template v-slot:badge v-if="totalOrderProductsAmount > 0">
+                            <span>{{totalOrderProductsAmount}}</span>
+                        </template>
+                        <v-icon>mdi-cart</v-icon>
+                    </v-badge>
                 </v-btn>
+
             </router-link>
 
             <div v-if="!admin">
@@ -95,6 +101,7 @@
         data: () => ({
             collapseOnScroll: true,
             loading: false,
+
         }),
         methods: {
             searchProducts() {
@@ -141,6 +148,9 @@
             },
             searchArea() {
                 return this.$store.state.showSearchedArea
+            },
+            totalOrderProductsAmount() {
+                return this.$store.state.orderedProducts.length
             }
         }
     }

@@ -72,7 +72,10 @@ public class OrderService {
         orderRepo.save(order);
         return order;
     }
-
+    /*
+    При добавлении корзины из сессии новому/cуществующему пользователю
+    * баллы не умножаются на количество
+    */
     public LinkedList<Object> deleteProductFromOrder(String productID, User user) {
         productID = productID.replaceAll("=","");
 
@@ -173,7 +176,7 @@ public class OrderService {
 
                 order.getOrderedProducts().put(productID, amount);
                 order.setTotalPrice(order.getTotalPrice() + product.getFinalPrice() * amount);
-                order.setTotalBonus(order.getTotalBonus() + product.getBonus());
+                order.setTotalBonus(order.getTotalBonus() + product.getBonus() * amount);
             });
             orderRepo.save(order);
         }

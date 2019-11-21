@@ -2,8 +2,6 @@
     <v-item v-slot:default="{ active, toggle }">
         <v-card outlined class="mx-auto mt-3" max-width="300">
 
-
-
             <div class="p-3">
                 <a @mouseover="this.style.cursor='pointer'">
                     <v-img class="white--text" contain height="150px" :src="product.pic" alt="Bad Link" @click.stop="picDialog = true"></v-img>
@@ -16,30 +14,11 @@
             </div>
 
 
-
             <v-card-text>
                 <router-link :to=showProductInfo>
                     <div class="align-center fill-height headline">{{product.fullName}}</div>
                 </router-link>
             </v-card-text>
-
-            <!--<v-list>
-                <v-list-item-group v-model="item" color="primary">
-                    <v-list-item v-for="anno in annotations" v-if="anno" :key="anno">
-
-                        <v-list-item-content>
-                            <v-list-item-subtitle v-text="anno"></v-list-item-subtitle>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-list-item-group>
-
-                &lt;!&ndash;<v-list-item link>
-                    <v-list-item-content>
-                        <v-list-item-title class="title">John Leider</v-list-item-title>
-                        <v-list-item-subtitle>john@vuetifyjs.com</v-list-item-subtitle>
-                    </v-list-item-content>
-                </v-list-item>&ndash;&gt;
-            </v-list>-->
 
             <v-card-text>
                 <ul>
@@ -54,23 +33,9 @@
                 <v-btn text outlined color="#e52d00" @click="addToOrder(product.productID)">
                     В корзину
                 </v-btn>
-                <!--<v-dialog v-model="dialog" max-width="500">
-                    <template v-slot:activator="{ on }">
-                        <v-btn text color="orange" v-on="on">Купить в 1 клик</v-btn>
-                    </template>
-                    <v-card>
-                        <v-card-title class="headline">Оформить заказ</v-card-title>
-                        <v-card-text>Цена: {{product.finalPrice}} ₽</v-card-text>
-                        <v-card-actions>
-                            <div class="flex-grow-1"></div>
-                            <v-btn color="green darken-1" text @click="dialog = false">Оформить</v-btn>
-                            <v-btn color="green darken-1" text @click="dialog = false">Отмена</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>-->
             </v-card-actions>
             <v-card-actions v-else>
-                <v-btn class="goToOrderButton" @click="toOrder()">
+                <v-btn style="background-color: #e52d00; color: #ffffff" @click="toOrder()">
                     Перейти в корзину
                 </v-btn>
             </v-card-actions>
