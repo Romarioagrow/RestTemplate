@@ -1,9 +1,9 @@
 <template>
-    <div style="width: 90%; margin-left: 50px">
+    <div style="width: 100%;">
         <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
 
         <v-toolbar flat >
-            <v-toolbar-items>
+            <v-toolbar-items style="padding-left: 8%">
                 <v-btn v-if="showFiltersButtonToolbar" small depressed outlined color="indigo" max-height="50%" style="margin-top: 15px" @click="returnFilters()">Открыть фильтры</v-btn>
 
                 <v-btn depressed text small>
@@ -13,7 +13,7 @@
                 </v-btn>
 
                 <v-btn depressed text small>
-                    <router-link to="/">
+                    <router-link to="/" >
                         {{linkCategory}}
                     </router-link>
                 </v-btn>
@@ -22,7 +22,7 @@
             </v-toolbar-items>
         </v-toolbar>
 
-        <v-navigation-drawer app width="350" v-if="showFilters" :clipped="$vuetify.breakpoint.lgAndUp" style="margin-left: 50px">
+        <v-navigation-drawer app width="375" v-if="showFilters" :clipped="$vuetify.breakpoint.lgAndUp" style="margin-left: 70px">
             <template v-slot:prepend>
                 <v-container>
                     <v-row>
@@ -36,131 +36,79 @@
                         </v-col>
                     </v-row>
 
-                    <div>
+                    <!--<div>
                         <p v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</p>
-                    </div>
+                    </div>-->
                 </v-container>
             </template>
 
             <v-divider></v-divider>
 
-            <v-card-actions class="pl-0 pr-1">
-                <v-expansion-panels multiple >
+            <v-card-text v-if="!loading">
+                <p style="text-align: left; margin-top: -20px; margin-bottom: -20px;" v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</p>
+            </v-card-text>
 
+            <v-card-actions style="padding-right: -15px;">
+
+                <div v-if="loading">
+                    <v-progress-circular style="margin-left: 150%"
+                                         :size="75"
+                                         :width="5"
+                                         color="#e52d00"
+                                         indeterminate
+                    ></v-progress-circular>
+                </div>
+
+                <v-expansion-panels multiple focusable  v-else>
+                    <!--Фильтры-цены input-->
                     <v-expansion-panel>
-                        <v-expansion-panel-header >Цены</v-expansion-panel-header>
+                        <v-expansion-panel-header ripple>Цены</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <v-card-actions>
-
-                                <!--<template v-slot:prepend>
-                                    <v-text-field @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
-                                </template>
-                                <template v-slot:append>
-                                    <v-text-field @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
-                                </template>-->
-                                <!--<v-row>
-                                    <v-col>
-                                        <v-text-field @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
-                                    </v-col>
-                                    <v-col>
-                                        <v-text-field @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row>
-                                    <v-range-slider class="align-center" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
-                                        &lt;!&ndash;<template v-slot:prepend>
-                                            <v-text-field @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
-                                        </template>
-                                        <template v-slot:append>
-                                            <v-text-field @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
-                                        </template>&ndash;&gt;
-                                    </v-range-slider>
-                                </v-row>
--->
-
-                                <!--<v-range-slider v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()" >
-                                    <template v-slot:prepend >
-                                        <v-text-field style="margin-bottom: -60px;" @input="filterProducts()" v-model="priceRange[0]" type="string"></v-text-field>
-                                    </template>
-
-
-                                    <template v-slot:append>
-                                        <v-text-field style="margin-bottom: 60px;" @input="filterProducts()" v-model="priceRange[1]" type="string"></v-text-field>
-                                    </template>
-                                </v-range-slider>-->
-
-
-
-                                <v-range-slider class="align-bottom" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
+                                <v-range-slider class="align-bottom" v-model="priceRange" :min="min" :max="max" hide-details color="#e52d00" @end="filterProducts()">
                                     <template v-slot:prepend>
-                                        <v-text-field @input="filterProducts()" v-model="priceRange[0]" type="string" style="width: 60px" class="mt-0 pt-0"></v-text-field>
+                                        <!--<span>от</span>-->
+                                        <v-text-field @input="filterProducts()" color="#e52d00" v-model="priceRange[0]" type="string" style="width: 60px" class="mt-0 pt-0"></v-text-field>
                                     </template>
 
-
                                     <template v-slot:append>
-                                        <v-text-field @input="filterProducts()" v-model="priceRange[1]" type="string" style="width: 60px" class="mt-0 pt-0"></v-text-field>
+                                        <!--<span>до</span>-->
+                                        <v-text-field @input="filterProducts()" color="#e52d00" v-model="priceRange[1]" type="string" style="width: 60px" class="mt-0 pt-0"></v-text-field>
                                     </template>
                                 </v-range-slider>
-
-
-
-
-
-
-
-
-                                <!--dxfgdsfgsdgfds-->
-                                <!--<v-range-slider class="align-bottom" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
-                                    <template v-slot:prepend>
-                                        <v-text-field @input="filterProducts()" v-model="priceRange[0]" type="string"></v-text-field>
-                                    </template>
-
-
-                                    <template v-slot:append>
-                                        <v-text-field @input="filterProducts()" v-model="priceRange[1]" type="string"></v-text-field>
-                                    </template>
-                                </v-range-slider>-->
-
-                                <!--<v-range-slider class="align-center" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
-                                    &lt;!&ndash;<template v-slot:prepend>
-                                        <v-text-field @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
-                                    </template>
-                                    <template v-slot:append>
-                                        <v-text-field @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
-                                    </template>&ndash;&gt;
-                                </v-range-slider>-->
-
                             </v-card-actions>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 
-                    <v-expansion-panel>
-                        <v-expansion-panel-header>Бренды</v-expansion-panel-header>
-                        <v-expansion-panel-content>
-                            <div v-for="brand in twoColsBrands" >
+                    <!--Фильтры-бренды checkbox-->
+                    <v-expansion-panel ripple >
+                        <v-expansion-panel-header ripple>Бренды</v-expansion-panel-header>
+                        <v-expansion-panel-content eager style="margin-top: 10px">
+                            <div v-for="brand in twoColsBrands">
                                 <v-row>
-                                    <v-col class="p-0 m-0">
-                                        <v-checkbox class="mt-1" @change="filterProducts()" v-model="selectedBrands" :label="brand.firstBrand" :value="brand.firstBrand" height="2"></v-checkbox>
+                                    <v-col class="p-0 ">
+                                        <v-checkbox color="#e52d00" class="mt-1"  @change="filterProducts()" v-model="selectedBrands" :label="brand.firstBrand" :value="brand.firstBrand" height="2"></v-checkbox>
                                     </v-col>
-                                    <v-col class="p-0 m-0" v-if="brand.secondBrand !== undefined">
-                                        <v-checkbox class="mt-1" @change="filterProducts()" v-model="selectedBrands" :label="brand.secondBrand" :value="brand.secondBrand" height="2"></v-checkbox>
+                                    <v-col class="p-0 " v-if="brand.secondBrand !== undefined">
+                                        <v-checkbox color="#e52d00" class="mt-1"  @change="filterProducts()" v-model="selectedBrands" :label="brand.secondBrand" :value="brand.secondBrand" height="2"></v-checkbox>
                                     </v-col>
                                 </v-row>
                             </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 
+                    <!--Фильтры-диапазоны input-->
                     <v-expansion-panel v-for="[key, val] of filtersDiapasons" :key="key" >
-                        <v-expansion-panel-header v-if="val[1] !== undefined" :class="{'red': val[1] === undefined}">{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
-                        <v-expansion-panel-content>
+                        <v-expansion-panel-header ripple v-if="val[1] !== undefined" :class="{'red': val[1] === undefined}">{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
+                        <v-expansion-panel-content eager>
                             <v-row>
                                 <v-col>
-                                    <v-range-slider v-model="val" :min="val[0]" :max="val[1]" hide-details class="align-center" @end="filterProducts(key +':'+ val)">
+                                    <v-range-slider color="#e52d00" v-model="val" :min="val[0]" :max="val[1]" hide-details class="align-center" @end="filterProducts(key +':'+ val)">
                                         <template v-slot:prepend>
-                                            <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[0]" class="mt-0 pt-0"  type="string" style="width: 60px"></v-text-field>
+                                            <v-text-field color="#e52d00" @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[0]" class="mt-0 pt-0"  type="string" style="width: 60px"></v-text-field>
                                         </template>
                                         <template v-slot:append>
-                                            <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[1]" class="mt-0 pt-0"  type="string" style="width: 60px"></v-text-field>
+                                            <v-text-field color="#e52d00" @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[1]" class="mt-0 pt-0"  type="string" style="width: 60px"></v-text-field>
                                         </template>
                                     </v-range-slider>
                                 </v-col>
@@ -168,13 +116,15 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 
+                    <!--Фильтры-параметры checkbox-->
+                    <!--#2d2d26-->
                     <v-expansion-panel v-for="[key, val] of filtersParams" :key="key">
-                        <v-expansion-panel-header>{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
-                        <v-expansion-panel-content>
+                        <v-expansion-panel-header ripple>{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
+                        <v-expansion-panel-content eager style="margin-top: 10px">
                             <div v-for="(param, i) in val" :key="i" :brand="param">
                                 <v-row>
                                     <v-col class="p-0 m-0">
-                                        <v-checkbox class="mt-2" @change="filterProducts()" v-model="selectedParams" :label="param" :value="key +': '+param" height="2"></v-checkbox>
+                                        <v-checkbox color="#e52d00" class="mt-2" @change="filterProducts()" v-model="selectedParams" :label="param" :value="key +': '+param" height="2"></v-checkbox>
                                     </v-col>
                                 </v-row>
                             </div>
@@ -186,17 +136,18 @@
         </v-navigation-drawer>
 
 
-        <b-container fluid fill-height>
+        <b-container fluid fill-height style="padding-left: 4%">
 
-            <v-slide-group multiple show-arrows class="mt-5">
+            <!--Список фильтров-особенностей-->
+            <v-slide-group multiple show-arrows class="mt-5" style="margin-left: 5%">
                 <v-slide-item v-for="feature in filtersFeats" :key="feature" v-slot:default="{ active, toggle }">
-                    <v-btn class="mx-2" style="background-color: #fafafa" :input-value="active" active-class="orange text" depressed rounded @click="toggle" @mouseup="filterProducts(feature)">
+                    <v-btn class="mx-2 btn-actv" style="background-color: #fafafa" :input-value="active" active-class="orange text" depressed rounded @click="toggle" @mouseup="filterProducts(feature)">
                         {{ feature }}
                     </v-btn>
                 </v-slide-item>
             </v-slide-group>
 
-            <v-row>
+            <v-row style="margin-left: 5%">
                 <product-card v-for="product in products" :key="product.productID" :product="product" :products="products"></product-card>
             </v-row>
 
@@ -385,4 +336,9 @@
     }
 </script>
 
-<style scoped></style>
+<style scoped>
+    /*.btn-actv:active {
+        background-color: #e52d00;
+        color: #fafafa;
+    }*/
+</style>

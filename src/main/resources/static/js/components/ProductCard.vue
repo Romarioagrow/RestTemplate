@@ -1,6 +1,6 @@
 <template>
     <v-item v-slot:default="{ active, toggle }">
-        <v-card outlined class="mx-auto mt-3" max-width="300">
+        <v-card outlined class="mx-2 mt-3" max-width="300">
 
             <div class="p-3">
                 <a @mouseover="this.style.cursor='pointer'">

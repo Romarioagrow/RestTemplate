@@ -203,11 +203,39 @@ public class ProductService {
         return productRepo.findByProductID(productID);
     }
 
+
+    /*
+    Основной алгоритм фильтрации
+    Main sort algorithm
+    */
     public Page<Product> filterProducts(Map<String, String[]> filters, String group, Pageable pageable) {
         List<Product> products = productRepo.findByProductGroupIgnoreCase(group);
+
+
+
+        ///
+        /*
+        Коллекция с фильтрами Queue/LinkedList наполняется и убирается, фильтруется для каждого фильтра в ней
+        Новый фильтр добавляется к уже существующему друг за другом
+        При снятии фильтр убирается из очереди в обратном порядке
+        *
+        При каждой фильтрации формирование нового списка фильтров
+        Сверка уже наполненого списка фильтров с новым, если старый не присутствует в новом, то старый :disabled
+        Выводить фильтры от rbt и подставлять синонимы по ключам из json
+        *
+        for (map.entry filter : filters)
+        */
+        /*
+        * Убрать пыстые массивы из объекта фильтров
+        * */
+        filters.forEach((s, strings) -> log.info(s + " : " + Arrays.toString(strings)));
+
+
+
+        /// Basic filtration algorithm
         try
         {
-            /*Фильтры по цене*/
+            /*Price filters*/
             products = products.stream().filter(product ->
             {
                 String[] priceFilters = filters.get("prices");
@@ -216,7 +244,7 @@ public class ProductService {
                 return product.getFinalPrice() >= minPrice && product.getFinalPrice() <= maxPrice;
             }).collect(Collectors.toList());
 
-            /*Фильтры по брендам*/
+            /*Brands filters*/
             if (filterHasContent(filters, "brands")) {
                 products = products.stream().filter(product ->
                 {
@@ -225,7 +253,7 @@ public class ProductService {
                 }).collect(Collectors.toList());
             }
 
-            /*Фильтры по диапазонам*/
+            /*Diapasons filters*/
             if (filterHasContent(filters, "selectedDiapasons")) {
                 products = products.stream().filter(product ->
                 {
