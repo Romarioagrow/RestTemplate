@@ -14,4 +14,10 @@ public class AliasConfig {
         JsonReader reader = new JsonReader(new FileReader("D:\\Projects\\Rest\\src\\main\\resources\\static\\js\\assets\\json\\aliases.json"));
         return new Gson().fromJson(reader, LinkedHashMap.class);
     }
+
+    @Bean
+    public LinkedHashMap<String, String> groupsMap() throws FileNotFoundException {
+        JsonReader reader = new JsonReader(new FileReader("D:\\Projects\\Rest\\src\\main\\resources\\static\\js\\assets\\json\\groups.json"));
+        return new Gson().fromJson(reader, LinkedHashMap.class);
+    }
 }

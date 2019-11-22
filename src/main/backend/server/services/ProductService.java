@@ -1,4 +1,5 @@
 package server.services;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,9 @@ import org.springframework.util.StringUtils;
 import server.domain.Product;
 import server.dto.FiltersList;
 import server.repos.ProductRepo;
+
+import java.io.File;
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
@@ -353,5 +357,62 @@ public class ProductService {
         }
 
         return products;
+    }
+
+    public void test() {
+
+        Set<String> categoryGroups = new TreeSet<>();
+        productRepo.findAll().forEach(product -> categoryGroups.add(product.getProductGroup()));
+
+        Map<String, String> groups = new LinkedHashMap<>();
+
+        categoryGroups.forEach(productGroup -> {
+            Product product = productRepo.findFirstByProductGroupAndPicIsNotNullAndPicNotContains(productGroup, "legprom71");
+            String pic = product != null ? product.getPic() : "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
+
+            groups.put(productGroup, pic);
+
+            /*group.add(productGroup);
+            group.add(pic);*/
+        });
+
+        try {
+            new ObjectMapper().writeValue(new File("D:\\Projects\\Rest\\src\\main\\resources\\static\\js\\assets\\json\\groups.json"), groups);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+        /*productRepo.findAll().forEach(product -> {
+            if (product.getPic().equals("_no_link")) {
+                product.setPic("https://legprom71.ru/Content/images/no-photo.png");
+                productRepo.save(product);
+                log.info(product.getPic());
+            }
+        });*/
+
+        /*log.info("TEST USER: " + user.getFirstName());
+        productBuilder.test();
+        Runnable taskOriginal = () -> {
+            originalRepo.findAll().forEach(originalProduct -> {
+                originalProduct.setUpdateDate(LocalDate.ofYearDay(2019,50));
+                originalRepo.save(originalProduct);
+                log.info("original " + originalProduct.getUpdateDate().toString());
+            });
+        };
+        taskOriginal.run();
+        new Thread(taskOriginal).start();
+        Runnable taskProducts = () -> {
+            productRepo.findAll().forEach(product -> {
+                product.setUpdateDate(LocalDate.ofYearDay(2019,50));
+                productRepo.save(product);
+                log.info("product " + product.getUpdateDate().toString());
+            });
+        };
+        taskProducts.run();
+        new Thread(taskProducts).start();*/
+
     }
 }

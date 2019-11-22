@@ -11,8 +11,12 @@ import server.repos.OriginalRepo;
 import server.repos.ProductRepo;
 import server.services.OrderService;
 import server.services.ProductBuilder;
+import server.services.ProductService;
+
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Log
 @RestController
@@ -22,7 +26,7 @@ import java.util.List;
 public class AdminApiController {
     private final ProductBuilder productBuilder;
     private final OrderService orderService;
-    private final OriginalRepo originalRepo;
+    private final ProductService productService;
     private final ProductRepo productRepo;
 
     @PostMapping("/deleteOrder")
@@ -94,34 +98,6 @@ public class AdminApiController {
 
     @PostMapping("/test")
     private void uploadProductsDBFile(@AuthenticationPrincipal User user) {
-
-        productRepo.findAll().forEach(product -> {
-            if (product.getPic().equals("_no_link")) {
-                product.setPic("https://legprom71.ru/Content/images/no-photo.png");
-                productRepo.save(product);
-                log.info(product.getPic());
-            }
-        });
-
-        /*log.info("TEST USER: " + user.getFirstName());
-        productBuilder.test();
-        Runnable taskOriginal = () -> {
-            originalRepo.findAll().forEach(originalProduct -> {
-                originalProduct.setUpdateDate(LocalDate.ofYearDay(2019,50));
-                originalRepo.save(originalProduct);
-                log.info("original " + originalProduct.getUpdateDate().toString());
-            });
-        };
-        taskOriginal.run();
-        new Thread(taskOriginal).start();
-        Runnable taskProducts = () -> {
-            productRepo.findAll().forEach(product -> {
-                product.setUpdateDate(LocalDate.ofYearDay(2019,50));
-                productRepo.save(product);
-                log.info("product " + product.getUpdateDate().toString());
-            });
-        };
-        taskProducts.run();
-        new Thread(taskProducts).start();*/
+        productService.test();
     }
 }

@@ -2,7 +2,7 @@
     <div style="width: 100%;">
         <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
 
-        <v-toolbar flat >
+        <v-toolbar flat v-if="!loading">
             <v-toolbar-items style="padding-left: 8%">
                 <v-btn v-if="showFiltersButtonToolbar" small depressed outlined color="indigo" max-height="50%" style="margin-top: 15px" @click="returnFilters()">Открыть фильтры</v-btn>
 

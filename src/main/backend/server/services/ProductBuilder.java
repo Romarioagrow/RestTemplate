@@ -120,18 +120,37 @@ public class ProductBuilder {
             Set<String> categoryGroups = new TreeSet<>();
 
             productRepo.findByProductCategoryIgnoreCase(category).forEach(product -> categoryGroups.add(product.getProductGroup()));
+
             categoryGroups.forEach(productGroup ->
             {
                 ArrayList<String> group = new ArrayList<>();
                 try
                 {
-                    Product product = productRepo.findFirstByProductGroupAndPicIsNotNullAndPicNotContains(productGroup, "legprom71");
+                    String pic;
+                    Map<String, String> constantPics = aliasConfig.groupsMap();
+
+                    pic = constantPics.get(productGroup);
+                    if (pic != null) {
+                        group.add(productGroup);
+                        group.add(pic);
+                        log.info(pic);
+                    }
+                    else
+                    {
+                        Product product = productRepo.findFirstByProductGroupAndPicIsNotNullAndPicNotContains(productGroup, "legprom71");
+                        pic = product != null ? product.getPic() : "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
+                        group.add(productGroup);
+                        group.add(pic);
+                    }
+
+                    /*Product product = productRepo.findFirstByProductGroupAndPicIsNotNullAndPicNotContains(productGroup, "legprom71");
                     String pic = product != null ? product.getPic() : "D:\\Projects\\Rest\\src\\main\\resources\\static\\pics\\toster.png";
                     group.add(productGroup);
-                    group.add(pic);
+                    group.add(pic);*/
+
                     productGroups.add(group);
                 }
-                catch (NullPointerException e) {
+                catch (NullPointerException | FileNotFoundException e) {
                     log.info("Нет ссылки для группы: " + productGroup);
                 }
             });
