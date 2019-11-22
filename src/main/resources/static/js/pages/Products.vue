@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="width: 90%; margin-left: 50px">
         <v-progress-linear indeterminate color="#e52d00" v-if="loading"></v-progress-linear>
 
         <v-toolbar flat >
@@ -22,7 +22,7 @@
             </v-toolbar-items>
         </v-toolbar>
 
-        <v-navigation-drawer app width="350" v-if="showFilters" :clipped="$vuetify.breakpoint.lgAndUp">
+        <v-navigation-drawer app width="350" v-if="showFilters" :clipped="$vuetify.breakpoint.lgAndUp" style="margin-left: 50px">
             <template v-slot:prepend>
                 <v-container>
                     <v-row>
@@ -51,14 +51,84 @@
                         <v-expansion-panel-header >Цены</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <v-card-actions>
-                                <v-range-slider class="align-center" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
+
+                                <!--<template v-slot:prepend>
+                                    <v-text-field @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
+                                </template>
+                                <template v-slot:append>
+                                    <v-text-field @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
+                                </template>-->
+                                <!--<v-row>
+                                    <v-col>
+                                        <v-text-field @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
+                                    </v-col>
+                                    <v-col>
+                                        <v-text-field @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-range-slider class="align-center" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
+                                        &lt;!&ndash;<template v-slot:prepend>
+                                            <v-text-field @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
+                                        </template>
+                                        <template v-slot:append>
+                                            <v-text-field @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
+                                        </template>&ndash;&gt;
+                                    </v-range-slider>
+                                </v-row>
+-->
+
+                                <!--<v-range-slider v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()" >
+                                    <template v-slot:prepend >
+                                        <v-text-field style="margin-bottom: -60px;" @input="filterProducts()" v-model="priceRange[0]" type="string"></v-text-field>
+                                    </template>
+
+
+                                    <template v-slot:append>
+                                        <v-text-field style="margin-bottom: 60px;" @input="filterProducts()" v-model="priceRange[1]" type="string"></v-text-field>
+                                    </template>
+                                </v-range-slider>-->
+
+
+
+                                <v-range-slider class="align-bottom" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
                                     <template v-slot:prepend>
+                                        <v-text-field @input="filterProducts()" v-model="priceRange[0]" type="string" style="width: 60px" class="mt-0 pt-0"></v-text-field>
+                                    </template>
+
+
+                                    <template v-slot:append>
+                                        <v-text-field @input="filterProducts()" v-model="priceRange[1]" type="string" style="width: 60px" class="mt-0 pt-0"></v-text-field>
+                                    </template>
+                                </v-range-slider>
+
+
+
+
+
+
+
+
+                                <!--dxfgdsfgsdgfds-->
+                                <!--<v-range-slider class="align-bottom" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
+                                    <template v-slot:prepend>
+                                        <v-text-field @input="filterProducts()" v-model="priceRange[0]" type="string"></v-text-field>
+                                    </template>
+
+
+                                    <template v-slot:append>
+                                        <v-text-field @input="filterProducts()" v-model="priceRange[1]" type="string"></v-text-field>
+                                    </template>
+                                </v-range-slider>-->
+
+                                <!--<v-range-slider class="align-center" v-model="priceRange" :min="min" :max="max" hide-details @end="filterProducts()">
+                                    &lt;!&ndash;<template v-slot:prepend>
                                         <v-text-field @input="filterProducts()" v-model="priceRange[0]" hide-details single-line type="number" ></v-text-field>
                                     </template>
                                     <template v-slot:append>
                                         <v-text-field @input="filterProducts()" v-model="priceRange[1]" hide-details single-line type="number" ></v-text-field>
-                                    </template>
-                                </v-range-slider>
+                                    </template>&ndash;&gt;
+                                </v-range-slider>-->
 
                             </v-card-actions>
                         </v-expansion-panel-content>
@@ -70,10 +140,10 @@
                             <div v-for="brand in twoColsBrands" >
                                 <v-row>
                                     <v-col class="p-0 m-0">
-                                        <v-checkbox class="mt-0" @change="filterProducts()" v-model="selectedBrands" :label="brand.firstBrand" :value="brand.firstBrand" height="2"></v-checkbox>
+                                        <v-checkbox class="mt-1" @change="filterProducts()" v-model="selectedBrands" :label="brand.firstBrand" :value="brand.firstBrand" height="2"></v-checkbox>
                                     </v-col>
                                     <v-col class="p-0 m-0" v-if="brand.secondBrand !== undefined">
-                                        <v-checkbox class="mt-0" @change="filterProducts()" v-model="selectedBrands" :label="brand.secondBrand" :value="brand.secondBrand" height="2"></v-checkbox>
+                                        <v-checkbox class="mt-1" @change="filterProducts()" v-model="selectedBrands" :label="brand.secondBrand" :value="brand.secondBrand" height="2"></v-checkbox>
                                     </v-col>
                                 </v-row>
                             </div>
@@ -87,10 +157,10 @@
                                 <v-col>
                                     <v-range-slider v-model="val" :min="val[0]" :max="val[1]" hide-details class="align-center" @end="filterProducts(key +':'+ val)">
                                         <template v-slot:prepend>
-                                            <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[0]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                            <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[0]" class="mt-0 pt-0"  type="string" style="width: 60px"></v-text-field>
                                         </template>
                                         <template v-slot:append>
-                                            <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[1]" class="mt-0 pt-0" hide-details single-line type="float" style="width: 60px"></v-text-field>
+                                            <v-text-field @input="filterProducts(key +':'+ diapasonValues.get(key))" v-model="diapasonValues.get(key)[1]" class="mt-0 pt-0"  type="string" style="width: 60px"></v-text-field>
                                         </template>
                                     </v-range-slider>
                                 </v-col>
