@@ -6,17 +6,17 @@
             <v-toolbar-items style="padding-left: 8%">
                 <v-btn v-if="showFiltersButtonToolbar" small depressed outlined color="indigo" max-height="50%" style="margin-top: 15px" @click="returnFilters()">Открыть фильтры</v-btn>
 
-                <v-btn depressed text small>
-                    <router-link to="/">
+                <router-link to="/">
+                    <v-btn depressed text small height="100%">
                         Каталог
-                    </router-link>
-                </v-btn>
+                    </v-btn>
+                </router-link>
 
-                <v-btn depressed text small>
-                    <router-link to="/" >
+                <router-link to="/" >
+                    <v-btn depressed text small height="100%">
                         {{linkCategory}}
-                    </router-link>
-                </v-btn>
+                    </v-btn>
+                </router-link>
 
                 <v-btn depressed disabled text small>{{linkProductGroup}}</v-btn>
             </v-toolbar-items>
@@ -97,6 +97,22 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 
+                    <!--Фильтры-параметры checkbox-->
+                    <!--#2d2d26-->
+                    <v-expansion-panel v-for="[key, val] of filtersParams" :key="key">
+                        <v-expansion-panel-header ripple>{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
+                        <v-expansion-panel-content eager style="margin-top: 10px">
+                            <div v-for="(param, i) in val" :key="i" :brand="param">
+                                <v-row>
+                                    <v-col class="p-0 m-0">
+                                        <v-checkbox color="#e52d00" class="mt-2" @change="filterProducts()" v-model="selectedParams" :label="param" :value="key +': '+param" height="2"></v-checkbox>
+                                    </v-col>
+                                </v-row>
+                            </div>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+
+
                     <!--Фильтры-диапазоны input-->
                     <v-expansion-panel v-for="[key, val] of filtersDiapasons" :key="key" >
                         <v-expansion-panel-header ripple v-if="val[1] !== undefined" :class="{'red': val[1] === undefined}">{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
@@ -113,21 +129,6 @@
                                     </v-range-slider>
                                 </v-col>
                             </v-row>
-                        </v-expansion-panel-content>
-                    </v-expansion-panel>
-
-                    <!--Фильтры-параметры checkbox-->
-                    <!--#2d2d26-->
-                    <v-expansion-panel v-for="[key, val] of filtersParams" :key="key">
-                        <v-expansion-panel-header ripple>{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
-                        <v-expansion-panel-content eager style="margin-top: 10px">
-                            <div v-for="(param, i) in val" :key="i" :brand="param">
-                                <v-row>
-                                    <v-col class="p-0 m-0">
-                                        <v-checkbox color="#e52d00" class="mt-2" @change="filterProducts()" v-model="selectedParams" :label="param" :value="key +': '+param" height="2"></v-checkbox>
-                                    </v-col>
-                                </v-row>
-                            </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 

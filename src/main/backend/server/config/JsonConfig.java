@@ -3,12 +3,13 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.LinkedHashMap;
 
 @Component
-public class AliasConfig {
+public class JsonConfig {
     @Bean
     public LinkedHashMap<String, String> aliasesMap() throws FileNotFoundException {
         JsonReader reader = new JsonReader(new FileReader("D:\\Projects\\Rest\\src\\main\\resources\\static\\js\\assets\\json\\aliases.json"));

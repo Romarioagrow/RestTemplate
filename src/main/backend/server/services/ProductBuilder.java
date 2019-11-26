@@ -11,7 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import server.config.AliasConfig;
+import server.config.JsonConfig;
 import server.domain.*;
 import server.dto.SearchProduct;
 import server.repos.*;
@@ -34,7 +34,7 @@ import org.jsoup.select.Elements;
 public class ProductBuilder {
     private final OriginalRepo originalRepo;
     private final ProductRepo productRepo;
-    private final AliasConfig aliasConfig;
+    private final JsonConfig jsonConfig;
     private final BrandsRepo brandsRepo;
     private final OrderRepo orderRepo;
 
@@ -65,7 +65,10 @@ public class ProductBuilder {
         }
     }
 
+    /*Пост-обработка разметки*/
     private void checkProductGroupCorrect() {
+        /*Любое условие ниже*/
+
         productRepo.findByProductGroupIgnoreCase("Клавиатуры, мыши, комплекты").forEach(product -> {
             if (product.getSingleTypeName().contains("мышь")) {
                 product.setProductGroup("Мыши");
@@ -83,6 +86,8 @@ public class ProductBuilder {
                 productRepo.save(product);
             }
         });
+
+        /*<!--тип из аннотации в productType, если нет, то singleType-->*/
     }
 
     private void checkOrdersForProductAvailable() {
@@ -127,7 +132,7 @@ public class ProductBuilder {
                 try
                 {
                     String pic;
-                    Map<String, String> constantPics = aliasConfig.groupsMap();
+                    Map<String, String> constantPics = jsonConfig.groupsMap();
 
                     pic = constantPics.get(productGroup);
                     if (pic != null) {
@@ -206,7 +211,7 @@ public class ProductBuilder {
 
         int countJSON = 0, countDefault = 0;
         List<OriginalProduct> originalProducts = originalRepo.findByUpdateDate(LocalDate.now());
-        LinkedHashMap<String, String> aliases = aliasConfig.aliasesMap();
+        LinkedHashMap<String, String> aliases = jsonConfig.aliasesMap();
 
         for (OriginalProduct originalProduct : originalProducts)
         {

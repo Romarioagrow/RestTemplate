@@ -28,6 +28,7 @@
                     solo-inverted
                     @keyup="searchProducts()"
             ></v-autocomplete>
+
             <v-container v-if="searchArea" class="display-result">
                 <v-list shaped color="white">
                     <v-list-item-group >
@@ -72,6 +73,7 @@
                         <v-icon>mdi-account</v-icon>
                     </v-btn>
                 </router-link>
+
                 <router-link to="/login" class="ml-5" v-else>
                     <v-btn tile outlined>
                         <span>Вход</span>
