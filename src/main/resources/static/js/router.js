@@ -1,7 +1,7 @@
 import Vue          from 'vue';
 import VueRouter    from "vue-router";
 import TestPage     from "pages/TestPage.vue";
-import Home         from "pages/Catalog.vue";
+import Catalog      from "pages/Catalog.vue";
 import Products     from "pages/Products.vue";
 import ProductInfo  from "pages/ProductInfo.vue";
 import Admin        from "pages/Admin.vue";
@@ -11,7 +11,8 @@ import Order        from "pages/Order.vue";
 
 Vue.use(VueRouter);
 const routes = [
-    {path: '/', component: Home},
+    {path: '/', component: Catalog},
+    {path: '/:category', component: Catalog},
     {path: '/products/:group', component: Products},
     {path: '/order', component: Order},
     {path: '/products/product/:productID', component: ProductInfo},

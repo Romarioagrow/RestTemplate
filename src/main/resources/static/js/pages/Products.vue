@@ -12,7 +12,7 @@
                     </v-btn>
                 </router-link>
 
-                <router-link to="/" >
+                <router-link :to="'/'+linkCategory" >
                     <v-btn depressed text small height="100%">
                         {{linkCategory}}
                     </v-btn>
@@ -35,10 +35,6 @@
                             </v-btn>
                         </v-col>
                     </v-row>
-
-                    <!--<div>
-                        <p v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</p>
-                    </div>-->
                 </v-container>
             </template>
 
@@ -115,7 +111,7 @@
 
                     <!--Фильтры-диапазоны input-->
                     <v-expansion-panel v-for="[key, val] of filtersDiapasons" :key="key" >
-                        <v-expansion-panel-header ripple v-if="val[1] !== undefined" :class="{'red': val[1] === undefined}">{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
+                        <v-expansion-panel-header  ripple v-if="val[1] !== undefined" :class="{'red': val[1] === undefined}">{{ key.charAt(0).toUpperCase() + key.substr(1) }}</v-expansion-panel-header>
                         <v-expansion-panel-content eager>
                             <v-row>
                                 <v-col>
@@ -131,7 +127,14 @@
                             </v-row>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
-
+                    <!--<div>
+                        <b-button v-b-toggle.collapse-2 class="m-1" variant="outline-primary" >
+                            Toggle Collapse
+                        </b-button>
+                        <b-collapse id="collapse-2">
+                            <b-card>I am collapsible content!</b-card>
+                        </b-collapse>
+                    </div>-->
                 </v-expansion-panels>
             </v-card-actions>
         </v-navigation-drawer>
@@ -244,6 +247,8 @@
                 const isBottomOfScreen = el.scrollTop + window.innerHeight === el.offsetHeight
 
                 if(isBottomOfScreen) {
+                    console.log('bottomLoad')
+
                     if (Object.keys(this.filters).length === 0) {
                         axios.get('/api/products/group'+this.requestGroup + '/' + this.scrollPage).then(response => {
                             console.log(response.data.content)
