@@ -18,6 +18,10 @@
                                               v-mask="'7-###-###-##-##'"
                                               v-model="username"
                                               label="Номер телефона +7"
+                                              :error-messages="usernameErrors"
+                                              required
+                                              @input="$v.firstName.$touch()"
+                                              @blur="$v.firstName.$touch()"
                                 ></v-text-field>
 
                                 <v-text-field id="password"
@@ -26,6 +30,10 @@
                                               type="password"
                                               v-model="password"
                                               label="Пароль"
+                                              :error-messages="passwordErrors"
+                                              required
+                                              @input="$v.firstName.$touch()"
+                                              @blur="$v.firstName.$touch()"
                                 ></v-text-field>
                             </v-form>
                         </v-card-text>
@@ -55,6 +63,10 @@
                                                           type="text"
                                                           v-mask="'7-###-###-##-##'"
                                                           v-model="username"
+                                                          :error-messages="usernameErrors"
+                                                          required
+                                                          @input="$v.firstName.$touch()"
+                                                          @blur="$v.firstName.$touch()"
                                             ></v-text-field>
 
                                             <v-row>
@@ -64,7 +76,12 @@
                                                                   prepend-icon="mdi-key"
                                                                   type="password"
                                                                   v-model="password"
-                                                                  label="Пароль"></v-text-field>
+                                                                  label="Пароль"
+                                                                  :error-messages="passwordErrors"
+                                                                  required
+                                                                  @input="$v.firstName.$touch()"
+                                                                  @blur="$v.firstName.$touch()"
+                                                    ></v-text-field>
                                                 </v-col>
 
                                                 <v-col>
@@ -72,7 +89,12 @@
                                                                   name="passwordConfirm"
                                                                   type="password"
                                                                   v-model="registerPassConfirm"
-                                                                  label="Подтвердите пароль"></v-text-field>
+                                                                  label="Подтвердите пароль"
+                                                                  :error-messages="passwordConfirmErrors"
+                                                                  required
+                                                                  @input="$v.firstName.$touch()"
+                                                                  @blur="$v.firstName.$touch()"
+                                                    ></v-text-field>
                                                 </v-col>
                                             </v-row>
 
@@ -83,7 +105,12 @@
                                                                   prepend-icon="mdi-account"
                                                                   type="text"
                                                                   v-model="lastName"
-                                                                  label="Фамилия"></v-text-field>
+                                                                  label="Фамилия"
+                                                                  :error-messages="lastNameErrors"
+                                                                  required
+                                                                  @input="$v.lastName.$touch()"
+                                                                  @blur="$v.lastName.$touch()"
+                                                    ></v-text-field>
                                                 </v-col>
 
                                                 <v-col>
@@ -91,7 +118,12 @@
                                                                   name="firstName"
                                                                   type="text"
                                                                   v-model="firstName"
-                                                                  label="Имя"></v-text-field>
+                                                                  label="Имя"
+                                                                  :error-messages="firstNameErrors"
+                                                                  required
+                                                                  @input="$v.firstName.$touch()"
+                                                                  @blur="$v.firstName.$touch()"
+                                                    ></v-text-field>
                                                 </v-col>
 
                                                 <v-col>
@@ -99,7 +131,12 @@
                                                                   name="patronymic"
                                                                   type="text"
                                                                   v-model="patronymic"
-                                                                  label="Отчество"></v-text-field>
+                                                                  label="Отчество"
+                                                                  :error-messages="patronymicErrors"
+                                                                  required
+                                                                  @input="$v.patronymic.$touch()"
+                                                                  @blur="$v.patronymic.$touch()"
+                                                    ></v-text-field>
                                                 </v-col>
                                             </v-row>
 
@@ -129,13 +166,19 @@
 
 <script>
     import axios from 'axios'
+    import { validationMixin } from 'vuelidate'
+    import { required, minLength, email } from 'vuelidate/lib/validators'
+
     export default {
-        beforeCreate() {
-            axios.post('/auth/hasUser').then(noUser => {
-                if (noUser.data === true) {
-                    this.$router.push('/user/cabinet')
-                }
-            })
+        mixins: [validationMixin],
+        validations: {
+            username:   { required, minLength: minLength(15) },
+            password:   { required },
+            registerPassConfirm:   { required },
+            lastName:   { required, minLength: minLength(2) },
+            firstName:  { required, minLength: minLength(2) },
+            patronymic: { required, minLength: minLength(2) },
+
         },
         data() {
             return {
@@ -150,37 +193,108 @@
                 email: '',
             }
         },
+
+        beforeCreate() {
+            axios.post('/auth/hasUser').then(noUser => {
+                if (noUser.data === true) {
+                    this.$router.push('/user/cabinet')
+                }
+            })
+        },
         created() {
             this.loading = false
         },
         methods: {
             submitRegistration() {
-                let registrationData = {}
-                registrationData['email']      = this.email
-                registrationData['username']   = this.username
-                registrationData['password']   = this.password
-                registrationData['lastName']   = this.lastName
-                registrationData['firstName']  = this.firstName
-                registrationData['patronymic'] = this.patronymic
-                axios.post('/auth/user/registration', registrationData).then(response => {
-                    console.log(response)
-                })
-                this.dialog = false
+                this.$v.$touch()
+
+                if (this.registrationValid) {
+
+                    let registrationData = {}
+                    registrationData['email']      = this.email
+                    registrationData['username']   = this.username
+                    registrationData['password']   = this.password
+                    registrationData['lastName']   = this.lastName
+                    registrationData['firstName']  = this.firstName
+                    registrationData['patronymic'] = this.patronymic
+                    axios.post('/auth/user/registration', registrationData).then(response => {
+                        console.log(response)
+                    })
+                    this.dialog = false
+                }
             },
             loginUser() {
-                let auth = new FormData();
-                auth.set('username', this.username);
-                auth.set('password', this.password);
-                const config = {
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
+                this.$v.$touch()
+
+                if (this.loginValid) {
+
+                    let auth = new FormData();
+                    auth.set('username', this.username);
+                    auth.set('password', this.password);
+                    const config = {
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
                     }
+                    const loginURL = '/user/login'
+                    axios.post(loginURL, auth, config).then(() => {
+                        this.$store.dispatch('login')
+                    })
                 }
-                const loginURL = '/user/login'
-                axios.post(loginURL, auth, config).then((response) => {
-                    this.$store.dispatch('login')
-                })
             }
+        },
+        computed: {
+            usernameErrors() {
+                const errors = []
+                if (!this.$v.username.$dirty) return errors
+                !this.$v.username.minLength && errors.push('Номер телефона в формате +7-9xx-xxx-xx-xx')
+                !this.$v.username.required && errors.push('Введите номер телефона')
+                return errors
+            },
+            passwordErrors() {
+                const errors = []
+                if (!this.$v.password.$dirty) return errors
+                !this.$v.password.required && errors.push('Введите пароль')
+                return errors
+            },
+
+            passwordConfirmErrors() {
+                const errors = []
+                if (!this.$v.registerPassConfirm.$dirty) return errors
+                !this.$v.registerPassConfirm.required && errors.push('Подтвердите пароль')
+                return errors
+            },
+
+            lastNameErrors() {
+                const errors = []
+                if (!this.$v.lastName.$dirty) return errors
+                !this.$v.lastName.minLength && errors.push('Не менее 2 символов')
+                !this.$v.lastName.required && errors.push('Введите фамилию')
+                return errors
+            },
+            firstNameErrors() {
+                const errors = []
+                if (!this.$v.firstName.$dirty) return errors
+                !this.$v.firstName.minLength && errors.push('Не менее 2 символов')
+                !this.$v.firstName.required && errors.push('Введите имя')
+                return errors
+            },
+            patronymicErrors() {
+                const errors = []
+                if (!this.$v.patronymic.$dirty) return errors
+                !this.$v.patronymic.minLength && errors.push('Не менее 2 символов')
+                !this.$v.patronymic.required && errors.push('Введите отчество')
+                return errors
+            },
+
+            loginValid() {
+                return this.usernameErrors.length === 0 && this.passwordErrors.length === 0
+            },
+
+            registrationValid() {
+                return this.usernameErrors.length === 0 && this.passwordErrors.length === 0 &&
+                    this.lastNameErrors.length === 0 && this.firstNameErrors.length === 0 && this.patronymicErrors.length === 0
+            },
         }
     }
 </script>

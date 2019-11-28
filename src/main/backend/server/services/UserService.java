@@ -31,10 +31,11 @@ public class UserService implements UserDetailsService {
 
         User user = new User();
         user.setPassword(passwordEncoder.encode(userDetails.get("password")));
-        user.setUsername(userDetails.get("username"));
-        user.setFirstName(userDetails.get("firstName"));
-        user.setLastName(userDetails.get("lastName"));
-        user.setEmail(userDetails.get("email"));
+        user.setUsername(userDetails.get("username").trim());
+        user.setFirstName(userDetails.get("firstName").trim());
+        user.setLastName(userDetails.get("lastName").trim());
+        user.setPatronymic(userDetails.get("patronymic").trim());
+        user.setEmail(userDetails.get("email").trim());
         user.setActive(true);
         user.setRegistrationDate(LocalDateTime.now());
         user.setRoles(Collections.singleton(Role.USER));

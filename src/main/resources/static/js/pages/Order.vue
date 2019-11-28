@@ -413,9 +413,9 @@
 
                 this.$v.$touch()
 
-                console.log(this.lastNameErrors)
+                /*console.log(this.lastNameErrors)
                 console.log(this.firstNameErrors)
-                console.log(this.mobileErrors)
+                console.log(this.mobileErrors)*/
 
                 if (this.customerDataValid) {
 
