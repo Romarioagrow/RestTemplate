@@ -11,8 +11,22 @@
                         </v-toolbar>
                         <v-card-text>
                             <v-form>
-                                <v-text-field id="username"  name="username" prepend-icon="mdi-phone" type="text" v-mask="'7-###-###-##-##'" v-model="username" label="Номер телефона +7"></v-text-field>
-                                <v-text-field id="password" name="password" prepend-icon="mdi-key" type="password" v-model="password" label="Пароль"></v-text-field>
+                                <v-text-field id="username"
+                                              name="username"
+                                              prepend-icon="mdi-phone"
+                                              type="text"
+                                              v-mask="'7-###-###-##-##'"
+                                              v-model="username"
+                                              label="Номер телефона +7"
+                                ></v-text-field>
+
+                                <v-text-field id="password"
+                                              name="password"
+                                              prepend-icon="mdi-key"
+                                              type="password"
+                                              v-model="password"
+                                              label="Пароль"
+                                ></v-text-field>
                             </v-form>
                         </v-card-text>
                         <v-card-actions>
@@ -34,27 +48,68 @@
                                     <v-card-text>Введите ваши контактные данные</v-card-text>
                                     <v-card-text>
                                         <v-form>
-                                            <v-text-field id="username" label="Номер телефона" name="username" prepend-icon="mdi-phone" type="text" v-mask="'7-###-###-##-##'" v-model="username"></v-text-field>
+                                            <v-text-field id="username"
+                                                          label="Номер телефона"
+                                                          name="username"
+                                                          prepend-icon="mdi-phone"
+                                                          type="text"
+                                                          v-mask="'7-###-###-##-##'"
+                                                          v-model="username"
+                                            ></v-text-field>
+
                                             <v-row>
                                                 <v-col>
-                                                    <v-text-field id="password" name="password" prepend-icon="mdi-key" type="password" v-model="password" label="Пароль"></v-text-field>
+                                                    <v-text-field id="password"
+                                                                  name="password"
+                                                                  prepend-icon="mdi-key"
+                                                                  type="password"
+                                                                  v-model="password"
+                                                                  label="Пароль"></v-text-field>
                                                 </v-col>
+
                                                 <v-col>
-                                                    <v-text-field id="passwordConfirm"  name="passwordConfirm" type="password" v-model="registerPassConfirm" label="Подтвердите пароль"></v-text-field>
+                                                    <v-text-field id="passwordConfirm"
+                                                                  name="passwordConfirm"
+                                                                  type="password"
+                                                                  v-model="registerPassConfirm"
+                                                                  label="Подтвердите пароль"></v-text-field>
                                                 </v-col>
                                             </v-row>
+
                                             <v-row>
                                                 <v-col>
-                                                    <v-text-field id="lastName" name="lastName" prepend-icon="mdi-account" type="text" v-model="lastName" label="Фамилия"></v-text-field>
+                                                    <v-text-field id="lastName"
+                                                                  name="lastName"
+                                                                  prepend-icon="mdi-account"
+                                                                  type="text"
+                                                                  v-model="lastName"
+                                                                  label="Фамилия"></v-text-field>
                                                 </v-col>
+
                                                 <v-col>
-                                                    <v-text-field id="firstName" name="firstName" type="text" v-model="firstName" label="Имя"></v-text-field>
+                                                    <v-text-field id="firstName"
+                                                                  name="firstName"
+                                                                  type="text"
+                                                                  v-model="firstName"
+                                                                  label="Имя"></v-text-field>
                                                 </v-col>
+
                                                 <v-col>
-                                                    <v-text-field id="patronymic" name="patronymic" type="text" v-model="patronymic" label="Отчество"></v-text-field>
+                                                    <v-text-field id="patronymic"
+                                                                  name="patronymic"
+                                                                  type="text"
+                                                                  v-model="patronymic"
+                                                                  label="Отчество"></v-text-field>
                                                 </v-col>
                                             </v-row>
-                                            <v-text-field id="email" name="email" prepend-icon="mdi-email" type="email" v-model="email" label="E-mail"></v-text-field>
+
+                                            <v-text-field id="email"
+                                                          name="email"
+                                                          prepend-icon="mdi-email"
+                                                          type="email"
+                                                          v-model="email"
+                                                          label="E-mail"
+                                            ></v-text-field>
                                         </v-form>
                                     </v-card-text>
                                     <v-card-actions>

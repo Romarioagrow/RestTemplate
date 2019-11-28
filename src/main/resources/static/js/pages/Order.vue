@@ -7,20 +7,24 @@
                     <v-card outlined>
                         <v-list subheader>
                             <v-subheader>Товары в корзине</v-subheader>
+
                             <v-list-item v-for="[product, amount] of orderedProducts" :key="product.productID" @click="" style="min-height: 5rem;">
                                 <v-list-item-avatar>
                                     <v-img :src="product.pic"></v-img>
                                 </v-list-item-avatar>
+
                                 <v-list-item-content class="ml-12">
                                     <router-link :to="'/products/product/' + product.productID">
                                         <v-list-item-title v-text="product.fullName" style="color: black"></v-list-item-title>
                                     </router-link>
                                 </v-list-item-content>
+
                                 <v-list-item-content class="ml-12">
                                     <v-list-item-title>
                                         <span><strong>{{(product.finalPrice * amount).toLocaleString('ru-RU')}}</strong> ₽</span>
                                     </v-list-item-title>
                                 </v-list-item-content>
+
                                 <v-list-item-action class="ml-12">
                                     <div class="my-2">
                                         <v-btn text small icon @click="decreaseAmount(product.productID)" :disabled="amount === 1">
@@ -32,17 +36,21 @@
                                         </v-btn>
                                     </div>
                                 </v-list-item-action>
+
                                 <v-list-item-icon>
                                     <v-btn icon @click="deleteProduct(product.productID)">
                                         <v-icon>mdi-close-circle</v-icon>
                                     </v-btn>
                                 </v-list-item-icon>
+
                             </v-list-item>
                         </v-list>
                     </v-card>
                 </v-col>
+
                 <v-col>
                     <v-card outlined v-if="productAmount !== 0">
+
                         <v-card-text class="pb-0">
                             <v-row>
                                 <v-col>
@@ -50,6 +58,7 @@
                                 </v-col>
                             </v-row>
                         </v-card-text>
+
                         <div v-if="!auth">
                             <v-card-actions>
                                 <!--В DIALOG!!!-->
@@ -61,6 +70,7 @@
                                 </router-link>
                             </v-card-actions>
                         </div>
+
                         <div v-else>
                             <v-card-text>
                                 <v-row>
@@ -75,7 +85,9 @@
                                 </v-row>
                             </v-card-text>
                         </div>
+
                         <v-divider></v-divider>
+
                         <div>
                             <v-row>
                                 <v-col cols="5">
@@ -91,12 +103,14 @@
                                     </v-badge>
                                 </v-col>
                             </v-row>
+
                             <v-row>
                                 <v-col cols="5">
                                     <v-card-text>
                                         Количество едениц
                                     </v-card-text>
                                 </v-col>
+
                                 <v-col>
                                     <v-badge left color="#000000">
                                         <template v-slot:badge>
@@ -105,20 +119,27 @@
                                     </v-badge>
                                 </v-col>
                             </v-row>
+
                         </div>
+
                         <v-divider></v-divider>
+
                         <v-card-actions v-if="productAmount !== 0">
                             <v-dialog v-model="orderDialog" persistent max-width="1000">
+
                                 <template v-slot:activator="{ on }">
                                     <v-btn block color="#e52d00" dark v-on="on">Оформить заказ</v-btn>
                                 </template>
+
                                 <v-card outlined>
                                     <v-card-title class="headline">
                                         <span v-if="auth" class="mr-1">{{firstName}},</span><span v-else class="mr-1">Ваш </span> заказ на сумму
                                         <span style="color: #e52d00" class="ml-2" v-if="!discountApplied">{{totalPrice.toLocaleString('ru-RU')}} ₽</span>
                                         <span v-else style="color: green" class="ml-2">{{discountPrice.toLocaleString('ru-RU')}} ₽ со скидкой</span>
                                     </v-card-title>
+
                                     <v-divider></v-divider>
+
                                     <div v-if="auth">
                                         <v-card-text >
                                             <v-row>
@@ -144,18 +165,48 @@
                                             <h5>Ваши контактные данные</h5>
                                             <v-row>
                                                 <v-col>
-                                                    <v-text-field prepend-icon="mdi-account" type="text" v-model="lastName" label="Фамилия"></v-text-field>
+                                                    <v-text-field prepend-icon="mdi-account" type="text"
+                                                                  v-model="lastName"
+                                                                  label="Фамилия"
+                                                                  :error-messages="lastNameErrors"
+                                                                  required
+                                                                  @input="$v.lastName.$touch()"
+                                                                  @blur="$v.lastName.$touch()"
+                                                    ></v-text-field>
                                                 </v-col>
                                                 <v-col>
-                                                    <v-text-field type="text" v-model="firstName" label="Имя"></v-text-field>
+                                                    <v-text-field type="text"
+                                                                  v-model="firstName"
+                                                                  label="Имя"
+                                                                  :error-messages="firstNameErrors"
+                                                                  required
+                                                                  @input="$v.firstName.$touch()"
+                                                                  @blur="$v.firstName.$touch()"
+                                                    ></v-text-field>
                                                 </v-col>
                                                 <v-col>
-                                                    <v-text-field type="text" v-model="patronymic" label="Отчество"></v-text-field>
+                                                    <v-text-field type="text"
+                                                                  v-model="patronymic"
+                                                                  label="Отчество"
+                                                                  :error-messages="patronymicErrors"
+                                                                  required
+                                                                  @input="$v.patronymic.$touch()"
+                                                                  @blur="$v.patronymic.$touch()"
+                                                    ></v-text-field>
                                                 </v-col>
                                             </v-row>
                                             <v-row>
                                                 <v-col>
-                                                    <v-text-field type="text" prepend-icon="mdi-phone" v-mask="'7-###-###-##-##'" v-model="mobile" label="Номер телефона"></v-text-field>
+                                                    <v-text-field type="text"
+                                                                  prepend-icon="mdi-phone"
+                                                                  v-mask="'7-###-###-##-##'"
+                                                                  v-model="mobile"
+                                                                  label="Номер телефона"
+                                                                  :error-messages="mobileErrors"
+                                                                  required
+                                                                  @input="$v.firstName.$touch()"
+                                                                  @blur="$v.firstName.$touch()"
+                                                    ></v-text-field>
                                                 </v-col>
                                                 <v-col>
                                                     <v-text-field type="email" prepend-icon="mdi-email" v-model="email" label="E-mail"></v-text-field>
@@ -177,13 +228,34 @@
                                             <div class="mt-3" v-else>
                                                 <v-row>
                                                     <v-col>
-                                                        <v-text-field type="text" v-model="city" label="Населенный пункт"></v-text-field>
+                                                        <v-text-field type="text"
+                                                                      v-model="city"
+                                                                      label="Населенный пункт"
+                                                                      :error-messages="cityErrors"
+                                                                      required
+                                                                      @input="$v.city.$touch()"
+                                                                      @blur="$v.city.$touch()"
+                                                        ></v-text-field>
                                                     </v-col>
                                                     <v-col>
-                                                        <v-text-field type="text" v-model="street" label="Улица"></v-text-field>
+                                                        <v-text-field type="text"
+                                                                      v-model="street"
+                                                                      label="Улица"
+                                                                      :error-messages="streetErrors"
+                                                                      required
+                                                                      @input="$v.street.$touch()"
+                                                                      @blur="$v.street.$touch()"
+                                                        ></v-text-field>
                                                     </v-col>
                                                     <v-col>
-                                                        <v-text-field type="text" v-model="house" label="Дом"></v-text-field>
+                                                        <v-text-field type="text"
+                                                                      v-model="house"
+                                                                      label="Дом"
+                                                                      :error-messages="houseErrors"
+                                                                      required
+                                                                      @input="$v.house.$touch()"
+                                                                      @blur="$v.house.$touch()"
+                                                        ></v-text-field>
                                                     </v-col>
                                                     <v-col>
                                                         <v-text-field type="text" v-model="flat" label="Квартира"></v-text-field>
@@ -231,7 +303,20 @@
 
 <script>
     import axios from 'axios'
+    import { validationMixin } from 'vuelidate'
+    import { required, minLength, email } from 'vuelidate/lib/validators'
     export default {
+        mixins: [validationMixin],
+        validations: {
+            lastName:   { required, minLength: minLength(2) },
+            firstName:  { required, minLength: minLength(2) },
+            patronymic: { required, minLength: minLength(2) },
+            mobile:     { required, minLength: minLength(15) },
+            city:       { required, minLength: minLength(2) },
+            street:     { required, minLength: minLength(2) },
+            house:      { required, }
+        },
+
         data: () => ({
             orderedProducts : {},
             totalPrice      : 0,
@@ -325,35 +410,50 @@
                 this.discountApplied = true
             },
             acceptOrder() {
-                this.orderDialog = false
 
-                let address = ''
-                if (this.city) {
-                    address = this.city + ';' + this.street  + ';' + this.house  + ';' + this.flat
+                this.$v.$touch()
+
+                console.log(this.lastNameErrors)
+                console.log(this.firstNameErrors)
+                console.log(this.mobileErrors)
+
+                if (this.customerDataValid) {
+
+
+                    console.log('valid')
+
+                    let address = ''
+                    if (this.city) {
+                        address = this.city + ';' + this.street  + ';' + this.house  + ';' + this.flat
+                    }
+
+                    let orderDetails = {
+                        'orderID'   :this.order.orderID,
+                        'firstName' :this.firstName,
+                        'lastName'  :this.lastName,
+                        'patronymic':this.patronymic,
+                        'mobile'    :this.mobile,
+                        'email'     :this.email,
+                        'address'   :address
+                    }
+
+                    if (this.discountApplied) {
+                        orderDetails.discountAmount = Math.round(this.discountAmount)
+                        orderDetails.discountPrice = Math.round(this.$store.state.currentOrder.discountPrice)
+                        orderDetails.userID = Math.round(this.$store.state.currentUser.userID)
+                    }
+
+                    axios.post('/api/order/acceptOrder', orderDetails).then(response => {
+                        console.log(response)
+
+                        this.$store.dispatch('acceptOrder')
+                        this.$store.dispatch('clearOrderedProducts')
+                        this.orderDialog = false
+                        this.$router.push('/user/cabinet')
+                    })
+
+                    this.orderDialog = false
                 }
-
-                let orderDetails = {
-                    'orderID'   :this.order.orderID,
-                    'firstName' :this.firstName,
-                    'lastName'  :this.lastName,
-                    'patronymic':this.patronymic,
-                    'mobile'    :this.mobile,
-                    'email'     :this.email,
-                    'address'   :address
-                }
-
-                if (this.discountApplied) {
-                    orderDetails.discountAmount = Math.round(this.discountAmount)
-                    orderDetails.discountPrice = Math.round(this.$store.state.currentOrder.discountPrice)
-                    orderDetails.userID = Math.round(this.$store.state.currentUser.userID)
-                }
-
-                axios.post('/api/order/acceptOrder', orderDetails).then(response => {
-                    console.log(response)
-                    this.$store.dispatch('acceptOrder')
-                    this.$store.dispatch('clearOrderedProducts')
-                    this.$router.push('/user/cabinet')
-                })
             },
             cancelOrder() {
                 if (this.discountApplied) {
@@ -369,6 +469,62 @@
             }
         },
         computed: {
+            lastNameErrors() {
+                const errors = []
+                if (!this.$v.lastName.$dirty) return errors
+                !this.$v.lastName.minLength && errors.push('Не менее 2 символов')
+                !this.$v.lastName.required && errors.push('Введите фамилию')
+                return errors
+            },
+            firstNameErrors() {
+                const errors = []
+                if (!this.$v.firstName.$dirty) return errors
+                !this.$v.firstName.minLength && errors.push('Не менее 2 символов')
+                !this.$v.firstName.required && errors.push('Введите имя')
+                return errors
+            },
+            patronymicErrors() {
+                const errors = []
+                if (!this.$v.patronymic.$dirty) return errors
+                !this.$v.patronymic.minLength && errors.push('Не менее 2 символов')
+                !this.$v.patronymic.required && errors.push('Введите отчество')
+                return errors
+            },
+            mobileErrors() {
+                const errors = []
+                if (!this.$v.mobile.$dirty) return errors
+                !this.$v.mobile.minLength && errors.push('Номер телефона в формате +7-9xx-xxx-xx-xx')
+                !this.$v.mobile.required && errors.push('Введите номер телефона')
+                return errors
+            },
+            cityErrors() {
+                const errors = []
+                if (!this.$v.city.$dirty) return errors
+                !this.$v.city.minLength && errors.push('Не менее 2 символов')
+                !this.$v.city.required && errors.push('Введите город')
+                return errors
+            },
+            streetErrors() {
+                const errors = []
+                if (!this.$v.street.$dirty) return errors
+                !this.$v.street.minLength && errors.push('Не менее 2 символов')
+                !this.$v.street.required && errors.push('Введите улицу')
+                return errors
+            },
+            houseErrors() {
+                const errors = []
+                if (!this.$v.house.$dirty) return errors
+                !this.$v.house.required && errors.push('Введите номер дома')
+                return errors
+            },
+
+            customerDataValid() {
+                if (this.noDelivery) {
+                    return this.lastNameErrors.length === 0 && this.firstNameErrors.length === 0 && this.patronymicErrors.length === 0 && this.mobileErrors.length === 0
+                }
+                return this.lastNameErrors.length === 0 && this.firstNameErrors.length === 0 && this.patronymicErrors.length === 0 && this.mobileErrors.length === 0 &&
+                    this.cityErrors.length === 0 && this.streetErrors.length === 0 && this.houseErrors.length === 0
+            },
             auth() {
                 return this.$store.state.currentUser
             },

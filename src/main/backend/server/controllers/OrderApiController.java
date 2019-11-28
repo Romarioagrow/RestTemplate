@@ -56,4 +56,9 @@ public class OrderApiController {
     private List<Order> getCompletedOrders(@AuthenticationPrincipal User user) {
         return orderService.getUserCompletedOrders(user);
     }
+
+    @GetMapping("/checkSessionOrder")
+    private boolean checkSessionOrder() {
+        return orderService.hasCurrentSessionOrder();
+    }
 }

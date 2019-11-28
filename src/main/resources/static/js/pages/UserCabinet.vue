@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="userConfirmed">
         <v-navigation-drawer absolute permanent>
 
             <template v-slot:prepend>
@@ -184,11 +184,15 @@
                 completedOrders: [],
                 activeContainerCurrent: true,
                 activeContainerCompleted: false,
+                userConfirmed: false
             }
         },
         created() {
             this.loadAcceptedOrders()
             this.loadCompletedOrders()
+        },
+        mounted() {
+            this.userConfirmed = true
         },
         methods: {
             logout() {

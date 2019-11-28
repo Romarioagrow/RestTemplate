@@ -6,13 +6,13 @@
             <v-toolbar-items style="padding-left: 8%">
                 <v-btn v-if="showFiltersButtonToolbar" small depressed outlined color="indigo" max-height="50%" style="margin-top: 15px" @click="returnFilters()">Открыть фильтры</v-btn>
 
-                <router-link to="/">
+                <router-link to="/catalog">
                     <v-btn depressed text small height="100%">
                         Каталог
                     </v-btn>
                 </router-link>
 
-                <router-link :to="'/'+linkCategory" >
+                <router-link :to="'/catalog/'+linkCategory" >
                     <v-btn depressed text small height="100%">
                         {{linkCategory}}
                     </v-btn>

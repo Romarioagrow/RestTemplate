@@ -23,6 +23,8 @@ public class OrderService {
     private final ProductRepo productRepo;
 
     public boolean acceptOrder(Map<String, String> orderDetails) {
+        log.info(orderDetails.toString());
+
         Long orderID = Long.parseLong(orderDetails.get("orderID"));
         Order order = orderRepo.findByOrderID(orderID);
 
@@ -50,9 +52,9 @@ public class OrderService {
 
     private String concatClientName(Map<String, String> orderDetails) {
         if (orderDetails.get("patronymic") == null) {
-            return orderDetails.get("firstName").concat("_").concat(orderDetails.get("lastName"));
+            return orderDetails.get("lastName").trim().concat(" ").concat(orderDetails.get("firstName").trim());
         }
-        return orderDetails.get("firstName").concat("_").concat(orderDetails.get("lastName")).concat(orderDetails.get("patronymic"));
+        return orderDetails.get("lastName").trim().concat(" ").concat(orderDetails.get("firstName").trim()).concat(" ").concat(orderDetails.get("patronymic").trim());
     }
 
     public Order addProductToOrder(String productID, User user) {
@@ -215,6 +217,9 @@ public class OrderService {
     public List<Order> getAllAcceptedOrders() {
         List<Order> acceptedOrders = orderRepo.findAllByAcceptedTrueAndCompletedFalse();
         acceptedOrders.sort(Comparator.comparing(Order::getOpenDate).reversed());
+
+        log.info(acceptedOrders.toString());
+
         return acceptedOrders;
     }
 
@@ -222,5 +227,10 @@ public class OrderService {
         List<Order> completedOrders = orderRepo.findAllByCompletedTrue();
         completedOrders.sort(Comparator.comparing(Order::getOpenDate).reversed());
         return completedOrders;
+    }
+
+    public boolean hasCurrentSessionOrder() {
+        String sessionID = RequestContextHolder.currentRequestAttributes().getSessionId();
+        return orderRepo.findBySessionIDAndAcceptedFalse(sessionID) != null;
     }
 }

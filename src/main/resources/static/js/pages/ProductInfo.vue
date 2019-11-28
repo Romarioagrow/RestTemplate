@@ -5,7 +5,7 @@
                 <v-col cols="6">
 
                     <div class="mb-3">
-                        <router-link to="/">
+                        <router-link :to="'/catalog/'+product.productCategory">
                             <v-btn depressed small>{{product.productCategory}}</v-btn>
                         </router-link>
                         <router-link :to="linkBack">

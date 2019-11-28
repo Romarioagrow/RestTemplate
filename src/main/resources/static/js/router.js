@@ -12,7 +12,7 @@ import Order        from "pages/Order.vue";
 Vue.use(VueRouter);
 const routes = [
     {path: '/', component: Catalog},
-    {path: '/:category', component: Catalog},
+    {path: '/catalog/:category', component: Catalog},
     {path: '/products/:group', component: Products},
     {path: '/order', component: Order},
     {path: '/products/product/:productID', component: ProductInfo},

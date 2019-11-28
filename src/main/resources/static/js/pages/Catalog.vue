@@ -5,7 +5,7 @@
 
             <div v-if="!loading" class="indent">
 
-                <v-tabs v-model="openWindow" v-tabs center-active show-arrows :centered="true" :icons-and-text="true" slider-color="#e52d00" background-color="#ffffff">
+                <v-tabs v-model="openWindow" center-active show-arrows :centered="true" :icons-and-text="true" slider-color="#e52d00" background-color="#ffffff">
                     <v-tab v-for="(value, key, index) of allCategories" :key="index" :href="`#tab-${index}`">
                         {{key}}
                         <v-icon>{{icons[index]}}</v-icon>
@@ -60,7 +60,7 @@
                     'mdi-archive'
                 ],
                 categoryWindows: {
-                    'Теле-видео-аудио':0,
+                    'Теле-Видео-Аудио':0,
                     'Кухонная техника':1,
                     'Техника для дома':2,
                     'Встраиваемая техника':3,
@@ -84,8 +84,12 @@
             this.allCategories = catalogJSON
             this.loading = false
 
-            let uriCategory = decodeURI(window.location.pathname).replace('/','')
+            const uri = decodeURI(window.location.pathname)
+            let uriCategory = uri.substr(uri.lastIndexOf('/')+1)
+
+            console.log(uriCategory)
             if (uriCategory !== '') {
+                console.log(this.categoryWindows[uriCategory])
                 this.openWindow = 'tab-' + this.categoryWindows[uriCategory]
             }
         }

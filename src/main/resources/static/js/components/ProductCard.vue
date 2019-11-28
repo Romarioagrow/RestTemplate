@@ -35,7 +35,7 @@
 
             <div class="d-flex align-baseline">
                 <v-card-text style="padding-top: 25px;">
-                    <h5>{{product.finalPrice.toLocaleString('ru-RU')}} ₽</h5>
+                    <h5>{{product.finalPrice.toLocaleString('ru-RU')}}₽</h5>
                 </v-card-text>
 
                 <v-card-actions style="align-items: end; padding-right: 15px;">
