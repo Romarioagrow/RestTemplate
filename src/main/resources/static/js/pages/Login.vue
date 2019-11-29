@@ -286,11 +286,9 @@
                 !this.$v.patronymic.required && errors.push('Введите отчество')
                 return errors
             },
-
             loginValid() {
                 return this.usernameErrors.length === 0 && this.passwordErrors.length === 0
             },
-
             registrationValid() {
                 return this.usernameErrors.length === 0 && this.passwordErrors.length === 0 &&
                     this.lastNameErrors.length === 0 && this.firstNameErrors.length === 0 && this.patronymicErrors.length === 0

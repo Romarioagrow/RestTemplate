@@ -1,23 +1,74 @@
 <template>
     <div>
-        <v-container>
+        <v-container class="pt-0">
+
             <v-row>
-                <v-col cols="6">
-                    <div class="mb-3">
+                <v-col class="pt-0">
+                    <v-toolbar flat v-if="!loading">
+                        <v-toolbar-items>
+
+                            <router-link :to="'/catalog/'+product.productCategory">
+                                <v-btn depressed text small height="100%">
+                                    Каталог
+                                </v-btn>
+                            </router-link>
+
+                            <router-link :to="'/catalog/'+product.productCategory" >
+                                <v-btn depressed text small height="100%">
+                                    {{product.productCategory}}
+                                </v-btn>
+                            </router-link>
+
+                            <router-link :to="linkBack">
+                                <v-btn depressed text small height="100%">
+                                    {{product.productGroup}}
+                                </v-btn>
+                            </router-link>
+
+                            <v-btn depressed text small disabled height="100%">
+                                {{product.productGroup}} {{product.brand}}
+                            </v-btn>
+
+
+                            <v-btn depressed disabled text small>{{linkProductGroup}}</v-btn>
+                        </v-toolbar-items>
+                    </v-toolbar>
+
+
+                    <!--<div class="mb-3">
                         <router-link :to="'/catalog/'+product.productCategory">
-                            <v-btn depressed small>{{product.productCategory}}</v-btn>
+                            <v-btn tile outlined small>{{product.productCategory}}</v-btn>
                         </router-link>
                         <router-link :to="linkBack">
-                            <v-btn depressed small>{{product.productGroup}}</v-btn>
+                            <v-btn tile outlined small>{{product.productGroup}}</v-btn>
                         </router-link>
-                    </div>
-                    <v-card max-width="600">
+                    </div>-->
+                </v-col>
+            </v-row>
 
+            <v-row>
+                <v-col>
+                    <b-card>
+                        <b-card-body>
+                            <v-row v-for="(value, param) of formattedAnno" :key="param">
+                                <v-col cols="7">
+                                    {{param}}
+                                    <hr style="width: 180%;">
+                                </v-col>
+                                <v-col align="right">
+                                    <strong>{{value}}</strong>
+                                </v-col>
+                            </v-row>
+                        </b-card-body>
+                    </b-card>
+                </v-col>
+
+                <v-col cols="6">
+                    <v-card max-width="600">
                         <v-list-item>
                             <v-list-item-content>
                                 <v-list-item-title class="headline">{{ product.originalName }}</v-list-item-title>
-                                <v-list-item-subtitle>{{ product.productGroup }}</v-list-item-subtitle>
-                                <v-list-item-subtitle>{{ product.productType }}</v-list-item-subtitle>
+                                <v-list-item-subtitle>{{ product.singleTypeName }}</v-list-item-subtitle>
                             </v-list-item-content>
                         </v-list-item>
 
@@ -30,23 +81,54 @@
                                 <v-img class="white--text" height="1000" contain :src="product.pic" alt="Bad Link" @click.stop="picDialog = true"></v-img>
                             </v-card>
                         </v-dialog>
+                    </v-card>
 
-                        <b-card>
-                            <b-card-body>
-                                <v-row v-for="(value, param) of formattedAnno" :key="param" style="margin-bottom: -1rem;">
-                                    <v-col>
-                                        {{param}}
-                                        <hr style="width: 220%;">
+                    <v-row>
+                        <v-col>
+                            <v-card >
+                                <v-row>
+                                    <v-col cols="4">
+                                        <v-card-title>{{ product.finalPrice.toLocaleString('ru-RU') }} ₽</v-card-title>
                                     </v-col>
-                                    <v-col align="right">
-                                        {{value}}
+                                    <v-col class="mr-5">
+                                        <v-card-text>За покупку будет зачисленно <strong>{{ product.bonus }} </strong> баллов!</v-card-text>
                                     </v-col>
                                 </v-row>
-                            </b-card-body>
-                        </b-card>
-                    </v-card>
+
+                                <v-card-actions v-if="!productInOrder(product.productID)">
+                                    <v-btn text outlined block color="#e52d00" @click="addToOrder(product.productID)">
+                                        В корзину
+                                    </v-btn>
+                                </v-card-actions>
+                                <v-card-actions v-else>
+                                    <v-btn class="goToOrderButton" block @click="toOrder()" style="background-color: #e52d00; color: #ffffff">
+                                        Перейти в корзину
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-col>
+                    </v-row>
                 </v-col>
-                <v-col class="mt-10">
+            </v-row>
+
+
+
+
+            <!--<v-row>
+                <v-col>
+                    <div class="mb-3">
+                        <router-link :to="'/catalog/'+product.productCategory">
+                            <v-btn depressed small>{{product.productCategory}}</v-btn>
+                        </router-link>
+                        <router-link :to="linkBack">
+                            <v-btn depressed small>{{product.productGroup}}</v-btn>
+                        </router-link>
+                    </div>
+                </v-col>
+            </v-row>
+
+            <v-row>
+                <v-col>
                     <v-card >
                         <v-row>
                             <v-col cols="4">
@@ -70,6 +152,118 @@
                     </v-card>
                 </v-col>
             </v-row>
+
+            <v-row>
+                <v-col cols="6">
+                    <v-card max-width="600">
+                        <v-list-item>
+                            <v-list-item-content>
+                                <v-list-item-title class="headline">{{ product.originalName }}</v-list-item-title>
+                                <v-list-item-subtitle>{{ product.productGroup }}</v-list-item-subtitle>
+                                <v-list-item-subtitle>{{ product.productType }}</v-list-item-subtitle>
+                            </v-list-item-content>
+                        </v-list-item>
+
+                        <a @mouseover="this.style.cursor='pointer'">
+                            <v-img class="white&#45;&#45;text" contain max-height="300" :src="product.pic" alt="Bad Link" @click.stop="picDialog = true"></v-img>
+                        </a>
+
+                        <v-dialog v-model="picDialog" max-width="80%">
+                            <v-card>
+                                <v-img class="white&#45;&#45;text" height="1000" contain :src="product.pic" alt="Bad Link" @click.stop="picDialog = true"></v-img>
+                            </v-card>
+                        </v-dialog>
+                    </v-card>
+                </v-col>
+
+                <v-col>
+                    <b-card>
+                        <b-card-body>
+                            <v-row v-for="(value, param) of formattedAnno" :key="param">
+                                <v-col cols="8">
+                                    {{param}}
+                                    <hr style="width: 160%;">
+                                </v-col>
+                                <v-col align="right">
+                                    <strong>{{value}}</strong>
+                                </v-col>
+                            </v-row>
+                        </b-card-body>
+                    </b-card>
+                </v-col>
+            </v-row>
+-->
+
+            <!--<v-row>
+                <v-col cols="6">
+                    <div class="mb-3">
+                        <router-link :to="'/catalog/'+product.productCategory">
+                            <v-btn depressed small>{{product.productCategory}}</v-btn>
+                        </router-link>
+                        <router-link :to="linkBack">
+                            <v-btn depressed small>{{product.productGroup}}</v-btn>
+                        </router-link>
+                    </div>
+
+                    <v-card max-width="600">
+                        <v-list-item>
+                            <v-list-item-content>
+                                <v-list-item-title class="headline">{{ product.originalName }}</v-list-item-title>
+                                <v-list-item-subtitle>{{ product.productGroup }}</v-list-item-subtitle>
+                                <v-list-item-subtitle>{{ product.productType }}</v-list-item-subtitle>
+                            </v-list-item-content>
+                        </v-list-item>
+
+                        <a @mouseover="this.style.cursor='pointer'">
+                            <v-img class="white&#45;&#45;text" contain max-height="300" :src="product.pic" alt="Bad Link" @click.stop="picDialog = true"></v-img>
+                        </a>
+
+                        <v-dialog v-model="picDialog" max-width="80%">
+                            <v-card>
+                                <v-img class="white&#45;&#45;text" height="1000" contain :src="product.pic" alt="Bad Link" @click.stop="picDialog = true"></v-img>
+                            </v-card>
+                        </v-dialog>
+
+                        <b-card>
+                            <b-card-body>
+                                <v-row v-for="(value, param) of formattedAnno" :key="param" style="margin-bottom: -1rem;">
+                                    <v-col>
+                                        {{param}}
+                                        <hr style="width: 220%;">
+                                    </v-col>
+                                    <v-col align="right">
+                                        {{value}}
+                                    </v-col>
+                                </v-row>
+                            </b-card-body>
+                        </b-card>
+                    </v-card>
+                </v-col>
+
+                <v-col class="mt-10">
+                    <v-card >
+                        <v-row>
+                            <v-col cols="4">
+                                <v-card-title>{{ product.finalPrice.toLocaleString('ru-RU') }} ₽</v-card-title>
+                            </v-col>
+                            <v-col class="mr-5">
+                                <v-card-text>За покупку будет зачисленно <strong>{{ product.bonus }} </strong> баллов!</v-card-text>
+                            </v-col>
+                        </v-row>
+
+                        <v-card-actions v-if="!productInOrder(product.productID)">
+                            <v-btn text outlined block color="#e52d00" @click="addToOrder(product.productID)">
+                                В корзину
+                            </v-btn>
+                        </v-card-actions>
+                        <v-card-actions v-else>
+                            <v-btn class="goToOrderButton" block @click="toOrder()" style="background-color: #e52d00; color: #ffffff">
+                                Перейти в корзину
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-col>
+            </v-row>-->
         </v-container>
     </div>
 </template>

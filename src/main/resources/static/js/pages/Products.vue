@@ -4,7 +4,7 @@
 
         <v-toolbar flat v-if="!loading">
             <v-toolbar-items style="padding-left: 8%">
-                <v-btn v-if="showFiltersButtonToolbar" small depressed outlined color="indigo" max-height="50%" style="margin-top: 15px" @click="returnFilters()">Открыть фильтры</v-btn>
+                <v-btn v-if="showFiltersButtonToolbar" small depressed outlined color="black" max-height="50%" style="margin-top: 15px" @click="returnFilters()">Открыть фильтры</v-btn>
 
                 <router-link to="/">
                     <v-btn depressed text small height="100%">
@@ -37,7 +37,7 @@
                     </v-row>
                     <v-row>
                         <v-col>
-                            <p v-if="!loading" style="text-align: left; margin-top: -20px; margin-bottom: -20px;" v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</p>
+                            <p v-if="!loading" style="text-align: left; margin-top: -20px; margin-bottom: -20px;" v-model="totalProductsFound">Всего товаров: <strong>{{totalProductsFound}}</strong></p>
                         </v-col>
                     </v-row>
                 </v-container>
