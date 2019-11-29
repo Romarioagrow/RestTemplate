@@ -3,7 +3,6 @@
         <v-container>
             <v-row>
                 <v-col cols="6">
-
                     <div class="mb-3">
                         <router-link :to="'/catalog/'+product.productCategory">
                             <v-btn depressed small>{{product.productCategory}}</v-btn>
@@ -12,7 +11,6 @@
                             <v-btn depressed small>{{product.productGroup}}</v-btn>
                         </router-link>
                     </div>
-
                     <v-card max-width="600">
 
                         <v-list-item>

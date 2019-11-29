@@ -6,7 +6,7 @@
             <v-toolbar-items style="padding-left: 8%">
                 <v-btn v-if="showFiltersButtonToolbar" small depressed outlined color="indigo" max-height="50%" style="margin-top: 15px" @click="returnFilters()">Открыть фильтры</v-btn>
 
-                <router-link to="/catalog">
+                <router-link to="/">
                     <v-btn depressed text small height="100%">
                         Каталог
                     </v-btn>
@@ -35,14 +35,19 @@
                             </v-btn>
                         </v-col>
                     </v-row>
+                    <v-row>
+                        <v-col>
+                            <p v-if="!loading" style="text-align: left; margin-top: -20px; margin-bottom: -20px;" v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</p>
+                        </v-col>
+                    </v-row>
                 </v-container>
             </template>
 
             <v-divider></v-divider>
 
-            <v-card-text v-if="!loading">
+            <!--<v-card-text v-if="!loading">
                 <p style="text-align: left; margin-top: -20px; margin-bottom: -20px;" v-model="totalProductsFound">Всего товаров: {{totalProductsFound}}</p>
-            </v-card-text>
+            </v-card-text>-->
 
             <v-card-actions style="padding-right: -15px;">
 

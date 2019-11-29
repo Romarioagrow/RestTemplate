@@ -410,17 +410,9 @@
                 this.discountApplied = true
             },
             acceptOrder() {
-
                 this.$v.$touch()
 
-                /*console.log(this.lastNameErrors)
-                console.log(this.firstNameErrors)
-                console.log(this.mobileErrors)*/
-
                 if (this.customerDataValid) {
-
-
-                    console.log('valid')
 
                     let address = ''
                     if (this.city) {

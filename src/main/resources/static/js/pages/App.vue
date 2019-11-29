@@ -31,6 +31,11 @@
                     this.$store.dispatch('clearOrderedProducts')
                 }
             })
+            axios.post('/auth/noUser').then(response => {
+                if (response.data === true) {
+                    this.$store.dispatch('logout')
+                }
+            })
         },
         methods: {
             hideSearch() {

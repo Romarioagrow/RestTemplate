@@ -1,7 +1,36 @@
 <template>
     <v-item v-slot:default="{ active, toggle }">
-        <v-card outlined  class="mx-2 mt-3" width="300">
 
+
+
+        <!--<b-card :title="product.singleTypeName" :img-src="product.pic" img-alt="Image" img-top >
+            <b-card-text>
+                <ul class="pl-1">
+                    <li v-for="anno in annotations" v-if="anno" style="list-style-type: none;" >
+                        <span class="font-weight-light">{{anno}}</span>
+                    </li>
+                </ul>
+            </b-card-text>
+            <template v-slot:footer>
+                <v-row>
+                    <v-col>
+                        <h5>{{product.finalPrice.toLocaleString('ru-RU')}}₽</h5>
+                    </v-col>
+                    <v-col>
+                        <v-btn text outlined color="#e52d00" v-if="!productInOrder(product.productID)" @click="addToOrder(product.productID)">
+                            В корзину
+                        </v-btn>
+                        <v-btn style="background-color: #e52d00; color: #ffffff" v-else @click="toOrder()">
+                            Перейти в корзину
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </template>
+        </b-card>-->
+
+
+
+        <v-card outlined class="mx-2 mt-3 d-flex flex-column" width="300" >
             <div class="p-3">
                 <a @mouseover="this.style.cursor='pointer'">
                     <v-img class="white--text" contain height="150px" :src="product.pic" alt="Bad Link" @click.stop="picDialog = true"></v-img>
@@ -23,31 +52,34 @@
                 </router-link>
             </v-card-text>
 
-            <div>
-                <v-card-text >
-                    <ul class="pl-1">
-                        <li v-for="anno in annotations" v-if="anno" style="list-style-type: none;" >
-                            <span class="font-weight-light">{{anno}}</span>
-                        </li>
-                    </ul>
-                </v-card-text>
-            </div>
+            <v-spacer></v-spacer>
+
+            <v-card-text >
+                <ul class="pl-1">
+                    <li v-for="anno in annotations" v-if="anno" style="list-style-type: none;" >
+                        <span class="font-weight-light">{{anno}}</span>
+                    </li>
+                </ul>
+            </v-card-text>
+
+            <v-spacer></v-spacer>
 
             <div class="d-flex align-baseline">
-                <v-card-text style="padding-top: 25px;">
+                <v-card-text style="padding-top: 25px;" class="flex-grow-1">
                     <h5>{{product.finalPrice.toLocaleString('ru-RU')}}₽</h5>
                 </v-card-text>
 
                 <v-card-actions style="align-items: end; padding-right: 15px;">
-                    <v-btn text outlined color="#e52d00" v-if="!productInOrder(product.productID)" @click="addToOrder(product.productID)">
+                    <v-btn class="flex-grow-1" text outlined color="#e52d00" v-if="!productInOrder(product.productID)" @click="addToOrder(product.productID)">
                         В корзину
                     </v-btn>
-                    <v-btn style="background-color: #e52d00; color: #ffffff" v-else @click="toOrder()">
+                    <v-btn class="flex-grow-1" style="background-color: #e52d00; color: #ffffff" v-else @click="toOrder()">
                         Перейти в корзину
                     </v-btn>
                 </v-card-actions>
             </div>
         </v-card>
+
     </v-item>
 </template>
 

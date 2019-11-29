@@ -2,10 +2,7 @@ package server.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import server.domain.User;
 import server.services.OrderService;
 import server.services.UserService;
@@ -39,4 +36,7 @@ public class AuthApiController {
     private boolean hasUser(@AuthenticationPrincipal User user) {
         return user != null;
     }
+
+    /*@GetMapping("/checkActiveUser")
+    private boolean*/
 }

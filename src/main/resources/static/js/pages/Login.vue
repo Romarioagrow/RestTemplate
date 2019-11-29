@@ -217,7 +217,7 @@
                     registrationData['lastName']   = this.lastName
                     registrationData['firstName']  = this.firstName
                     registrationData['patronymic'] = this.patronymic
-                    axios.post('/auth/user/registration', registrationData).then(response => {
+                    axios.post('/auth//auth/noUser', registrationData).then(response => {
                         console.log(response)
                     })
                     this.dialog = false
