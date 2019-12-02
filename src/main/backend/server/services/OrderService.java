@@ -29,6 +29,7 @@ public class OrderService {
         Order order = orderRepo.findByOrderID(orderID);
 
         order.setClientName(concatClientName(orderDetails));
+        order.setClientMobile(orderDetails.get("mobile"));
 
         if (orderDetails.get("discountAmount") != null) {
             int discountPrice  = Integer.parseInt(orderDetails.get("discountPrice"));
@@ -192,9 +193,12 @@ public class OrderService {
         Order order = orderRepo.findByOrderID(orderID);
         User user = order.getUser();
         order.setCompleted(true);
-        user.setBonus(user.getBonus() + order.getTotalBonus());
+        if (user != null) {
+            user.setBonus(user.getBonus() + order.getTotalBonus());
+            orderRepo.save(order);
+            userRepo.save(user);
+        }
         orderRepo.save(order);
-        userRepo.save(user);
         /// sendNotificationToUser(order.getUser())
         return true;
     }
@@ -218,7 +222,7 @@ public class OrderService {
         List<Order> acceptedOrders = orderRepo.findAllByAcceptedTrueAndCompletedFalse();
         acceptedOrders.sort(Comparator.comparing(Order::getOpenDate).reversed());
 
-        log.info(acceptedOrders.toString());
+        //log.info(acceptedOrders.toString());
 
         return acceptedOrders;
     }

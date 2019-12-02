@@ -137,13 +137,16 @@
                                     </v-card-title>
                                     <v-card-text>
                                         <v-row>
-                                            <v-col class="subtitle-1 black--text">
+                                            <v-col class="subtitle-1 black--text" v-if="order.user !== null">
                                                 ФИО: {{order.user.lastName}} {{order.user.firstName}} {{order.user.patronymic}}
+                                            </v-col>
+                                            <v-col class="subtitle-1 black--text" v-else>
+                                                ФИО: {{order.clientName}}
                                             </v-col>
                                         </v-row>
                                         <v-row>
                                             <v-col class="subtitle-1 black--text">
-                                                Телефон: +{{order.user.username}}
+                                                Телефон: +{{order.clientMobile}}
                                             </v-col>
                                         </v-row>
                                         <v-row>
@@ -159,18 +162,22 @@
                                             <v-list-item-avatar>
                                                 <v-img :src="product.pic"></v-img>
                                             </v-list-item-avatar>
+
                                             <v-list-item-content>
                                                 <v-list-item-title v-text="product.productName"></v-list-item-title>
                                             </v-list-item-content>
+
                                             <v-list-item-content>
                                                 <v-list-item-title>
                                                     <span><strong>{{(product.productPrice * product.productAmount).toLocaleString('ru-RU')}}</strong> ₽</span>
                                                 </v-list-item-title>
                                             </v-list-item-content>
+
                                             <v-list-item-content>
                                                 <v-list-item-title>
                                                     <span>за {{product.productAmount}} шт.</span>
                                                 </v-list-item-title>
+
                                             </v-list-item-content>
                                         </v-list-item>
                                     </v-list>
@@ -226,15 +233,19 @@
                                             </v-col>
                                         </v-row>
                                     </v-card-title>
+
                                     <v-card-text>
                                         <v-row>
-                                            <v-col class="subtitle-1 black--text">
+                                            <v-col class="subtitle-1 black--text" v-if="order.user !== null">
                                                 ФИО: {{order.user.lastName}} {{order.user.firstName}} {{order.user.patronymic}}
+                                            </v-col>
+                                            <v-col class="subtitle-1 black--text" v-else>
+                                                ФИО: {{order.clientName}}
                                             </v-col>
                                         </v-row>
                                         <v-row>
                                             <v-col class="subtitle-1 black--text">
-                                                Телефон: +{{order.user.username}}
+                                                Телефон: +{{order.clientMobile}}
                                             </v-col>
                                         </v-row>
                                         <v-row>
@@ -243,7 +254,9 @@
                                             </v-col>
                                         </v-row>
                                     </v-card-text>
+
                                     <v-divider></v-divider>
+
                                     <v-list subheader>
                                         <v-subheader>Заказанные товары</v-subheader>
                                         <v-list-item v-for="product in order.orderedList" :key="product.productID">
@@ -326,6 +339,7 @@
         created() {
             axios.get('/admin/acceptedOrders').then(response => {
                 this.acceptedOrders = response.data
+                console.log(this.acceptedOrders)
             })
             axios.get('/admin/completedOrders').then(response => {
                 this.completedOrders = response.data

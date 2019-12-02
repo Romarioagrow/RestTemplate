@@ -55,7 +55,7 @@ public class Order implements Serializable {
 
     private Integer totalPrice = 0, totalBonus = 0, discount, discountPrice;
 
-    private String address, clientName;
+    private String address, clientName, clientMobile;
 
     private LocalDateTime openDate = LocalDateTime.now().withSecond(0).withNano(0);
 }
