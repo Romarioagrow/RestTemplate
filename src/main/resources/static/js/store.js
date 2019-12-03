@@ -61,6 +61,10 @@ export default new Vuex.Store({
         showFiltersButton(currentState) {
             currentState.filtersClosedButton = true
         },
+
+        setUserBonus(currentState, bonus) {
+            currentState.currentUser.bonus = bonus
+        }
     },
     actions: {
         searchProducts(context, searchQuery) {
@@ -139,7 +143,10 @@ export default new Vuex.Store({
         },
         hideSearchedArea(context) {
             context.commit('hideSearchedAreaTrue')
-        }
+        },
+        setUserBonus(context, bonus) {
+            context.commit('setUserBonus', bonus)
+        },
     },
     plugins: [createPersistedState()]
 });

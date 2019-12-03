@@ -168,7 +168,6 @@
     import axios from 'axios'
     import { validationMixin } from 'vuelidate'
     import { required, minLength, email } from 'vuelidate/lib/validators'
-
     export default {
         mixins: [validationMixin],
         validations: {

@@ -179,7 +179,7 @@
                 username:   this.$store.state.currentUser.firstName,
                 lastName:   this.$store.state.currentUser.lastName,
                 patronymic: this.$store.state.currentUser.patronymic,
-                userBonus:  this.$store.state.currentUser.bonus,
+                userBonus:  '',
                 acceptedOrders: [],
                 completedOrders: [],
                 activeContainerCurrent: true,
@@ -190,6 +190,7 @@
         created() {
             this.loadAcceptedOrders()
             this.loadCompletedOrders()
+            this.showUserBonus()
         },
         mounted() {
             this.userConfirmed = true
@@ -220,6 +221,13 @@
             showCompletedOrdersPage() {
                 this.activeContainerCurrent = false
                 this.activeContainerCompleted = true
+            },
+            showUserBonus() {
+                axios.get('/api/order/showUserBonus').then((response) => {
+                    console.log(response)
+                    this.$store.dispatch('setUserBonus', response.data)
+                    this.userBonus = response.data
+                })
             }
         },
         beforeCreate() {

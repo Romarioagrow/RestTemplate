@@ -195,7 +195,6 @@ public class OrderService {
         order.setCompleted(true);
         if (user != null) {
             user.setBonus(user.getBonus() + order.getTotalBonus());
-            orderRepo.save(order);
             userRepo.save(user);
         }
         orderRepo.save(order);
@@ -221,9 +220,6 @@ public class OrderService {
     public List<Order> getAllAcceptedOrders() {
         List<Order> acceptedOrders = orderRepo.findAllByAcceptedTrueAndCompletedFalse();
         acceptedOrders.sort(Comparator.comparing(Order::getOpenDate).reversed());
-
-        //log.info(acceptedOrders.toString());
-
         return acceptedOrders;
     }
 

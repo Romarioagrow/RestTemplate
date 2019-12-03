@@ -339,6 +339,7 @@
             discountAmount  :0,
             discountApplied :false,
 
+
         }),
         created() {
             axios.post('/api/order/orderedProducts').then(response => {
@@ -351,6 +352,10 @@
                 this.mobile     = this.$store.state.currentUser.username
                 this.email      = this.$store.state.currentUser.email
             }
+            axios.get('/api/order/showUserBonus').then((response) => {
+                console.log(response)
+                this.$store.dispatch('setUserBonus', response.data)
+            })
         },
         methods: {
             loadData(response) {
