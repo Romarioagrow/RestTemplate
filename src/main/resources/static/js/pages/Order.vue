@@ -9,7 +9,7 @@
                             <v-subheader>Товары в корзине</v-subheader>
 
                             <v-list-item v-for="[product, amount] of orderedProducts" :key="product.productID" @click="" style="min-height: 5rem;">
-                                <v-list-item-avatar>
+                                <v-list-item-avatar horizontal class="ml-2">
                                     <v-img :src="product.pic"></v-img>
                                 </v-list-item-avatar>
 

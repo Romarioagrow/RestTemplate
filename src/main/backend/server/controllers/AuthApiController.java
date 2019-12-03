@@ -36,7 +36,4 @@ public class AuthApiController {
     private boolean hasUser(@AuthenticationPrincipal User user) {
         return user != null;
     }
-
-    /*@GetMapping("/checkActiveUser")
-    private boolean*/
 }

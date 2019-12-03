@@ -233,4 +233,23 @@ public class OrderService {
         String sessionID = RequestContextHolder.currentRequestAttributes().getSessionId();
         return orderRepo.findBySessionIDAndAcceptedFalse(sessionID) != null;
     }
+
+    public List<Order> searchAcceptedOrders(String searchData) {
+        List<Order> acceptedOrders;
+
+        acceptedOrders = orderRepo.findByClientNameContainsIgnoreCase(searchData);
+        if (!acceptedOrders.isEmpty()) return acceptedOrders;
+
+        acceptedOrders = orderRepo.findByClientMobileContains(searchData);
+        if (!acceptedOrders.isEmpty()) return acceptedOrders;
+
+        try {
+            acceptedOrders = Collections.singletonList(orderRepo.findByOrderID(Long.parseLong(searchData)));
+            if (!acceptedOrders.isEmpty()) return acceptedOrders;
+        }
+        catch (NumberFormatException e) {
+            e.getSuppressed();
+        }
+        return null;
+    }
 }

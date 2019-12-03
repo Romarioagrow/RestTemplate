@@ -25,6 +25,12 @@ public class AdminApiController {
     private final ProductService productService;
     private final ProductRepo productRepo;
 
+
+    @PostMapping("/searchAcceptedOrders")
+    private List<Order> searchAcceptedOrders(@RequestBody String searchData) {
+        return orderService.searchAcceptedOrders(searchData);
+    }
+
     @PostMapping("/deleteOrder")
     private List<Order> deleteOrder(@RequestBody String orderID) {
         return orderService.deleteOrder(Long.parseLong(orderID.replaceAll("=","")));

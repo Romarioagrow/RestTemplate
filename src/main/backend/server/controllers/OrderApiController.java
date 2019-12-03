@@ -1,10 +1,7 @@
 package server.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import server.domain.Order;
 import server.domain.User;
@@ -71,13 +68,4 @@ public class OrderApiController {
     private int showUserBonus(@AuthenticationPrincipal User user) {
         return userRepo.findByUserID(user.getUserID()).getBonus();
     }
-
-    /*@GetMapping("/updateUserData")
-    private void updateUserData(@AuthenticationPrincipal User user) {
-        //return userRepo.findByUserID(user.getUserID());
-
-        User userDB = userRepo.findByUserID(user.getUserID());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDB, userDB.getPassword(), userDB.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }*/
 }

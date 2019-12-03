@@ -119,10 +119,25 @@
                 <!--Принятые заказы-->
 
                 <v-container v-if="activeContainerOrders">
+
                     <v-layout justify-center align-center>
+
                         <v-list subheader width="100%">
-                            <v-subheader style="background-color: #f2f2f2;"><h3>Принятые заказы</h3></v-subheader>
-                            <v-list-item v-for="order of acceptedOrders" :key="order.orderID" style="background-color: #f2f2f2;" >
+
+                            <v-subheader style="background-color: #f2f2f2;">
+                                <h3>Принятые заказы</h3>
+                            </v-subheader>
+
+
+                            <v-text-field
+                                    v-model="acceptedOrderSearch"
+                                    label="Телефон, ФИО, №Заказа"
+                                    solo
+                                    @input="searchAcceptedOrders()"
+                            ></v-text-field>
+
+
+                            <v-list-item v-for="order of acceptedOrders" :key="order.orderID" style="background-color: #f2f2f2;">
                                 <v-card outlined width="100%" class="mb-3">
                                     <v-card-title>
                                         <v-row>
@@ -372,7 +387,8 @@
                 completedOrders: [],
                 dialog: false,
                 updatingDB: false,
-                updatingBrands: false
+                updatingBrands: false,
+                acceptedOrderSearch: ''
             }
         },
         beforeCreate() {
@@ -439,7 +455,7 @@
             openOrders() {
                 axios.get('/admin/acceptedOrders').then(response => {
                     this.acceptedOrders = response.data
-                    console.log(this.acceptedOrders)
+                    //console.log(this.acceptedOrders)
                 })
 
                 this.activeContainerDB = false
@@ -482,14 +498,36 @@
                 })
             },
             test() {
-                axios.post('admin/test').then((response) => {
-                    console.log(response)
-                })
+                axios.post('admin/test')
             },
             updateSearch() {
-                axios.post('admin/updateSearch').then((response) => {
-                    console.log(response)
+                axios.post('admin/updateSearch')
+            },
+
+            searchAcceptedOrders() {
+                if (this.acceptedOrderSearch === '') {
+                    axios.get('/admin/acceptedOrders').then(response => {
+                        this.acceptedOrders = response.data
+                    })
+                }
+
+                const headers = {
+                    'Content-Type': 'application/json',
+                }
+
+                axios.post('admin/searchAcceptedOrders', this.acceptedOrderSearch, {
+                    headers: headers
                 })
+                    .then((response) => {
+                        console.log(response.data)
+                        if (response.data !== null) {
+                            this.acceptedOrders = response.data
+                        }
+
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
             }
         }
     }

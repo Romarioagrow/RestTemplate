@@ -20,4 +20,8 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
     List<Order> findAllByCompletedTrue();
 
     List<Order> findAllByAcceptedFalse();
+
+    List<Order> findByClientMobileContains(String mobile);
+
+    List<Order> findByClientNameContainsIgnoreCase(String name);
 }
